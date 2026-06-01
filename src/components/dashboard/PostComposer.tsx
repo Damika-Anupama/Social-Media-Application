@@ -14,7 +14,7 @@ const tones = [
   { id: 'poll', label: 'Poll' },
 ];
 
-export function PostComposer() {
+export function PostComposer({ onPosted, variant = 'card' }: { onPosted?: () => void; variant?: 'card' | 'naked' }) {
   const [text, setText] = useState('');
   const [tone, setTone] = useState('thought');
   const remaining = 500 - text.length;
@@ -26,8 +26,9 @@ export function PostComposer() {
       onSubmit={(e) => {
         e.preventDefault();
         setText('');
+        onPosted?.();
       }}
-      className="card p-5"
+      className={variant === 'card' ? 'card p-5' : 'p-5'}
     >
       <div className="flex items-start gap-3">
         <Avatar user={currentUser} size={44} />

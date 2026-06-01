@@ -46,9 +46,16 @@ export function RightRail() {
           <ul className="divide-y divide-line/40">
             {suggestions.map((u) => (
               <li key={u.id} className="flex items-center gap-3 px-5 py-3">
-                <Avatar user={u} size={40} />
+                <Link href={`/dashboard/u/${u.handle}`} aria-label={`${u.name}'s profile`}>
+                  <Avatar user={u} size={40} />
+                </Link>
                 <div className="min-w-0 flex-1">
-                  <div className="truncate text-sm font-semibold text-ink">{u.name}</div>
+                  <Link
+                    href={`/dashboard/u/${u.handle}`}
+                    className="block truncate text-sm font-semibold text-ink hover:underline"
+                  >
+                    {u.name}
+                  </Link>
                   <div className="truncate text-xs text-ink-dim">
                     @{u.handle} · {formatCount(u.followers ?? 0)} followers
                   </div>

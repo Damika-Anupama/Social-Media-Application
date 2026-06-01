@@ -2,6 +2,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import clsx from 'clsx';
 import {
   Heart,
@@ -27,14 +28,28 @@ export function PostCard({ post }: { post: Post }) {
   return (
     <article className="card group p-5 transition-colors hover:border-line">
       <header className="flex items-start gap-3">
-        <Avatar user={post.author} size={44} />
+        <Link href={`/dashboard/u/${post.author.handle}`} aria-label={`${post.author.name}'s profile`}>
+          <Avatar user={post.author} size={44} />
+        </Link>
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-            <span className="font-semibold text-ink">{post.author.name}</span>
+            <Link
+              href={`/dashboard/u/${post.author.handle}`}
+              className="font-semibold text-ink hover:underline"
+            >
+              {post.author.name}
+            </Link>
             {post.author.verified && <BadgeCheck className="h-4 w-4 text-brand-300" aria-label="Verified" />}
-            <span className="text-sm text-ink-dim">@{post.author.handle}</span>
+            <Link
+              href={`/dashboard/u/${post.author.handle}`}
+              className="text-sm text-ink-dim hover:text-ink"
+            >
+              @{post.author.handle}
+            </Link>
             <span className="text-sm text-ink-dim">·</span>
-            <span className="text-sm text-ink-dim">{post.postedAt}</span>
+            <Link href={`/dashboard/p/${post.id}`} className="text-sm text-ink-dim hover:text-ink">
+              {post.postedAt}
+            </Link>
             {post.location && (
               <span className="inline-flex items-center gap-1 text-xs text-ink-dim">
                 <MapPin className="h-3 w-3" /> {post.location}
@@ -48,7 +63,12 @@ export function PostCard({ post }: { post: Post }) {
         </button>
       </header>
 
-      <div className="mt-4 whitespace-pre-line text-[15px] leading-relaxed text-ink">{post.body}</div>
+      <Link
+        href={`/dashboard/p/${post.id}`}
+        className="mt-4 block whitespace-pre-line text-[15px] leading-relaxed text-ink"
+      >
+        {post.body}
+      </Link>
 
       {post.tags && post.tags.length > 0 && (
         <div className="mt-3 flex flex-wrap gap-1.5">

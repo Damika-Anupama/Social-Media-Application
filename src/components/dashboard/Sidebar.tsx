@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { Avatar } from '@/components/Avatar';
 import { currentUser } from '@/lib/mock-data';
+import { useComposeOpener } from '@/components/dashboard/ComposeContext';
 
 const navItems = [
   { href: '/dashboard', label: 'Home', icon: Home, badge: null },
@@ -32,6 +33,7 @@ const navItems = [
 
 export function Sidebar() {
   const pathname = usePathname();
+  const openCompose = useComposeOpener();
 
   return (
     <aside className="sticky top-0 hidden h-screen w-[260px] shrink-0 flex-col border-r border-line/70 bg-bg/80 backdrop-blur-sm lg:flex">
@@ -71,12 +73,13 @@ export function Sidebar() {
           })}
         </nav>
 
-        <Link
-          href="/dashboard"
+        <button
+          type="button"
+          onClick={openCompose}
           className="btn-primary mx-auto mt-1 w-full justify-center py-3 text-sm"
         >
           <PenSquare className="h-4 w-4" /> Compose
-        </Link>
+        </button>
 
         <div className="card mt-2 p-4">
           <div className="flex items-center gap-2 text-xs text-ink-muted">

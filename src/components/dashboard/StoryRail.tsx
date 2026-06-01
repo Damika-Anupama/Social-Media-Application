@@ -39,20 +39,20 @@ export function StoryRail() {
           >
             <img src={s.thumbnail} alt="" className="absolute inset-0 h-full w-full object-cover" />
             <div className="absolute inset-0 bg-gradient-to-t from-bg/95 via-bg/30 to-bg/10" />
-            {s.isLive && (
+            {s.isLive ? (
               <span className="absolute left-2 top-2 inline-flex items-center gap-1 rounded-full bg-accent-coral px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
                 <Radio className="h-3 w-3" /> Live
               </span>
+            ) : (
+              <span
+                className={clsx(
+                  'absolute left-2 top-2 inline-flex h-9 w-9 items-center justify-center rounded-full p-0.5',
+                  s.viewed ? 'bg-line' : 'bg-gradient-to-br from-brand-400 via-accent-coral to-accent-sun',
+                )}
+              >
+                <img src={s.user.avatar} alt={s.user.name} className="h-full w-full rounded-full bg-bg" />
+              </span>
             )}
-            <span
-              className={clsx(
-                'absolute left-2 top-2 inline-flex h-9 w-9 items-center justify-center rounded-full p-0.5',
-                !s.isLive && (s.viewed ? 'bg-line' : 'bg-gradient-to-br from-brand-400 via-accent-coral to-accent-sun'),
-              )}
-              style={{ display: s.isLive ? 'none' : undefined }}
-            >
-              <img src={s.user.avatar} alt={s.user.name} className="h-full w-full rounded-full bg-bg" />
-            </span>
             <span className="relative text-xs font-medium text-ink line-clamp-1">{s.user.name.split(' ')[0]}</span>
           </button>
         ))}

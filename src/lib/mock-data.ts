@@ -325,3 +325,110 @@ export const formatCount = (n: number) => {
   if (n >= 1_000) return (n / 1_000).toFixed(1).replace(/\.0$/, '') + 'K';
   return n.toString();
 };
+
+export type Comment = {
+  id: string;
+  user: User;
+  body: string;
+  time: string;
+  likes: number;
+  replies?: Comment[];
+};
+
+const commentsByPost: Record<string, Comment[]> = {
+  p1: [
+    {
+      id: 'p1c1',
+      user: byHandle('kenji'),
+      body: 'That second spread is doing so much with so little. The kerning is gorgeous.',
+      time: '8m',
+      likes: 42,
+      replies: [
+        {
+          id: 'p1c1r1',
+          user: byHandle('nadia'),
+          body: 'Thank you. We re-spaced it five times. The capital T was the boss fight.',
+          time: '6m',
+          likes: 11,
+        },
+      ],
+    },
+    {
+      id: 'p1c2',
+      user: byHandle('lina'),
+      body: 'I am stealing the bottom right pairing for the Coastline lookbook. Crediting you obviously.',
+      time: '4m',
+      likes: 28,
+    },
+    {
+      id: 'p1c3',
+      user: byHandle('theo'),
+      body: 'Always learning from your studio notes. Bookmarking.',
+      time: '2m',
+      likes: 9,
+    },
+  ],
+  p2: [
+    {
+      id: 'p2c1',
+      user: byHandle('priya'),
+      body: 'The Phoenix section completely changed how I think about siting these things. Saving for the lab meeting.',
+      time: '20m',
+      likes: 188,
+    },
+    {
+      id: 'p2c2',
+      user: byHandle('amaru'),
+      body: 'Numbers in figure 3 match what we are seeing internally. Solid reporting.',
+      time: '14m',
+      likes: 96,
+    },
+  ],
+  p3: [
+    { id: 'p3c1', user: byHandle('nadia'), body: 'The light here is heartbreaking.', time: '45m', likes: 33 },
+    { id: 'p3c2', user: byHandle('marcos'), body: 'What lens? Looks like a 35.', time: '30m', likes: 6 },
+  ],
+  p4: [
+    {
+      id: 'p4c1',
+      user: byHandle('sasha'),
+      body: 'Looking forward to the thread. Postgres 17 has been quietly amazing.',
+      time: '1h',
+      likes: 22,
+    },
+  ],
+  p5: [
+    {
+      id: 'p5c1',
+      user: byHandle('nadia'),
+      body: 'The dye work on the third look is incredible. Please tell me there is a press kit.',
+      time: '2h',
+      likes: 67,
+      replies: [
+        {
+          id: 'p5c1r1',
+          user: byHandle('lina'),
+          body: 'Sending the press kit over tonight — Halftone is already in.',
+          time: '1h',
+          likes: 18,
+        },
+      ],
+    },
+  ],
+  p6: [
+    {
+      id: 'p6c1',
+      user: byHandle('amaru'),
+      body: 'Procedural roads that respect water — finally. Real systems thinking.',
+      time: '4h',
+      likes: 41,
+    },
+  ],
+};
+
+export const findPost = (id: string) => posts.find((p) => p.id === id);
+export const findUser = (handle: string) =>
+  users.find((u) => u.handle === handle) ?? (handle === currentUser.handle ? currentUser : undefined);
+export const postsByUser = (userId: string) => posts.filter((p) => p.author.id === userId);
+export const commentsFor = (postId: string): Comment[] => commentsByPost[postId] ?? [];
+export const allHandles = () => [currentUser.handle, ...users.map((u) => u.handle)];
