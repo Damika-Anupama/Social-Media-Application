@@ -1,91 +1,181 @@
 /* eslint-disable @next/next/no-img-element */
+'use client';
+
+import { useMemo, useState } from 'react';
+import Link from 'next/link';
+import clsx from 'clsx';
+import { Users2, Plus, Search, Check } from 'lucide-react';
 import { TopBar } from '@/components/dashboard/TopBar';
-import { Users2, Plus } from 'lucide-react';
-
-const myCommunities = [
-  {
-    name: 'Slow Web Society',
-    members: '12.4K',
-    online: 318,
-    cover: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80',
-    description: 'For people building software that respects attention.',
-  },
-  {
-    name: 'Open Climate Lab',
-    members: '8.1K',
-    online: 96,
-    cover: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1200&q=80',
-    description: 'Field notes, datasets, and methods from climate researchers.',
-  },
-  {
-    name: 'Halftone',
-    members: '24.0K',
-    online: 540,
-    cover: 'https://images.unsplash.com/photo-1561070791-2526d30994b8?auto=format&fit=crop&w=1200&q=80',
-    description: 'Design studios talking shop about type, identity, and craft.',
-  },
-];
-
-const discover = [
-  { name: 'Roastery', members: '3.2K', topic: 'Specialty coffee' },
-  { name: 'Pixel Diaries', members: '6.8K', topic: 'Indie game dev' },
-  { name: 'Long-form Cycling', members: '2.1K', topic: 'Endurance + travel' },
-  { name: 'Postgres Wizards', members: '5.6K', topic: 'Databases at scale' },
-];
+import { communities, formatCount } from '@/lib/mock-data';
 
 export default function CommunitiesPage() {
+  const [joined, setJoined] = useState<Set<string>>(
+    new Set(communities.filter((c) => c.joined).map((c) => c.id)),
+  );
+  const [query, setQuery] = useState('');
+
+  const toggleJoin = (id: string) =>
+    setJoined((s) => {
+      const next = new Set(s);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+
+  const q = query.trim().toLowerCase();
+  const visible = useMemo(
+    () =>
+      communities.filter(
+        (c) =>
+          !q ||
+          c.name.toLowerCase().includes(q) ||
+          c.topic.toLowerCase().includes(q) ||
+          c.description.toLowerCase().includes(q),
+      ),
+    [q],
+  );
+
+  const myList = visible.filter((c) => joined.has(c.id));
+  const discoverList = visible.filter((c) => !joined.has(c.id));
+
   return (
     <div className="px-4 pt-1 sm:px-6">
       <TopBar title="Communities" subtitle="Small, opinionated rooms where the conversation goes deeper." />
 
-      <section className="mb-6">
-        <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-ink">Your communities</h2>
-          <button className="inline-flex items-center gap-1.5 rounded-full border border-brand-400/40 bg-brand-500/10 px-3 py-1 text-xs font-semibold text-brand-200">
-            <Plus className="h-3 w-3" /> Create
-          </button>
+      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-1 items-center gap-2 rounded-full border border-line/60 bg-bg-subtle px-4 py-2">
+          <Search className="h-4 w-4 text-ink-dim" />
+          <input
+            type="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search communities by name or topic"
+            className="w-full bg-transparent text-sm text-ink placeholder:text-ink-dim focus:outline-none"
+          />
         </div>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {myCommunities.map((c) => (
-            <div key={c.name} className="card overflow-hidden">
-              <div className="relative h-28">
-                <img src={c.cover} alt="" className="absolute inset-0 h-full w-full object-cover" />
-                <div className="absolute inset-0 bg-gradient-to-t from-bg-raised to-transparent" />
-              </div>
-              <div className="p-4">
-                <h3 className="text-base font-semibold text-ink">{c.name}</h3>
-                <p className="mt-1 text-xs leading-relaxed text-ink-muted">{c.description}</p>
-                <div className="mt-3 flex items-center justify-between text-xs">
-                  <span className="text-ink-dim">{c.members} members</span>
-                  <span className="inline-flex items-center gap-1 text-accent-mint">
-                    <span className="h-1.5 w-1.5 rounded-full bg-accent-mint animate-pulse" />
-                    {c.online} online
-                  </span>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+        <button className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-brand-400/40 bg-brand-500/10 px-4 py-2 text-xs font-semibold text-brand-200 hover:bg-brand-500/20">
+          <Plus className="h-3.5 w-3.5" /> Create community
+        </button>
+      </div>
+
+      <section className="mb-7">
+        <h2 className="mb-3 text-sm font-semibold text-ink">Your communities ({myList.length})</h2>
+        {myList.length === 0 ? (
+          <div className="card p-6 text-sm text-ink-muted">You haven't joined any communities yet. Browse below.</div>
+        ) : (
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {myList.map((c) => (
+              <CommunityCard
+                key={c.id}
+                community={c}
+                joined
+                onToggle={() => toggleJoin(c.id)}
+              />
+            ))}
+          </div>
+        )}
       </section>
 
       <section>
         <h2 className="mb-3 text-sm font-semibold text-ink">Discover more</h2>
         <div className="card divide-y divide-line/40">
-          {discover.map((c) => (
-            <div key={c.name} className="flex items-center gap-3 p-4">
-              <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-brand-500/10 text-brand-300">
-                <Users2 className="h-4 w-4" />
-              </span>
-              <div className="flex-1">
-                <div className="text-sm font-semibold text-ink">{c.name}</div>
-                <div className="text-xs text-ink-dim">{c.members} members · {c.topic}</div>
-              </div>
-              <button className="btn-ghost px-4 py-2 text-xs">Preview</button>
-              <button className="btn-primary px-4 py-2 text-xs">Join</button>
-            </div>
-          ))}
+          {discoverList.length === 0 ? (
+            <p className="p-6 text-sm text-ink-muted">Nothing new matching "{query}".</p>
+          ) : (
+            discoverList.map((c) => {
+              const isJoined = joined.has(c.id);
+              return (
+                <div key={c.id} className="flex items-center gap-3 p-4">
+                  <Link
+                    href={`/dashboard/c/${c.slug}`}
+                    className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-brand-500/10 text-brand-300"
+                    aria-label={c.name}
+                  >
+                    <Users2 className="h-4 w-4" />
+                  </Link>
+                  <div className="min-w-0 flex-1">
+                    <Link href={`/dashboard/c/${c.slug}`} className="block text-sm font-semibold text-ink hover:underline">
+                      {c.name}
+                    </Link>
+                    <div className="truncate text-xs text-ink-dim">
+                      {formatCount(c.members)} members · {c.topic}
+                    </div>
+                  </div>
+                  <Link href={`/dashboard/c/${c.slug}`} className="btn-ghost px-4 py-2 text-xs">
+                    Preview
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={() => toggleJoin(c.id)}
+                    aria-pressed={isJoined}
+                    className={clsx(
+                      'rounded-full px-4 py-2 text-xs font-semibold transition-colors',
+                      isJoined
+                        ? 'border border-accent-mint/40 bg-accent-mint/10 text-accent-mint'
+                        : 'btn-primary',
+                    )}
+                  >
+                    {isJoined ? 'Joined' : 'Join'}
+                  </button>
+                </div>
+              );
+            })
+          )}
         </div>
       </section>
+    </div>
+  );
+}
+
+function CommunityCard({
+  community,
+  joined,
+  onToggle,
+}: {
+  community: (typeof communities)[number];
+  joined: boolean;
+  onToggle: () => void;
+}) {
+  return (
+    <div className="card overflow-hidden">
+      <Link href={`/dashboard/c/${community.slug}`} className="block">
+        <div className="relative h-28">
+          <img src={community.cover} alt="" className="absolute inset-0 h-full w-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-t from-bg-raised to-transparent" />
+        </div>
+      </Link>
+      <div className="p-4">
+        <Link href={`/dashboard/c/${community.slug}`} className="text-base font-semibold text-ink hover:underline">
+          {community.name}
+        </Link>
+        <p className="mt-1 text-xs leading-relaxed text-ink-muted">{community.description}</p>
+        <div className="mt-3 flex items-center justify-between text-xs">
+          <span className="text-ink-dim">{formatCount(community.members)} members</span>
+          <span className="inline-flex items-center gap-1 text-accent-mint">
+            <span className="h-1.5 w-1.5 rounded-full bg-accent-mint animate-pulse" />
+            {community.online} online
+          </span>
+        </div>
+        <button
+          type="button"
+          onClick={onToggle}
+          aria-pressed={joined}
+          className={clsx(
+            'mt-4 w-full rounded-full py-2 text-xs font-semibold transition-colors',
+            joined
+              ? 'border border-accent-mint/40 bg-accent-mint/10 text-accent-mint'
+              : 'btn-primary',
+          )}
+        >
+          {joined ? (
+            <span className="inline-flex items-center gap-1.5">
+              <Check className="h-3 w-3" /> Joined
+            </span>
+          ) : (
+            'Join community'
+          )}
+        </button>
+      </div>
     </div>
   );
 }

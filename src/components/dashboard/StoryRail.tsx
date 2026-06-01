@@ -1,20 +1,30 @@
 /* eslint-disable @next/next/no-img-element */
 'use client';
 
+import { useState } from 'react';
+import Link from 'next/link';
 import clsx from 'clsx';
 import { Plus, Radio } from 'lucide-react';
 import { stories, currentUser } from '@/lib/mock-data';
+import { StoryViewer } from './StoryViewer';
 
 export function StoryRail() {
+  const [viewerIndex, setViewerIndex] = useState<number | null>(null);
+
+  const others = stories.slice(1);
+
   return (
     <div className="card relative overflow-hidden p-4">
       <div className="flex items-center justify-between">
         <h2 className="text-sm font-semibold text-ink">Stories</h2>
-        <button className="text-xs text-ink-muted hover:text-ink">See all</button>
+        <Link href="/dashboard/stories" className="text-xs text-ink-muted hover:text-ink">
+          See all
+        </Link>
       </div>
       <div className="-mx-1 mt-3 flex gap-3 overflow-x-auto px-1 pb-1">
         <button
           type="button"
+          onClick={() => setViewerIndex(0)}
           className="group relative flex h-40 w-28 shrink-0 flex-col items-center justify-end overflow-hidden rounded-2xl border border-dashed border-line bg-bg-subtle/60 p-3 text-left transition-all hover:border-brand-400/50 hover:bg-bg-subtle"
         >
           <img
@@ -28,10 +38,11 @@ export function StoryRail() {
           <span className="relative text-xs font-medium text-ink">Your story</span>
         </button>
 
-        {stories.slice(1).map((s) => (
+        {others.map((s, i) => (
           <button
             key={s.id}
             type="button"
+            onClick={() => setViewerIndex(i + 1)}
             className={clsx(
               'group relative flex h-40 w-28 shrink-0 flex-col justify-end overflow-hidden rounded-2xl border p-3 text-left transition-transform hover:-translate-y-0.5',
               s.viewed ? 'border-line/60 opacity-70' : 'border-transparent',
@@ -57,6 +68,14 @@ export function StoryRail() {
           </button>
         ))}
       </div>
+
+      {viewerIndex !== null && (
+        <StoryViewer
+          stories={stories}
+          startIndex={viewerIndex}
+          onClose={() => setViewerIndex(null)}
+        />
+      )}
     </div>
   );
 }

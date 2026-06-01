@@ -98,9 +98,9 @@ export function Sidebar() {
             <div className="truncate text-sm font-semibold text-ink">{currentUser.name}</div>
             <div className="truncate text-xs text-ink-dim">@{currentUser.handle}</div>
           </div>
-          <button className="btn-icon h-8 w-8" aria-label="Sign out">
+          <Link href="/login" className="btn-icon h-8 w-8" aria-label="Sign out">
             <LogOut className="h-4 w-4" />
-          </button>
+          </Link>
         </div>
       </div>
     </aside>

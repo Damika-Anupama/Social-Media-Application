@@ -1,17 +1,38 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
-import { Sparkles, TrendingUp, Calendar, Plus } from 'lucide-react';
+import clsx from 'clsx';
+import { Sparkles, TrendingUp, Calendar, Plus, Check } from 'lucide-react';
 import { trending, suggestions, formatCount } from '@/lib/mock-data';
 import { Avatar } from '@/components/Avatar';
 
 const events = [
-  { title: 'Lina x Coastline studio tour', date: 'Sat, Jun 8 · 6:00 PM', city: 'Lagos' },
-  { title: 'Designing for slow time — live room', date: 'Tonight · 9:30 PM', city: 'Online' },
-  { title: 'Open Climate Lab AMA', date: 'Wed, Jun 12 · 12:00 PM', city: 'Online' },
+  { id: 'e1', title: 'Lina x Coastline studio tour', date: 'Sat, Jun 8 · 6:00 PM', city: 'Lagos' },
+  { id: 'e2', title: 'Designing for slow time — live room', date: 'Tonight · 9:30 PM', city: 'Online' },
+  { id: 'e3', title: 'Open Climate Lab AMA', date: 'Wed, Jun 12 · 12:00 PM', city: 'Online' },
 ];
 
 export function RightRail() {
+  const [following, setFollowing] = useState<Set<string>>(new Set());
+  const [rsvped, setRsvped] = useState<Set<string>>(new Set());
+
+  const toggleFollow = (id: string) =>
+    setFollowing((s) => {
+      const next = new Set(s);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+
+  const toggleRsvp = (id: string) =>
+    setRsvped((s) => {
+      const next = new Set(s);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+
   return (
     <aside className="hidden w-[320px] shrink-0 flex-col gap-4 xl:flex">
       <div className="sticky top-4 flex flex-col gap-4">
@@ -22,11 +43,16 @@ export function RightRail() {
             <span className="badge ml-auto text-[10px]">Curated</span>
           </div>
           <ul className="divide-y divide-line/40">
-            {trending.map((t) => (
-              <li key={t.title} className="cursor-pointer px-5 py-3 transition-colors hover:bg-bg-elevated/40">
-                <div className="text-[11px] uppercase tracking-wider text-ink-dim">{t.category}</div>
-                <div className="mt-0.5 text-sm font-semibold text-ink">{t.title}</div>
-                <div className="mt-0.5 text-xs text-ink-dim">{t.posts}</div>
+            {trending.slice(0, 5).map((t) => (
+              <li key={t.title}>
+                <Link
+                  href={`/dashboard/explore?q=${encodeURIComponent(t.title)}`}
+                  className="block cursor-pointer px-5 py-3 transition-colors hover:bg-bg-elevated/40"
+                >
+                  <div className="text-[11px] uppercase tracking-wider text-ink-dim">{t.category}</div>
+                  <div className="mt-0.5 text-sm font-semibold text-ink">{t.title}</div>
+                  <div className="mt-0.5 text-xs text-ink-dim">{t.posts}</div>
+                </Link>
               </li>
             ))}
           </ul>
@@ -44,28 +70,55 @@ export function RightRail() {
             <h2 className="text-sm font-semibold text-ink">People worth following</h2>
           </div>
           <ul className="divide-y divide-line/40">
-            {suggestions.map((u) => (
-              <li key={u.id} className="flex items-center gap-3 px-5 py-3">
-                <Link href={`/dashboard/u/${u.handle}`} aria-label={`${u.name}'s profile`}>
-                  <Avatar user={u} size={40} />
-                </Link>
-                <div className="min-w-0 flex-1">
-                  <Link
-                    href={`/dashboard/u/${u.handle}`}
-                    className="block truncate text-sm font-semibold text-ink hover:underline"
-                  >
-                    {u.name}
+            {suggestions.slice(0, 4).map((u) => {
+              const isFollowing = following.has(u.id);
+              return (
+                <li key={u.id} className="flex items-center gap-3 px-5 py-3">
+                  <Link href={`/dashboard/u/${u.handle}`} aria-label={`${u.name}'s profile`}>
+                    <Avatar user={u} size={40} />
                   </Link>
-                  <div className="truncate text-xs text-ink-dim">
-                    @{u.handle} · {formatCount(u.followers ?? 0)} followers
+                  <div className="min-w-0 flex-1">
+                    <Link
+                      href={`/dashboard/u/${u.handle}`}
+                      className="block truncate text-sm font-semibold text-ink hover:underline"
+                    >
+                      {u.name}
+                    </Link>
+                    <div className="truncate text-xs text-ink-dim">
+                      @{u.handle} · {formatCount(u.followers ?? 0)} followers
+                    </div>
                   </div>
-                </div>
-                <button className="inline-flex items-center gap-1 rounded-full border border-brand-400/40 bg-brand-500/10 px-3 py-1 text-xs font-medium text-brand-200 transition-colors hover:bg-brand-500/20">
-                  <Plus className="h-3 w-3" /> Follow
-                </button>
-              </li>
-            ))}
+                  <button
+                    type="button"
+                    onClick={() => toggleFollow(u.id)}
+                    aria-pressed={isFollowing}
+                    className={clsx(
+                      'inline-flex items-center gap-1 rounded-full border px-3 py-1 text-xs font-medium transition-colors',
+                      isFollowing
+                        ? 'border-accent-mint/40 bg-accent-mint/10 text-accent-mint'
+                        : 'border-brand-400/40 bg-brand-500/10 text-brand-200 hover:bg-brand-500/20',
+                    )}
+                  >
+                    {isFollowing ? (
+                      <>
+                        <Check className="h-3 w-3" /> Following
+                      </>
+                    ) : (
+                      <>
+                        <Plus className="h-3 w-3" /> Follow
+                      </>
+                    )}
+                  </button>
+                </li>
+              );
+            })}
           </ul>
+          <Link
+            href="/dashboard/explore"
+            className="block border-t border-line/60 px-5 py-3 text-xs font-medium text-brand-300 hover:text-brand-200"
+          >
+            Show more →
+          </Link>
         </div>
 
         <div className="card overflow-hidden">
@@ -74,18 +127,36 @@ export function RightRail() {
             <h2 className="text-sm font-semibold text-ink">Happening soon</h2>
           </div>
           <ul className="divide-y divide-line/40">
-            {events.map((ev) => (
-              <li key={ev.title} className="px-5 py-3">
-                <div className="text-sm font-semibold text-ink">{ev.title}</div>
-                <div className="mt-0.5 text-xs text-ink-dim">{ev.date}</div>
-                <div className="mt-1 text-[11px] uppercase tracking-wider text-brand-300">{ev.city}</div>
-              </li>
-            ))}
+            {events.map((ev) => {
+              const going = rsvped.has(ev.id);
+              return (
+                <li key={ev.id} className="px-5 py-3">
+                  <div className="text-sm font-semibold text-ink">{ev.title}</div>
+                  <div className="mt-0.5 text-xs text-ink-dim">{ev.date}</div>
+                  <div className="mt-2 flex items-center justify-between">
+                    <div className="text-[11px] uppercase tracking-wider text-brand-300">{ev.city}</div>
+                    <button
+                      type="button"
+                      onClick={() => toggleRsvp(ev.id)}
+                      aria-pressed={going}
+                      className={clsx(
+                        'rounded-full border px-3 py-1 text-[11px] font-semibold transition-colors',
+                        going
+                          ? 'border-accent-mint/40 bg-accent-mint/10 text-accent-mint'
+                          : 'border-line bg-bg-subtle text-ink-muted hover:text-ink',
+                      )}
+                    >
+                      {going ? 'Going' : 'Interested'}
+                    </button>
+                  </div>
+                </li>
+              );
+            })}
           </ul>
         </div>
 
         <p className="px-2 text-[11px] leading-relaxed text-ink-dim">
-          Pulse is a frontend demonstration. All data, photography, and accounts shown here are fictional.
+          Pulse — a quieter way to share what you make.
         </p>
       </div>
     </aside>
