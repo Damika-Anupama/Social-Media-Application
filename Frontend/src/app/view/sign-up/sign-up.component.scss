@@ -1,0 +1,37 @@
+@import url('https://fonts.googleapis.com/css2?family=Indie+Flower&display=swap');
+
+H1{
+  font-family: 'Indie Flower', cursive;
+  font-size: 70px;
+  color: chocolate;
+}
+H2{
+  font-family: 'Indie Flower', cursive;
+  font-size: 60px;
+  color: chocolate;
+}
+
+.main-container{
+  width: 100vw;
+}
+.btn{
+  margin-bottom: 10px;
+}
+
+#example-radio-group-label{
+  font-weight: normal;
+}
+.example-radio-group{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+mat-radio-button{
+  margin-right: 10px;
+}
+.header-wrapper{
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}

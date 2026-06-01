@@ -1,0 +1,23 @@
+@import '~admin-lte/plugins/fontawesome-free/css/all.min.css';
+@import '~admin-lte/dist/css/adminlte.min.css';
+@import '~admin-lte/plugins/overlayScrollbars/css/OverlayScrollbars.min.css';
+@import '~font-awesome/css/font-awesome.min.css';
+@import 'https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700';
+@import 'https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css';
+
+
+
+
+.bd-placeholder-img {
+  font-size: 1.125rem;
+  text-anchor: middle;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+}
+
+@media (min-width: 768px) {
+  .bd-placeholder-img-lg {
+    font-size: 3.5rem;
+  }
+}

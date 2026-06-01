@@ -1,0 +1,45 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.suo
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Builds
+dist/
+build/
+.next/
+out/
+.nuxt/
+.turbo/
+.cache/
+.parcel-cache/
+
+# Angular
+.angular/
+
+# Java / Maven
+target/
+*.class
+
+# Logs
+logs/
+*.log
+
+# Env
+.env
+.env.local
+.env.*.local
+
+# Vercel
+.vercel

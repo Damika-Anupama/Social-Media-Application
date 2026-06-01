@@ -1,0 +1,39 @@
+#wallpaper-image {
+    background: url("https://wallpaperaccess.com/full/810183.jpg") red left top no-repeat;
+  }
+  
+  .wheat-color {
+    color: wheat;
+  }
+  
+  .set-width {
+    width: 50%;
+  }
+  
+  .hero-image {
+    background-size: contain;
+  }
+  
+  .display-5 {
+    font-size: 80px;
+    font-weight: 700;
+    color: lavenderblush;
+  }
+  
+  .game-select{
+    cursor: pointer;
+  }
+  
+  .bd-placeholder-img {
+    font-size: 1.125rem;
+    text-anchor: middle;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+  }
+  
+  @media (min-width: 768px) {
+    .bd-placeholder-img-lg {
+      font-size: 3.5rem;
+    }
+  }

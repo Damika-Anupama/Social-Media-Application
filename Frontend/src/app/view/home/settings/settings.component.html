@@ -1,0 +1,196 @@
+<div class="card" style="margin: 30px; padding: 0 100px 0">
+  <div >
+    <div class="form-group row">
+      <div style="display: flex; justify-content:  center; align-items: center;">
+        <div class="sub-container img-container">
+          <input type="file" name="file-input" id="file-input" class="file-input__input" (change)="readURL($event);" />
+          <label class="file-input__label" for="file-input">
+            <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="upload"
+              class="svg-inline--fa fa-upload fa-w-16" role="img" xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 512 512">
+              <path fill="currentColor"
+                d="M296 384h-80c-13.3 0-24-10.7-24-24V192h-87.7c-17.8 0-26.7-21.5-14.1-34.1L242.3 5.7c7.5-7.5 19.8-7.5 27.3 0l152.2 152.2c12.6 12.6 3.7 34.1-14.1 34.1H320v168c0 13.3-10.7 24-24 24zm216-8v112c0 13.3-10.7 24-24 24H24c-13.3 0-24-10.7-24-24V376c0-13.3 10.7-24 24-24h136v8c0 30.9 25.1 56 56 56h80c30.9 0 56-25.1 56-56v-8h136c13.3 0 24 10.7 24 24zm-124 88c0-11-9-20-20-20s-20 9-20 20 9 20 20 20 20-9 20-20zm64 0c0-11-9-20-20-20s-20 9-20 20 9 20 20 20 20-9 20-20z">
+              </path>
+            </svg>
+            <span>Upload Your Profile Picture</span></label>
+          <ng-template [ngIf]="profilePic" [ngIfElse]="loading">
+            <img alt="Avatar" src="data:image/png;base64,{{profilePic}}">
+          </ng-template>
+
+          <ng-template #loading>
+            <img alt="Avatar" src="assets/img/avatar-other.png">
+          </ng-template>
+        </div>
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="inputName" class="col-sm-2 col-form-label">User Name</label>
+      <div class="col-sm-10">
+        <input type="text" class="form-control" id="inputName" placeholder="User Name" required [(ngModel)]="username">
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="inputName" class="col-sm-2 col-form-label">Full Name</label>
+      <div class="col-sm-10">
+        <input type="email" class="form-control" id="inputName" placeholder="Full Name">
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <label for="inputEmail" class="col-sm-2 col-form-label">Email</label>
+      <div class="col-sm-10">
+        <input type="email" class="form-control" id="inputEmail" placeholder="Email" required [(ngModel)]="email">
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="inputName2" class="col-sm-2 col-form-label">Short Description</label>
+      <div class="col-sm-10">
+        <input type="text" class="form-control" id="inputName2" placeholder="Short Description" required
+          [ngModel]="shortDes">
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="inputName2" class="col-sm-2 col-form-label">Contact Number</label>
+      <div class="col-sm-10">
+        <input type="text" class="form-control" id="inputName2" placeholder="Contact Number" required
+          [(ngModel)]="phoneNumber">
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="inputName2" class="col-sm-2 col-form-label">Date of Birth</label>
+      <div class="col-sm-10">
+        <div class="input-group date" id="reservationdate" data-target-input="nearest">
+          <input type="text" placeholder="Date of Birth" class="form-control datetimepicker-input" 
+          data-target="#reservationdate" matInput [matDatepicker]="picker" required [(ngModel)]="dob"/>
+          <div class="input-group-append" data-target="#reservationdate" data-toggle="datetimepicker">
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+          </div>
+      </div>
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="inputExperience" class="col-sm-2 col-form-label">Education</label>
+      <div class="col-sm-10">
+        <textarea class="form-control" id="inputExperience" placeholder="Education" required [(ngModel)]="education"></textarea>
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="inputExperience" class="col-sm-2 col-form-label">Skills</label>
+      <div class="col-sm-10">
+        <textarea class="form-control" id="inputExperience" placeholder="Skills" required [(ngModel)]="skills"></textarea>
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="inputSkills" class="col-sm-2 col-form-label">Gender</label>
+      <div class="col-sm-3">
+        <select class="custom-select form-control-border" id="exampleSelectBorder" required [(ngModel)]="gender">
+          <option>Male</option>
+          <option>Female</option>
+          <option>Other</option>
+          <option>Custom</option>
+          <option>Prefer not to say</option>
+        </select>
+      </div>
+      <label for="inputSkills" class="col-sm-2 col-form-label" style="margin-left: 70px;">Relationship</label>
+      <div class="col-sm-4">
+        <select class="custom-select form-control-border" id="exampleSelectBorder" required [(ngModel)]="relationship">
+          <option>Single</option>
+          <option>In a Relationship</option>
+          <option>Engaged</option>
+          <option>Married</option>
+          <option>IN_A_CIVIL_RELATIONSHIP</option>
+          <option>IN_A_DOMESTIC_RELATIONSHIP</option>
+          <option>IN_AN_OPEN_RELATIONSHIP</option>
+          <option>IT_IS_COMPLICATED</option>
+          <option>SEPERATED</option>
+          <option>DIVORCED</option>
+          <option>WIDOWED</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <div class="offset-sm-2 col-sm-10">
+        <button type="button" class="btn btn-danger" (click)="updateUserDetails()">Submit</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- <section class="content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="main-container col-lg-6 col-12">
+        <div class="card">
+          <hr>
+          <div class="sub-container img-container">
+            <input type="file" name="file-input" id="file-input" class="file-input__input"
+              (change)="readURL($event);" />
+            <label class="file-input__label" for="file-input">
+              <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="upload"
+                class="svg-inline--fa fa-upload fa-w-16" role="img" xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 512 512">
+                <path fill="currentColor"
+                  d="M296 384h-80c-13.3 0-24-10.7-24-24V192h-87.7c-17.8 0-26.7-21.5-14.1-34.1L242.3 5.7c7.5-7.5 19.8-7.5 27.3 0l152.2 152.2c12.6 12.6 3.7 34.1-14.1 34.1H320v168c0 13.3-10.7 24-24 24zm216-8v112c0 13.3-10.7 24-24 24H24c-13.3 0-24-10.7-24-24V376c0-13.3 10.7-24 24-24h136v8c0 30.9 25.1 56 56 56h80c30.9 0 56-25.1 56-56v-8h136c13.3 0 24 10.7 24 24zm-124 88c0-11-9-20-20-20s-20 9-20 20 9 20 20 20 20-9 20-20zm64 0c0-11-9-20-20-20s-20 9-20 20 9 20 20 20 20-9 20-20z">
+                </path>
+              </svg>
+              <span>Upload Your Profile Picture</span></label>
+            <ng-template [ngIf]="profilePic" [ngIfElse]="loading">
+              <img alt="Avatar" src="data:image/png;base64,{{profilePic}}">
+            </ng-template>
+
+            <ng-template #loading>
+              <img alt="Avatar" src="assets/img/avatar-other.png">
+            </ng-template>
+          </div>
+          <hr>
+          <div class="callout callout-info">
+            <h5>Yourself shortly 😇 </h5>
+            <div class="input-data">
+              <input type="text" required [ngModel]="shortDes">
+              <div class="underline"></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      <div class="main-container col-lg-6 col-12">
+        <div class="card card-default col-md-9">
+          <div class="card-body">
+
+            <div class="callout callout-info">
+              <h5>UserName: </h5>
+              <div class="input-data">
+                <input type="text" required [(ngModel)]="username">
+                <div class="underline"></div>
+              </div>
+            </div>
+            <div class="callout callout-success">
+              <h5>Email</h5>
+              <div class="input-data">
+                <input type="text" required [(ngModel)]="email">
+                <div class="underline"></div>
+              </div>
+            </div>
+            <div class="callout callout-danger">
+              <h5>Contact Number</h5>
+              <div class="input-data">
+                <input type="text" required [(ngModel)]="phoneNumber">
+                <div class="underline"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="main-container">
+      <div class="col-md-12 main-container">
+        <button type="button" class="btn btn-block btn-outline-success btn-lg col-md-3" (click)="updateUserDetails()">
+          Change
+          Your Details
+        </button>
+      </div>
+    </div>
+  </div>
+</section> -->

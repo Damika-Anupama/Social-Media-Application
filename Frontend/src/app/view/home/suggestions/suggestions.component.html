@@ -1,0 +1,171 @@
+<!-- Content Wrapper. Contains page content -->
+<div class="container">
+  <!-- Content Header (Page header) -->
+
+  <div class="header-container">
+    <h1>Please Suggest your ideas !!</h1>
+  </div>
+
+  <!-- Main content -->
+  <section class="content">
+
+    <!-- Default box -->
+    <div class="card">
+      <div class="card-body row">
+        <div class="col-5 text-center d-flex align-items-center justify-content-center">
+          <div class="">
+            <h2><strong class="heading">Palindrome</strong></h2>
+            <p class="lead mb-5">Contact the developer - <strong>Damika Anupama</strong><br>
+              Phone: +94 764189999<br>
+              Email: damikaanupama@gmail.com
+
+          </div>
+        </div>
+        <div class="col-7">
+          <div class="form-group">
+            <label for="inputMessage">Suggestion</label>
+            <textarea id="inputMessage" class="form-control" rows="4" [(ngModel)]="message"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="inputMessage">Suggestion Priority</label>
+            <form class="priority-form">
+              <label class="priority-label"><input class="radio-input" type="radio" name="band" value="am"
+                  (click)="setPriority('PRIORITY1')" checked><span>9</span></label>
+              <label class="priority-label"><input class="radio-input" type="radio" name="band"
+                  (click)="setPriority('PRIORITY2')" value="fm"><span>99</span></label>
+              <label class="priority-label"><input class="radio-input" type="radio" name="band"
+                  (click)="setPriority('PRIORITY3')" value="sw"><span>999</span></label>
+              <label class="priority-label"><input class="radio-input" type="radio" name="band"
+                  (click)="setPriority('PRIORITY4')" value="mw"><span>9999</span></label>
+              <label class="priority-label"><input class="radio-input" type="radio" name="band"
+                  (click)="setPriority('PRIORITY5')" value="mw"><span>99999</span></label>
+            </form>
+          </div>
+          <div class="form-group">
+            <label for="inputMessage">Feeling about Palindrome :)</label>
+            <div class="sub-container">
+              <div class="emoji-container">
+                <div style="font-size: 40px ;text-align: center">{{feeling}}</div>
+              </div>
+            </div>
+            <div class="sub-container">
+              <mat-slider class="form-control" invert min="0" max="5" step="1" value="5" (input)="setEmoji($event)">
+              </mat-slider>
+            </div>
+          </div>
+          <div class="form-group">
+            <input type="submit" class="btn btn-primary" value="Suggest" (click)="saveSuggestion()">
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+  <!-- /.content -->
+</div>
+
+<div class="suggestion-container" *ngIf="ableToPreview">
+  <div class="card">
+    <div class="card-body p-0">
+      <table class="table table-striped projects">
+        <thead>
+          <tr>
+            <th style="width: 1%">
+              #
+            </th>
+            <th style="width: 10%">
+              User
+            </th>
+            <th style="width: 60%">
+              Suggestion
+            </th>
+            <th>
+              Priority
+            </th>
+            <th style="width: 8%" class="text-center">
+              Feeling
+            </th>
+            <th style="width: 20% " class="text-center">
+              Operate
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="tr" *ngFor="let row of rows">
+            <td>
+              {{row.id}}
+            </td>
+            <td>
+              <strong>{{row.userId}}: </strong>
+              <a>
+                {{row.username}}
+              </a><br>
+              <ng-template [ngIf]="row.profilePicture" [ngIfElse]="loading">
+                <img alt="Avatar" class="table-avatar" src="data:image/png;base64,{{row.profilePicture}}"
+                  style="height: 2.5rem;">
+              </ng-template>
+
+              <ng-template #loading>
+                <img alt="Avatar" class="table-avatar" src="assets/img/avatar-other.png" style="height: 2.5rem;">
+              </ng-template>
+            </td>
+            <td>
+              <div class="direct-chat-messages">{{row.message}}</div>
+            </td>
+            <td class="project_progress">
+              <div class="progress progress-sm">
+                <ng-container *ngIf="row.priority == 'PRIORITY1' ;else second">
+                  <div class="progress-bar bg-green" role="progressbar" aria-valuenow="20" aria-valuemin="0"
+                    aria-valuemax="100" style="width: 20%" >
+                  </div>
+                </ng-container>
+                <ng-template #second>
+                  <ng-container *ngIf="row.priority == 'PRIORITY2';else third">
+                    <div class="progress-bar bg-green" role="progressbar" aria-valuenow="40" aria-valuemin="0"
+                      aria-valuemax="100" style="width: 40%">
+                    </div>
+                  </ng-container>
+                </ng-template>
+                <ng-template #third>
+                  <ng-container *ngIf="row.priority == 'PRIORITY3';else forth">
+                    <div class="progress-bar bg-green" role="progressbar" aria-valuenow="60" aria-valuemin="0"
+                      aria-valuemax="100" style="width: 60%">
+                    </div>
+                  </ng-container>
+                </ng-template>
+                <ng-template #forth>
+                  <ng-container *ngIf="row.priority == 'PRIORITY4';else fifth">
+                    <div class="progress-bar bg-green" role="progressbar" aria-valuenow="80" aria-valuemin="0"
+                      aria-valuemax="100" style="width: 80%">
+                    </div>
+                  </ng-container>
+                </ng-template>
+                <ng-template #fifth>
+                  <ng-container *ngIf="row.priority == 'PRIORITY5'">
+                    <div class="progress-bar bg-green" role="progressbar" aria-valuenow="100" aria-valuemin="0"
+                      aria-valuemax="100" style="width: 100%">
+                    </div>
+                  </ng-container>
+                </ng-template>
+              </div>
+              <!-- <small>
+                {{this.}} % Complete
+              </small> -->
+            </td>
+            <td class="project-state">
+              {{row.feeling}}
+            </td>
+            <td class="project-actions text-right">
+              <a class="btn btn-danger btn-sm operation" (click)="deleteRow(row.id)">
+                <i class="fas fa-trash">
+                </i>
+                Delete
+              </a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <!-- /.card-body -->
+  </div>
+</div>

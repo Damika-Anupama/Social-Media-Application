@@ -1,0 +1,712 @@
+<!-- Dashboard -->
+<!-- <section class="content">
+  <div class="container-fluid">
+    <div class="row">
+      <section class="col-lg-2 connectedSortable bubble-bar-container">
+        <div class="bubble-bar">
+          <div class="add-bubble-container">
+            <div class="add-bubble">+
+            </div>
+          </div>
+        </div>
+      </section>
+      <section class="col-lg-10 connectedSortable">
+        <div class="main-content" *ngFor="let launch of launches">
+          <mat-card class="example-card">
+            <div class="ribbon-wrapper ribbon-xl">
+              <div class="menu-container">
+                <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #menu="matMenu">
+                  <button mat-menu-item>
+                    <mat-icon>dialpad</mat-icon>
+                    <span>Redial</span>
+                  </button>
+                  <button mat-menu-item disabled>
+                    <mat-icon>voicemail</mat-icon>
+                    <span>Check voice mail</span>
+                  </button>
+                  <button mat-menu-item>
+                    <mat-icon>notifications_off</mat-icon>
+                    <span>Disable alerts</span>
+                  </button>
+                </mat-menu>
+              </div>
+              <div class="ribbon bg-danger text-xl">
+                <span class="feeling">{{launch.feeling}}</span>
+              </div>
+            </div>
+            <mat-card-header>
+              <div mat-card-avatar class="example-header-image">
+                <img [src]="'data:image/png;base64,' + launch.profilePicture|| 'assets/img/avatar-other.png'"
+                     alt="launch-owner-profile-picture" class="launch-owner-profile-picture">
+              </div>
+              <mat-card-title class="float-right">{{launch.userName}}</mat-card-title>
+              <mat-card-subtitle>{{launch.shortDescription}}</mat-card-subtitle>
+
+            </mat-card-header>
+            <img src="data:image/png;base64,{{launch.file}}" class="image-view">
+            <mat-card-content>
+              <p [innerText]="launch.description"></p>
+            </mat-card-content>
+            <hr>
+            <mat-card-actions>
+              <div>
+                <nav class="row expanded">
+                  <ul>
+                    <li>
+                      <button mat-icon-button [color]=[reactColor] aria-label="Example icon-button with a heart icon" (click)="changeColor()">
+                        <mat-icon>{{react}}</mat-icon>
+                      </button>
+                      <nav class="row">
+                        <ul>
+                          <li *ngFor="let react of reacts">
+                            <button mat-icon-button color="warn" aria-label="Example icon-button with a heart icon" (click)="changeReactType(react)">
+                              <mat-icon>{{react}}</mat-icon>
+                            </button>
+                          </li>
+                        </ul>
+                      </nav>
+                    </li>
+                  </ul>
+                </nav>
+                <button mat-icon-button color="primary" aria-label="Example icon-button with a heart icon" (click)="(comment.focus())">
+                  <mat-icon>textsms</mat-icon>
+                </button>
+                <button mat-icon-button aria-label="Example icon-button with a heart icon">
+                  <mat-icon>share</mat-icon>
+                </button>
+              </div>
+            </mat-card-actions>
+            <hr>
+            <div class="comment-box-container">
+              <input type="text" #comment>
+            </div>
+          </mat-card>
+        </div>
+      </section>
+    </div>
+  </div>
+</section> -->
+
+
+<!-- home -->
+
+<div class="wrapper ">
+  <div style="position:sticky;z-index: 100000;position: -webkit-sticky; top: 0px;">
+    <!-- Main Sidebar Container -->
+    <div class=" fixed-sidebar-custom main-sidebar sidebar-dark-primary sidebar-no-expand" style="height: 100vh;">
+      <nav class="aside-items">
+        <!-- Brand Logo -->
+        <a href="#" class="brand-link" style="text-decoration: none">
+          <img src="assets/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
+            style="opacity: .8">
+          <span class="brand-text font-weight-light">Palindrome</span>
+        </a>
+
+        <!-- Sidebar -->
+        <div class="sidebar ">
+          <!-- Sidebar Menu -->
+          <nav class="mt-2">
+            <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+              <!-- Add icons to the links using the .nav-icon class
+                   with font-awesome or any other icon font library -->
+              <li class="nav-item">
+                <a routerLink="home" class="nav-link " routerLinkActive="active">
+                  <i class="nav-icon fas fa-home"></i>
+                  <p>
+                    Home
+                  </p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a routerLink="profile/{{userId}}" class="nav-link" routerLinkActive="active">
+                  <i class="nav-icon far fa-user-circle"></i>
+                  <p>
+                    Profile
+                  </p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a routerLink="com" class="nav-link" routerLinkActive="active">
+                  <i class="nav-icon fas fa-users"></i>
+                  <p>
+                    Groups
+                  </p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a routerLink="pages" class="nav-link" routerLinkActive="active">
+                  <i class="nav-icon fas  fa-pager"></i>
+                  <p>
+                    Pages
+                  </p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a routerLink="chatter-box" class="nav-link" routerLinkActive="active">
+                  <i class="nav-icon fas  fa-icons"></i>
+                  <p>
+                    Chatter Box
+                  </p>
+                </a>
+              </li>
+            </ul>
+          </nav>
+          <!-- /.sidebar-menu -->
+        </div>
+        <!-- /.sidebar -->
+      </nav>
+    </div>
+  </div>
+  <div>
+    <!-- Navbar -->
+    <nav class="main-header navbar navbar-expand navbar-orange navbar-light" style="border: 0">
+      <!-- Left navbar links -->
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" data-widget="pushmenu" href="#" role="button">
+            <mat-icon matBadgeColor="warn">reorder</mat-icon>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" role="button" mat-button (click)="openDialog()">
+            <mat-icon matBadgeColor="warn">search</mat-icon>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" role="button" mat-button (click)="openDialog()">
+            <mat-icon>library_add</mat-icon>
+          </a>
+        </li>
+      </ul>
+      <!-- Right navbar links -->
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+          <!-- <mat-slide-toggle class="example-margin">
+            Slide me!
+          </mat-slide-toggle> -->
+        </li>
+        <!-- Notifications Dropdown Menu -->
+        <li class="nav-item dropdown">
+          <a class="nav-link" data-toggle="dropdown" href="#">
+            <mat-icon matBadge="15" matBadgeColor="warn">circle_notifications</mat-icon>
+          </a>
+          <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+            <span class="dropdown-item dropdown-header">15 Notifications</span>
+            <div class="dropdown-divider"></div>
+            <a href="#" class="dropdown-item">
+              <i class="fas fa-envelope mr-2"></i> 4 new messages
+              <span class="float-right text-muted text-sm">3 mins</span>
+            </a>
+            <div class="dropdown-divider"></div>
+            <a href="#" class="dropdown-item">
+              <i class="fas fa-users mr-2"></i> 8 friend requests
+              <span class="float-right text-muted text-sm">12 hours</span>
+            </a>
+            <div class="dropdown-divider"></div>
+            <a href="#" class="dropdown-item">
+              <i class="fas fa-file mr-2"></i> 3 new reports
+              <span class="float-right text-muted text-sm">2 days</span>
+            </a>
+            <div class="dropdown-divider"></div>
+            <a href="#" class="dropdown-item dropdown-footer">See All Notifications</a>
+          </div>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" role="button" mat-button (click)="openDialog()">
+            <mat-icon matBadgeColor="warn">warning</mat-icon>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" role="button" mat-button (click)="openDialog()">
+            <mat-icon matBadgeColor="warn">settings</mat-icon>
+          </a>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link" data-toggle="dropdown" mat-icon-button [matMenuTriggerFor]="menu"
+            aria-label="Example icon-button with a menu">
+            <mat-icon>more_vert</mat-icon>
+          </a>
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item class="mat-menu-sub-button">
+              <mat-icon> dialpad</mat-icon>
+              <span>More Info</span>
+            </button>
+            <button mat-menu-item class="mat-menu-sub-button">
+              <mat-icon> money</mat-icon>
+              <span>Donate</span>
+            </button>
+            <button mat-menu-item class="mat-menu-sub-button">
+              <mat-icon>alternate_email</mat-icon>
+              <span>Suggetions</span>
+            </button>
+            <button mat-menu-item class="mat-menu-sub-button">
+              <mat-icon>exit_to_app</mat-icon>
+              <span>Logout</span>
+            </button>
+          </mat-menu>
+        </li>
+      </ul>
+    </nav>
+    <!--        <mat-progress-bar mode="indeterminate"></mat-progress-bar>-->
+    <!-- Content Wrapper. Contains page content -->
+    <div id="content-wrapper">
+      <div class="content-wrapper">
+        <!-- Main content -->
+        <router-outlet></router-outlet>
+        <!-- /.content-wrapper -->
+
+
+        <!-- Main Footer -->
+        <footer class="main-footer">
+          <strong>Copyright &copy; 2014-2021 <a href="https://adminlte.io">AdminLTE.io</a>.</strong>
+          All rights reserved.
+          <div class="float-right d-none d-sm-inline-block">
+            <b>Version</b> 3.1.0
+          </div>
+        </footer>
+      </div>
+
+
+    </div>
+    <!-- ./wrapper -->
+  </div>
+</div>
+
+<!-- Suranga sir's register page -->
+
+<div class="hold-transition register-page main-container">
+  <div class="register-box">
+    <div class="register-logo">
+      <H1><b>Palindrome</b></H1>
+      <H2><b>Sign-up</b></H2>
+    </div>
+
+    <div class="card">
+      <div class="card-body register-card-body">
+        <form #frm="ngForm">
+          <div class="input-group mb-3">
+            <input class="form-control"(input)="findUser()" #txtUsername name="txt-username" required [minlength]="3" pattern="[A-Za-z]+" [(ngModel)]="username" id="txt-username" type="text"
+                   placeholder="Enter username">
+            <div class="input-group-append">
+              <div class="input-group-text">
+                <span class="fas fa-user"></span>
+              </div>
+            </div>
+          </div>
+          <small [style.color]="'red'" *ngIf="userExists">Username is already taken</small>
+          <div class="input-group mb-3">
+            <input class="form-control" name="txt-email" required
+                   pattern='/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/'
+                   [(ngModel)]="email" id="txt-email" type="email"
+                   placeholder="Enter email">
+            <div class="input-group-append">
+              <div class="input-group-text">
+                <span class="fas fa-envelope"></span>
+              </div>
+            </div>
+          </div>
+          <div class="input-group mb-3">
+            <input class="form-control" name="txt-contact-number" [minlength]="10" pattern="[0-9]+" [(ngModel)]="contactNumber" id="txt-contact-number" type="text"
+                   placeholder="Enter Contact Number">
+            <div class="input-group-append">
+              <div class="input-group-text">
+                <span class="fas fa-phone"></span>
+              </div>
+            </div>
+          </div>
+          <div class=" mb-3">
+            <label id="example-radio-group-label">Gender</label><br>
+            <mat-radio-group
+              aria-labelledby="example-radio-group-label"
+              class="example-radio-group"
+              name="gender"
+              [(ngModel)]="selectedGender">
+              <mat-radio-button class="example-radio-button" *ngFor="let gender of genders" [value]="gender" [color]="color">
+                {{gender}}
+              </mat-radio-button>
+            </mat-radio-group>
+          </div>
+          <div class="input-group mb-3">
+            <input class="form-control" name="txt-password" required [minlength]="3" [(ngModel)]="password" id="txt-password" type="password" placeholder="Enter password">
+            <div class="input-group-append">
+              <div class="input-group-text">
+                <span class="fas fa-lock"></span>
+              </div>
+            </div>
+          </div>
+          <div class="input-group mb-3">
+            <input class="form-control" name="txt-confirm-password" required [minlength]="3" [(ngModel)]="confirmPassword" id="txt-confirm-password" type="password"
+                   placeholder="Enter password again">
+            <div class="input-group-append">
+              <div class="input-group-text">
+                <span class="fas fa-lock"></span>
+              </div>
+            </div>
+          </div>
+          <small [style.color]="'red'" *ngIf="password.length > 0 && confirmPassword.length > 0 && password !== confirmPassword">Mismatched Password</small>
+          <div class="row">
+            <div class="col-4">
+<!--              <button class="btn btn-block btn-outline-warning" [disabled]="!(frm.valid && (password === confirmPassword) && !userExists)" (click)="createAccount()">Sign-up</button>-->
+              <button class="btn btn-block btn-outline-warning" (click)="createAccount()">Sign-up</button>
+            </div>
+            <!-- /.col -->
+          </div>
+        </form>
+        <a routerLink="/sign-in" class="text-center">I already have a membership</a>
+      </div>
+      <!-- /.form-box -->
+    </div><!-- /.card -->
+  </div>
+</div>
+
+<!-- Suranga sir's login form -->
+
+<div  class="hold-transition login-page">
+    <div class="login-box">
+      <div class="login-logo">
+        <H1><b>Palindrome</b></H1>
+        <H2><b>Sign-in</b></H2>
+      </div>
+      <!-- /.login-logo -->
+      <div class="card">
+        <div class="card-body login-card-body">
+          <p class="login-box-msg">Sign in to start your session</p>
+  
+          <form #frm="ngForm" (ngSubmit)="authenticate()">
+            <div class="input-group mb-3">
+              <input class="form-control" #txtUsername name="txt-username"  #usernameModel="ngModel" [(ngModel)]="username" required minlength="3" pattern="[A-Za-z]+"
+                     id="txt-username" type="text" placeholder="Enter username">
+              <small [style.color]="'red'" *ngIf="usernameModel.hasError('minlength') && usernameModel.touched">
+                Username should be at least 3 letters
+              </small>
+              <small [style.color]="'red'" *ngIf="usernameModel.hasError('pattern')  && usernameModel.touched">
+                Username can contain only [A-Za-z] letters
+              </small>
+              <div class="input-group-append">
+                <div class="input-group-text">
+                  <span class="fas fa-envelope"></span>
+                </div>
+              </div>
+            </div>
+            <div class="input-group mb-3">
+              <input class="form-control" name="txt-password" #passwordModel="ngModel" [(ngModel)]="password" required minlength="3"
+                     id="txt-password" type="password" placeholder="Enter password">
+              <small [style.color]="'red'" *ngIf="passwordModel.invalid && passwordModel.dirty">Password should be at least 3 letters</small>
+              <div class="input-group-append">
+                <div class="input-group-text">
+                  <span class="fas fa-lock"></span>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <!--<div class="col-8">
+                <div class="icheck-primary">
+                  <input type="checkbox" id="remember">
+                  <label for="remember">
+                    Remember Me
+                  </label>
+                </div>
+              </div>-->
+              <!-- /.col -->
+              <div class="col-4">
+                <button type="submit" class="btn btn-block btn-outline-warning" [disabled]="frm.invalid">Sign In</button>
+              </div>
+              <!-- /.col -->
+            </div>
+          </form>
+  
+          <div class="social-auth-links text-center mb-3">
+            <p>- OR -</p>
+            <div
+              class="fb-login-button"
+              data-width=""
+              data-size="large"
+              data-button-type="continue_with"
+              data-layout="default"
+              data-auto-logout-link="false"
+              data-use-continue-as="false"
+              scope="public_profile,email"
+              onlogin="checkLoginState();"
+            >
+            </div>
+            <br>
+            <button type="button" class="sign-in-with-google-btn" (click)="loginWithGoogle()">
+               Sign in using Google
+            </button>
+          </div>
+          <!-- /.social-auth-links -->
+  
+          <p class="mb-1">
+            <a href="forgot-password.html">I forgot my password</a>
+          </p>
+          <p class="mb-0">
+            <a routerLink="/sign-up" class="text-center">Register a new membership</a>
+          </p>
+        </div>
+        <!-- /.login-card-body -->
+      </div>
+    </div>
+    <!-- /.login-box -->
+  </div>
+
+
+
+  <!-- penguin -->
+
+  <!-- html -->
+
+      <!-- <div class="main">
+      <div class="penguin">
+        <div class="penguin-bottom">
+          <div class="right-hand"></div>
+          <div class="left-hand"></div>
+          <div class="right-feet"></div>
+          <div class="left-feet"></div>
+        </div>
+        <div class="penguin-top">
+          <div class="right-cheek"></div>
+          <div class="left-cheek"></div>
+          <div class="belly"></div>
+          <div class="right-eye">
+            <div class="sparkle"></div>
+          </div>
+          <div class="left-eye">
+            <div class="sparkle"></div>
+          </div>
+          <div class="blush-right"></div>
+          <div class="blush-left"></div>
+          <div class="beak-top"></div>
+          <div class="beak-bottom"></div>
+        </div>
+      </div>
+    </div> -->
+
+    <!-- SCSS -->
+
+    @import url('https://fonts.googleapis.com/css2?family=Indie+Flower&display=swap');
+
+.main-container{
+  margin-top: 80px;
+}
+
+
+:root {
+  --penguin-size: 500px;
+  --penguin-skin: black;
+  --penguin-belly: white;
+  --penguin-beak: orange;
+}
+
+
+@media (max-width: 400px) {
+  :root {
+    --penguin-size: 200px;
+
+  }
+}
+
+.main {
+
+  .penguin {
+    position: relative;
+    margin: auto;
+    display: block;
+    margin-top: 15%;
+    width: var(--penguin-size, 300px);
+    height: var(--penguin-size, 300px);
+  }
+
+  .right-cheek {
+    position: absolute;
+    top: 15%;
+    left: 35%;
+    background: var(--penguin-belly, white);
+    width: 60%;
+    height: 70%;
+    border-radius: 70% 70% 60% 60%;
+  }
+
+  .left-cheek {
+    position: absolute;
+    top: 15%;
+    left: 5%;
+    background: var(--penguin-belly, white);
+    width: 60%;
+    height: 70%;
+    border-radius: 70% 70% 60% 60%;
+  }
+
+  .belly {
+    position: absolute;
+    top: 60%;
+    left: 2.5%;
+    background: var(--penguin-belly, white);
+    width: 95%;
+    height: 100%;
+    border-radius: 120% 120% 100% 100%;
+  }
+
+  .penguin-top {
+    position: absolute;
+    top: 10%;
+    left: 25%;
+    background: var(--penguin-skin, gray);
+    width: 50%;
+    height: 45%;
+    border-radius: 70% 70% 60% 60%;
+  }
+
+  .penguin-bottom {
+    position: absolute;
+    top: 40%;
+    left: 23.5%;
+    background: var(--penguin-skin, gray);
+    width: 53%;
+    height: 45%;
+    border-radius: 70% 70% 100% 100%;
+  }
+
+  .right-hand {
+    position: absolute;
+    top: 5%;
+    left: 25%;
+    background: var(--penguin-skin, black);
+    width: 30%;
+    height: 60%;
+    border-radius: 30% 30% 120% 30%;
+    transform: rotate(130deg);
+    z-index: -1;
+    animation-duration: 3s;
+    animation-name: wave;
+    animation-iteration-count: infinite;
+    transform-origin: 0% 0%;
+    animation-timing-function: linear;
+  }
+
+  @keyframes wave {
+    10% {
+      transform: rotate(110deg);
+    }
+    20% {
+      transform: rotate(130deg);
+    }
+    30% {
+      transform: rotate(110deg);
+    }
+    40% {
+      transform: rotate(130deg);
+    }
+  }
+
+  .left-hand {
+    position: absolute;
+    top: 0%;
+    left: 75%;
+    background: var(--penguin-skin, gray);
+    width: 30%;
+    height: 60%;
+    border-radius: 30% 30% 30% 120%;
+    transform: rotate(-45deg);
+    z-index: -1;
+  }
+
+  .right-feet {
+    position: absolute;
+    top: 85%;
+    left: 60%;
+    background: var(--penguin-beak, orange);
+    width: 15%;
+    height: 30%;
+    border-radius: 50% 50% 50% 50%;
+    transform: rotate(-80deg);
+    z-index: -2222;
+  }
+
+  .left-feet {
+    position: absolute;
+    top: 85%;
+    left: 25%;
+    background: var(--penguin-beak, orange);
+    width: 15%;
+    height: 30%;
+    border-radius: 50% 50% 50% 50%;
+    transform: rotate(80deg);
+    z-index: -2222;
+  }
+
+  .right-eye {
+    position: absolute;
+    top: 45%;
+    left: 60%;
+    background: black;
+    width: 15%;
+    height: 17%;
+    border-radius: 50%;
+  }
+
+  .left-eye {
+    position: absolute;
+    top: 45%;
+    left: 25%;
+    background: black;
+    width: 15%;
+    height: 17%;
+    border-radius: 50%;
+  }
+
+  .sparkle {
+    position: absolute;
+    top: 25%;
+    left: 15%;
+    background: white;
+    width: 35%;
+    height: 35%;
+    border-radius: 50%;
+  }
+
+
+  .blush-right {
+    position: absolute;
+    top: 65%;
+    left: 17%;
+    background: pink;
+    width: 15%;
+    height: 10%;
+    border-radius: 50%;
+  }
+
+  .blush-left {
+    position: absolute;
+    top: 65%;
+    left: 70%;
+    background: pink;
+    width: 15%;
+    height: 10%;
+    border-radius: 50%;
+  }
+
+  .beak-top {
+    position: absolute;
+    top: 60%;
+    left: 40%;
+    background: var(--penguin-beak, orange);
+    width: 20%;
+    height: 10%;
+    border-radius: 50%;
+  }
+
+  .beak-bottom {
+    position: absolute;
+    top: 65%;
+    left: 42%;
+    background: var(--penguin-beak, orange);
+    width: 16%;
+    height: 10%;
+    border-radius: 50%;
+  }
+}
+
+/*Ending styling the penguin*/

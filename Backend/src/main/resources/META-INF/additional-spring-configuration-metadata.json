@@ -1,0 +1,23 @@
+{
+  "properties": [
+    {
+      "name": "app.log_dir",
+      "type": "java.lang.String",
+      "description": "Description for app.log_dir."
+    },
+    {
+      "name": "com.palindrome.twilio.AUTH.TOKEN",
+      "type": "java.lang.String",
+      "description": "Description for com.palindrome.twilio.AUTH.TOKEN.",
+      "sourceType": "com.pali.palindromebackend.util.CustomProperties",
+      "defaultValue": 100
+    },
+    {
+      "name": "com.palindrome.twilio.Account.SID",
+      "type": "java.lang.String",
+      "description": "Description for com.palindrome.twilio.Account.SID.",
+      "sourceType": "com.pali.palindromebackend.util.CustomProperties",
+      "defaultValue": 100
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+@import url('https://fonts.googleapis.com/css2?family=Indie+Flower&display=swap');
+
+H1{
+  font-family: 'Indie Flower', cursive;
+  font-size: 70px;
+  color: chocolate;
+  text-align: center;
+}
+.header-container{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.main-container{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 20px;
+  margin-left: 20px;
+  overflow: hidden;
+}
+.card{
+  margin-top: 20px;
+}
+.sub-container{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
