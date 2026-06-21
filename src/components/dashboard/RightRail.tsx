@@ -6,6 +6,7 @@ import clsx from 'clsx';
 import { Sparkles, TrendingUp, Calendar, Plus, Check } from 'lucide-react';
 import { trending, suggestions, formatCount } from '@/lib/mock-data';
 import { Avatar } from '@/components/Avatar';
+import { useFollowing } from '@/lib/useFollowing';
 
 const events = [
   { id: 'e1', title: 'Lina x Coastline studio tour', date: 'Sat, Jun 8 · 6:00 PM', city: 'Lagos' },
@@ -14,16 +15,8 @@ const events = [
 ];
 
 export function RightRail() {
-  const [following, setFollowing] = useState<Set<string>>(new Set());
+  const { isFollowing, toggleFollow } = useFollowing();
   const [rsvped, setRsvped] = useState<Set<string>>(new Set());
-
-  const toggleFollow = (id: string) =>
-    setFollowing((s) => {
-      const next = new Set(s);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
 
   const toggleRsvp = (id: string) =>
     setRsvped((s) => {
@@ -71,7 +64,7 @@ export function RightRail() {
           </div>
           <ul className="divide-y divide-line/40">
             {suggestions.slice(0, 4).map((u) => {
-              const isFollowing = following.has(u.id);
+              const following = isFollowing(u.id);
               return (
                 <li key={u.id} className="flex items-center gap-3 px-5 py-3">
                   <Link href={`/dashboard/u/${u.handle}`} aria-label={`${u.name}'s profile`}>
@@ -91,15 +84,15 @@ export function RightRail() {
                   <button
                     type="button"
                     onClick={() => toggleFollow(u.id)}
-                    aria-pressed={isFollowing}
+                    aria-pressed={following}
                     className={clsx(
                       'inline-flex items-center gap-1 rounded-full border px-3 py-1 text-xs font-medium transition-colors',
-                      isFollowing
+                      following
                         ? 'border-accent-mint/40 bg-accent-mint/10 text-accent-mint'
                         : 'border-brand-400/40 bg-brand-500/10 text-brand-200 hover:bg-brand-500/20',
                     )}
                   >
-                    {isFollowing ? (
+                    {following ? (
                       <>
                         <Check className="h-3 w-3" /> Following
                       </>
