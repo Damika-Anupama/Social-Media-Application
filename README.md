@@ -45,13 +45,16 @@ npm run dev
 ## Testing
 
 - **Unit tests (Vitest)** cover the pure form-validation logic
-  (`src/lib/validation.ts`) and the user-post builder (`src/lib/useUserPosts.ts`).
-- **End-to-end (Playwright)** drives the public + auth surface and the
-  **persistent post composer**: landing render + CTAs, login validation, the
-  sign-in → `/dashboard` redirect, the register form, and composing a post that
-  appears optimistically, **survives a reload** (localStorage), and can be
-  deleted. Since the app is frontend-only, the suite is valid against the Vercel
-  preview too.
+  (`src/lib/validation.ts`), the user-post builder (`src/lib/useUserPosts.ts`),
+  and the follow-store (de)serialization helpers (`src/lib/useFollowing.ts`).
+- **End-to-end (Playwright)** drives the public + auth surface, the
+  **persistent post composer**, and the **persistent following** store: landing
+  render + CTAs, login validation, the sign-in → `/dashboard` redirect, the
+  register form, composing a post that appears optimistically / **survives a
+  reload** (localStorage) / can be deleted, and following an account on Explore
+  that **persists across reloads** and is **shared with the right-rail widget**.
+  Since the app is frontend-only, the suite is valid against the Vercel preview
+  too.
 
 ```bash
 npm test                 # Vitest unit tests
@@ -67,6 +70,17 @@ you write are added optimistically to the top of the **For you** feed and saved
 to `localStorage`, so they persist across reloads and sync across tabs. Each of
 your posts has a delete control. This is genuine working behaviour layered on
 top of the otherwise-mocked feed.
+
+## Persistent following
+
+The **Follow** buttons on the Explore page and the right-rail "People worth
+following" widget are backed by a single shared client-side store
+(`useFollowing`). Who you follow is saved to `localStorage`
+(`pulse.following.v1`), so the **Following** state survives reloads, stays in
+sync across browser tabs (via the `storage` event), and is **consistent across
+both surfaces** — follow someone in the right rail and they show as followed on
+Explore, and vice-versa. Before this, each surface kept its own in-memory `Set`
+that reset on every navigation.
 
 ## Production build
 

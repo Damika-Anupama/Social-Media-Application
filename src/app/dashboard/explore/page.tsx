@@ -16,6 +16,7 @@ import {
   formatCount,
 } from '@/lib/mock-data';
 import { useInfiniteList } from '@/lib/useInfiniteList';
+import { useFollowing } from '@/lib/useFollowing';
 
 const chips = ['For you', 'Trending', 'News', 'Design', 'Climate', 'Tech', 'Sports', 'Film', 'Music', 'Books'];
 
@@ -32,15 +33,7 @@ function ExploreInner() {
   const initialQ = searchParams.get('q') ?? '';
   const [query, setQuery] = useState(initialQ);
   const [activeChip, setActiveChip] = useState('For you');
-  const [following, setFollowing] = useState<Set<string>>(new Set());
-
-  const toggleFollow = (id: string) =>
-    setFollowing((s) => {
-      const next = new Set(s);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
+  const { isFollowing, toggleFollow } = useFollowing();
 
   const q = query.trim().toLowerCase();
 
@@ -142,7 +135,7 @@ function ExploreInner() {
         ) : (
           <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {filteredUsers.map((u) => {
-              const isFollowing = following.has(u.id);
+              const following = isFollowing(u.id);
               return (
                 <div key={u.id} className="flex items-center gap-3 rounded-xl border border-line/60 bg-bg-subtle/60 p-3">
                   <Link href={`/dashboard/u/${u.handle}`} aria-label={`${u.name}'s profile`}>
@@ -162,15 +155,15 @@ function ExploreInner() {
                   <button
                     type="button"
                     onClick={() => toggleFollow(u.id)}
-                    aria-pressed={isFollowing}
+                    aria-pressed={following}
                     className={clsx(
                       'inline-flex items-center gap-1 rounded-full border px-3 py-1 text-xs font-medium transition-colors',
-                      isFollowing
+                      following
                         ? 'border-accent-mint/40 bg-accent-mint/10 text-accent-mint'
                         : 'border-line bg-bg-raised text-ink-muted hover:border-brand-400/40 hover:text-ink',
                     )}
                   >
-                    {isFollowing ? (
+                    {following ? (
                       <>
                         <Check className="h-3 w-3" /> Following
                       </>
