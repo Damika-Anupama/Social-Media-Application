@@ -14,7 +14,15 @@ const tones = [
   { id: 'poll', label: 'Poll' },
 ];
 
-export function PostComposer({ onPosted, variant = 'card' }: { onPosted?: () => void; variant?: 'card' | 'naked' }) {
+export function PostComposer({
+  onPosted,
+  onSubmitText,
+  variant = 'card',
+}: {
+  onPosted?: () => void;
+  onSubmitText?: (text: string) => void;
+  variant?: 'card' | 'naked';
+}) {
   const [text, setText] = useState('');
   const [tone, setTone] = useState('thought');
   const remaining = 500 - text.length;
@@ -25,6 +33,9 @@ export function PostComposer({ onPosted, variant = 'card' }: { onPosted?: () => 
     <form
       onSubmit={(e) => {
         e.preventDefault();
+        const trimmed = text.trim();
+        if (trimmed.length === 0 || remaining < 0) return;
+        onSubmitText?.(trimmed);
         setText('');
         onPosted?.();
       }}

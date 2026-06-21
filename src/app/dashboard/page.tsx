@@ -1,8 +1,7 @@
 import { TopBar } from '@/components/dashboard/TopBar';
 import { StoryRail } from '@/components/dashboard/StoryRail';
-import { PostComposer } from '@/components/dashboard/PostComposer';
 import { RightRail } from '@/components/dashboard/RightRail';
-import { HomeFeed } from '@/components/dashboard/HomeFeed';
+import { HomeColumn } from '@/components/dashboard/HomeColumn';
 
 export default function HomePage() {
   return (
@@ -10,8 +9,7 @@ export default function HomePage() {
       <div className="min-w-0 flex-1 space-y-5">
         <TopBar title="Home" subtitle="A quieter feed, ranked by what you actually engage with." />
         <StoryRail />
-        <PostComposer />
-        <HomeFeed />
+        <HomeColumn />
       </div>
       <RightRail />
     </div>

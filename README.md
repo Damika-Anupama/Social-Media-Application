@@ -45,12 +45,13 @@ npm run dev
 ## Testing
 
 - **Unit tests (Vitest)** cover the pure form-validation logic
-  (`src/lib/validation.ts`) — email/password/handle/name rules, confirm-match,
-  and the password-strength scorer.
-- **End-to-end (Playwright)** drives the public + auth surface in a real
-  Chromium browser: landing render + CTAs, login validation, the successful
-  sign-in → `/dashboard` redirect, and the register form. Since the app is
-  frontend-only, the suite is valid against the Vercel preview too.
+  (`src/lib/validation.ts`) and the user-post builder (`src/lib/useUserPosts.ts`).
+- **End-to-end (Playwright)** drives the public + auth surface and the
+  **persistent post composer**: landing render + CTAs, login validation, the
+  sign-in → `/dashboard` redirect, the register form, and composing a post that
+  appears optimistically, **survives a reload** (localStorage), and can be
+  deleted. Since the app is frontend-only, the suite is valid against the Vercel
+  preview too.
 
 ```bash
 npm test                 # Vitest unit tests
@@ -58,6 +59,14 @@ npm run test:e2e         # Playwright E2E (boots the prod server automatically)
 # Against a deployed preview:
 E2E_BASE_URL=https://<preview-url> npm run test:e2e
 ```
+
+## Persistent composer
+
+The home composer is wired to a real client-side store (`useUserPosts`): posts
+you write are added optimistically to the top of the **For you** feed and saved
+to `localStorage`, so they persist across reloads and sync across tabs. Each of
+your posts has a delete control. This is genuine working behaviour layered on
+top of the otherwise-mocked feed.
 
 ## Production build
 
