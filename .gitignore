@@ -44,3 +44,9 @@ logs/
 # Vercel
 .vercel
 .gstack/
+
+# Testing
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/

@@ -42,6 +42,23 @@ npm run dev
 # open http://localhost:3000
 ```
 
+## Testing
+
+- **Unit tests (Vitest)** cover the pure form-validation logic
+  (`src/lib/validation.ts`) — email/password/handle/name rules, confirm-match,
+  and the password-strength scorer.
+- **End-to-end (Playwright)** drives the public + auth surface in a real
+  Chromium browser: landing render + CTAs, login validation, the successful
+  sign-in → `/dashboard` redirect, and the register form. Since the app is
+  frontend-only, the suite is valid against the Vercel preview too.
+
+```bash
+npm test                 # Vitest unit tests
+npm run test:e2e         # Playwright E2E (boots the prod server automatically)
+# Against a deployed preview:
+E2E_BASE_URL=https://<preview-url> npm run test:e2e
+```
+
 ## Production build
 
 ```bash
