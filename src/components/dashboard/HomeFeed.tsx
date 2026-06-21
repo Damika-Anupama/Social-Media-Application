@@ -15,7 +15,13 @@ const tabs: { id: PostCategory; label: string; accent?: boolean; icon?: React.Co
   { id: 'live', label: 'Live now', accent: true, icon: Radio },
 ];
 
-export function HomeFeed() {
+export function HomeFeed({
+  userPosts = [],
+  onRemoveUserPost,
+}: {
+  userPosts?: Post[];
+  onRemoveUserPost?: (id: string) => void;
+} = {}) {
   const [category, setCategory] = useState<PostCategory>('foryou');
 
   const initialFor = useCallback((cat: PostCategory) => {
@@ -73,7 +79,23 @@ export function HomeFeed() {
       </div>
 
       <div className="space-y-5">
-        {items.length === 0 ? (
+        {category === 'foryou' &&
+          userPosts.map((p) => (
+            <div key={p.id} className="relative" data-testid="user-post">
+              <PostCard post={p} />
+              {onRemoveUserPost && (
+                <button
+                  type="button"
+                  onClick={() => onRemoveUserPost(p.id)}
+                  aria-label="Delete your post"
+                  className="absolute right-4 top-4 rounded-full border border-line bg-bg-subtle px-2 py-1 text-xs text-ink-muted hover:text-accent-coral"
+                >
+                  Delete
+                </button>
+              )}
+            </div>
+          ))}
+        {items.length === 0 && userPosts.length === 0 ? (
           <EmptyState category={category} />
         ) : (
           items.map((p) => <PostCard key={p.id} post={p} />)
