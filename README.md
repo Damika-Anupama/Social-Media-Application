@@ -40,14 +40,35 @@ A social networking application covering the core social-feed experience: posts/
 
 ```
 .
-├── Backend/                  # Spring Boot REST API
-│   ├── src/main/java/com/pali # application packages
+├── Backend/                              # Spring Boot REST API
+│   ├── src/main/java/com/pali/palindromebackend/
+│   │   ├── api/          # REST controllers (AuthenticateController, ChatController, …)
+│   │   ├── business/     # BO interfaces + impl; DTO↔Entity mappers; UserDetailsService
+│   │   ├── dao/          # Spring Data JPA repositories
+│   │   ├── dto/          # Data Transfer Objects (UserDTO, StatusDTO, …)
+│   │   ├── entity/       # JPA entities (User, Status, Community, Reaction, …)
+│   │   ├── filter/       # JWTRequestFilter — stateless token validation per request
+│   │   ├── model/        # Misc request/response models
+│   │   ├── service/      # AWS S3 file service (profile images)
+│   │   └── util/         # JWTUtil, SecurityConfig, CustomProperties
 │   └── pom.xml
-└── Frontend/                 # Angular 11 web + NativeScript mobile
+└── Frontend/                             # Angular 11 web + NativeScript mobile
     ├── src/app/
     ├── angular.json
     └── nativescript.config.ts
 ```
+
+## Security architecture (backend)
+
+The backend uses **stateless JWT authentication** (no server-side sessions):
+
+1. Client POSTs credentials to `/api/v1/authenticate` → receives a signed JWT.
+2. Every subsequent request carries the JWT in `Authorization: Bearer <token>`.
+3. `JWTRequestFilter` (a `OncePerRequestFilter`) validates the token on each request, extracts the username, and loads the `UserDetails` into the `SecurityContext`.
+4. `SecurityConfig` (extends `WebSecurityConfigurerAdapter`) marks `/api/v1/authenticate` and user-registration endpoints as public; all other routes require authentication.
+5. Tokens are signed with HS256 using a secret from `application.properties`.
+
+> **Known limitation (prototype-era):** `NoOpPasswordEncoder` is in use — passwords are stored as plain text. This is intentional for a portfolio/prototype context and is self-documented in [`REPO_ISSUES.md`](Backend/REPO_ISSUES.md). A production upgrade would swap in BCrypt and a proper secrets vault.
 
 ## Local development
 
