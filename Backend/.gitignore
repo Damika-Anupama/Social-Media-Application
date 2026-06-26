@@ -4,7 +4,8 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 jdks/
-test/
+# Ignore a root-level scratch test/ dir only — NOT the Maven src/test source root.
+/test/
 ### STS ###
 .apt_generated
 .classpath

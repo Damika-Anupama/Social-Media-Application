@@ -1,134 +1,157 @@
-frontend code repository: https://github.com/Damika-Anupama/Social-Media-Application-Frontend
+# Palindrome — Social Media Backend (Spring Boot)
 
-Palindrome Backend
-by Damika
+A Java **Spring Boot** REST API powering a social platform: authentication, user
+profiles, a chronological feed ("launches"), reactions, comments, friends,
+communities/groups, pages, chat, notifications, and media/email/SMS services.
 
-Level 1
-Complete all basic pages stuffs without friend, group pages suggestions and random status suggestions
-Includes chat, groups, pages, status
-Complete mobile app UpTo webapp content
-Apply UX techniques for both web app and mobile app (animations sounds)
-Apply docker with micro services
+> This is the real full-stack backend on `main`. The Vercel demo
+> ([social-media-application-rosy.vercel.app](https://social-media-application-rosy.vercel.app/))
+> is a separate frontend-only Next.js rebuild on the `frontend-demo` branch.
 
-Level 2
-Add mock 300 users 20 groups, 20 pages (and statuses)
-Add friends suggestions, group suggestions, page suggestions , status suggestions ( algorithms )
-Introduce ads and set add suggestions according to user details
-Add cyber security features
+Frontend (Angular/NativeScript) repo:
+<https://github.com/Damika-Anupama/Social-Media-Application-Frontend>
 
-Level 3
-Check all the other social media sites and compare features according to relevant criterias
-Criterias mainly based on user experience:
-- how posts are viewing (robust in Instagram)
-- loading speed
-- more functionalities than current social media sites
-- video calls, audio calls quality (zoom)
-- extream fun in status
-- relevant friend suggestions, group page suggestions,
-- Introduce new features currently not in other social media sites ( weekly giveaways, creativity appreciation tournaments, money exchange with cryptocurrency, etc.)
+---
 
+## Tech stack
 
-Level 4
-End of finishing backend (temporarily)
-- use best practices and remove bad coding
-- use design patterns ( structural, creational, behavioural)
-- add concurrency
-- reduce lot of time consuming procedures (find new frameworks)
-- apply singleton transactions for relevant requests and responses
+| Concern | Technology |
+|---|---|
+| Language / runtime | Java 8 (source/target 1.8) |
+| Framework | Spring Boot 2.4.x — Web, Security, Data JPA, Validation, Mail |
+| Auth | Stateless JWT (`io.jsonwebtoken` / jjwt), Spring Security filter chain |
+| Persistence | Spring Data JPA + Hibernate, MySQL 8 (HikariCP pool) |
+| Mapping | MapStruct (entity ⇄ DTO mappers), Lombok |
+| Integrations | Spring Mail (SMTP), Twilio (SMS) |
+| Build | Maven (wrapper included), packaged as a deployable `war` |
+| Test | JUnit + Spring Security Test + H2 (in-memory) |
 
+## Architecture
 
-Level 5
-End of finishing both web and mobile front ends
-- recheck all the other social media sites and check our performance is better than them
-- find new frameworks and those might be very helpful
-- check for all internet web browsers and all the types of computer devices whether our front end is compatible with them
-- research on human psychology (what colours they like, animations ,happy suggestions)
-- double the reactiveness of the site
-- image filters and video filters
+The codebase follows a classic layered architecture with interface/implementation
+separation at each layer, which keeps controllers thin and business logic testable:
 
-Level 6
-Release
-- Amazon web services
-- financial funding
-- Google play store
-- aid from university
-- liciening
--
+```
+HTTP request
+   │
+   ▼
+api/            REST controllers (abstract contract) + api/impl (implementations)
+   │            @RestController, /api/v1/* endpoints
+   ▼
+business/       Business Objects — BO interfaces (business/custom)
+   │            + BO implementations (business/custom/impl)
+   │            business/util — MapStruct EntityDTOMapper definitions
+   ▼
+dao/            Spring Data JPA repositories (CrudRepository-based)
+   │
+   ▼
+entity/         JPA @Entity classes (+ embedded composite-key PKs)
+                dto/    transport objects     model/  request/response bodies
+```
 
+Cross-cutting pieces:
 
--------------------------------------------------------------------------
-Not include in V.0.0.0
-1. Ads
-2. Shop
-3. XP levels
-4. NFTs
-5. Palindrome own games (only addiction games)
-6. Algorithms according to human psychology
-7. Machine learning advance techniques ( face detections etc.)
-8. Analyzing user data ( data science ) but keep only in database
-9. Advance cyber security features for prevent from hacking
-10. Sending messages to Phones ( cauz that costs)
-11. Apply VR goes into 3D
+- **`util/SecurityConfig`** — Spring Security filter chain. Stateless session
+  policy (`SessionCreationPolicy.STATELESS`), public endpoints whitelisted
+  (`/api/v1/authenticate`, user registration, public lookups), everything else
+  authenticated.
+- **`filter/JWTRequestFilter`** — a `OncePerRequestFilter` that extracts the
+  `Bearer` token, resolves the user, validates the token, and populates the
+  `SecurityContext` for the request.
+- **`util/JWTUtil`** — token generation, claim/subject extraction, expiry and
+  validation (HS256).
+- **`filter/CORSFilter`** — CORS handling for the Angular/Next.js clients.
+- **`service/Exception/GlobalExceptionHandler`** — `@ControllerAdvice` hook.
+- **`service/`** — supporting services: `FileService` (media), `EmailService`
+  (SMTP), `FullLaunchBodyPackager`, and `DateDescendentObjectCreator` (a
+  hand-written heap-sort that merges launches/communities/friends into one
+  reverse-chronological feed).
 
+## REST API surface
 
-Why would others buy from me instead of buying other products (Newness, Performance, Design, Price, Status, Cost Reduction, Risk Reduction, Usablity, Convenience)
-keep taking conversations btw customers (not only once)
+All endpoints are under `/api/v1`. Representative controllers:
 
-**Plan to end the whole project in december 2022**
-**The areas need to study**
+| Area | Controller | Notable endpoints |
+|---|---|---|
+| Auth | `AuthenticateController` | `POST /authenticate` → JWT |
+| Users | `UserController` | `POST /users` (register), `GET /users/info/{id}`, `GET /users/name/{username}` |
+| Feed | `LaunchController` | post/list "launches" (feed items) |
+| Social graph | `FriendController` | friend requests / suggestions |
+| Reactions | `ReactionController` | reactions on feed items |
+| Comments | `CommentController` | comments on feed items |
+| Communities | `CommunityController` | groups |
+| Pages | `PageController` | pages |
+| Chat | `ChatController` | messaging |
+| Notifications | `NotificationController` | user notifications |
+| Email / SMS | `EmailController`, `SMSController` | SMTP + Twilio |
 
->> HTML5 & SCSS 
->  UX/UI designing (figma, AdminLTE)
->> JS, JQUERY, TS -> Animations
->> Angular-CLI (Bootstrap, ionic, react, NgBootstrap, Angular Material, RxJS)
-> 
->> Java 8
-> (DP, Algorithms & Data Structures, Concurrency, OOP, Debugging and Testing, Exception Handling, Programming Paradigms, JDBC, IO, NIO, Serialization, Reflection API) + Clean Code
->> Spring-boot (Message sending, jwt, Core, Web, DataAccess, AOP, SpEL)
->> Maven + Gradle 
->> Postman (http client) 
->> RabbitMQ 
->> Microservices - Kubernetes, Docker icons (Deploying)
-> 
->> Cyber-Security 
->> Networking 
->> Ethical-Hacking (Kali Linux or Parrot OS)
-> 
->> Mobile App developing  
->> Framework (Native-Script/ Flutter/ React), Firebase
->> Google- App store and Apple App store (to store both apps)
-> 
->> Database - MySQL , MySQL workbench
-> 
->> Payment-Gates -> for money, for cryptocurrencies
-> 
->> Game Developing -> Find a suitable framework (Unity)
-> 
->> AWS - To store the entire backend and front end server 
-> 
->> VCS - GIT, Github
-> 
->> Techniques -> AJAX, JWT, OpenID Connect 
-> 
->> marketing
+## Security model
 
-## **_[ Send emails to each client email addresses, their notifications]_**
-### 5. Stage Five -> ***Most Important Stage***
->Until here anyone can blame to Palindrome you're copying facebook and Whatsapp
-> But here is the time to change those all blames
-> In here we apply loads of concepts based on Artificial Intelligence, Data Science, Cyber-security, Psychology, Virtual Reality so-and-so forth
+- **Stateless JWT** — no server session; the token carries the subject and is
+  validated on every request by `JWTRequestFilter`.
+- **Public vs. authenticated routes** are declared explicitly in `SecurityConfig`;
+  all non-whitelisted routes require a valid token.
+- **CORS** is handled by a dedicated filter so the SPA/mobile clients can call the
+  API cross-origin.
 
-- Get a connection with NFTs
-  - like everyone can maintain a NFT according to their profile
-  - introduce NFT store in the shop page
-  - NFTs are relevant to all games
-- Try to get the main game as "Pali-City"
-  - you can buy lands, have many events like car races, shops etc.
-- Go 3D
-  - Try VR mode to palindrome
-  - mainly on Pali-City game (like ready player one)
-  - group calls
-  - if someone hasn't enough money to get VR they have same functionalities in 2D version.
+> **Honest production caveats** (see also [`REPO_ISSUES.md`](REPO_ISSUES.md), a
+> self-audit kept in the repo): this is a portfolio/learning project. It uses
+> `NoOpPasswordEncoder` and a symmetric HS256 secret, and the global exception
+> handler is minimal. The audit file documents these and the recommended
+> hardening (BCrypt, asymmetric signing, structured error payloads, dependency
+> modernization) — they are known and intentionally tracked, not hidden.
 
+## Configuration
 
+Runtime config lives in `src/main/resources/application.properties`. **All secrets
+in the committed file are redacted** (`REDACTED-*` placeholders); supply real
+values via environment variables / a secret store before running:
 
+| Key | Purpose |
+|---|---|
+| `jwt.secret`, `jwt.expirationDateInMs` | JWT signing key + expiry |
+| `spring.datasource.url` / hikari `username` / `password` | MySQL connection |
+| `spring.mail.*` | SMTP (Gmail) for email |
+| `com.palindrome.twilio.*` | Twilio SMS credentials |
+| `media-upload.path` | media storage directory |
+
+## Local development
+
+Requires a JDK and a running MySQL 8 (`palindrome` database is auto-created via
+`createDatabaseIfNotExist=true`).
+
+```bash
+cd Backend
+./mvnw spring-boot:run        # starts on the default Spring Boot port (8080)
+```
+
+Build a deployable artifact:
+
+```bash
+./mvnw clean package          # produces target/palindrome-backend-1.0.0.war
+```
+
+## Testing
+
+Unit tests run with no database or Spring context where the logic allows it —
+e.g. `JWTUtilTest` exercises token generation/extraction/validation in isolation
+by injecting the `@Value` fields via `ReflectionTestUtils`:
+
+```bash
+cd Backend
+./mvnw test
+```
+
+```
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0
+```
+
+CI (GitHub Actions, `.github/workflows/backend-ci.yml`) compiles the backend and
+runs the test suite on every push / pull request that touches `Backend/`.
+
+## Author
+
+**Damika Anupama Nanayakkara** —
+[Portfolio](https://damika.is-a.dev/) ·
+[GitHub](https://github.com/Damika-Anupama) ·
+[LinkedIn](https://www.linkedin.com/in/damika-anupama)
