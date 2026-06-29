@@ -6,6 +6,7 @@ import { Bookmark, Search, FolderPlus } from 'lucide-react';
 import { TopBar } from '@/components/dashboard/TopBar';
 import { PostCard } from '@/components/dashboard/PostCard';
 import { posts } from '@/lib/mock-data';
+import { useReactions } from '@/lib/useReactions';
 
 const collections = [
   { id: 'all', label: 'All', tag: null },
@@ -18,8 +19,10 @@ const collections = [
 export default function BookmarksPage() {
   const [active, setActive] = useState('all');
   const [query, setQuery] = useState('');
+  const { bookmarks } = useReactions();
 
-  const saved = useMemo(() => posts.map((p) => ({ ...p, bookmarked: true })), []);
+  // Real bookmarks: only posts the viewer has actually saved (persisted store).
+  const saved = useMemo(() => posts.filter((p) => bookmarks.has(p.id)), [bookmarks]);
 
   const collection = collections.find((c) => c.id === active)!;
 

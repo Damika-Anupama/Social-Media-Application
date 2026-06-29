@@ -17,13 +17,18 @@ import {
 import type { Post } from '@/lib/mock-data';
 import { formatCount } from '@/lib/mock-data';
 import { Avatar } from '@/components/Avatar';
+import { useReactions } from '@/lib/useReactions';
 
 export function PostCard({ post }: { post: Post }) {
-  const [liked, setLiked] = useState(!!post.liked);
-  const [bookmarked, setBookmarked] = useState(!!post.bookmarked);
+  const { isLiked, isBookmarked, toggleLike, toggleBookmark } = useReactions();
   const [reshared, setReshared] = useState(false);
 
-  const likeCount = post.metrics.likes + (liked && !post.liked ? 1 : !liked && post.liked ? -1 : 0);
+  // The persisted reactions store is the single source of truth for the viewer's
+  // own like/bookmark state, so it survives navigation and reloads.
+  const liked = isLiked(post.id);
+  const bookmarked = isBookmarked(post.id);
+
+  const likeCount = post.metrics.likes + (liked ? 1 : 0);
 
   return (
     <article className="card group p-5 transition-colors hover:border-line">
@@ -87,7 +92,7 @@ export function PostCard({ post }: { post: Post }) {
             count={likeCount}
             active={liked}
             tone="coral"
-            onClick={() => setLiked((v) => !v)}
+            onClick={() => toggleLike(post.id)}
             label="Like"
           />
           <ReactionButton
@@ -106,10 +111,10 @@ export function PostCard({ post }: { post: Post }) {
           />
           <ReactionButton
             icon={<Bookmark className={clsx('h-[18px] w-[18px]', bookmarked && 'fill-brand-300 text-brand-300')} />}
-            count={post.metrics.bookmarks + (bookmarked && !post.bookmarked ? 1 : 0)}
+            count={post.metrics.bookmarks + (bookmarked ? 1 : 0)}
             active={bookmarked}
             tone="brand"
-            onClick={() => setBookmarked((v) => !v)}
+            onClick={() => toggleBookmark(post.id)}
             label="Bookmark"
           />
         </div>
