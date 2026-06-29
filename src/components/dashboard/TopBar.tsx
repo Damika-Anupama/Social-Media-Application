@@ -6,9 +6,11 @@ import { useState } from 'react';
 import { Search, Bell, MessageCircle, Sparkles } from 'lucide-react';
 import { Avatar } from '@/components/Avatar';
 import { currentUser } from '@/lib/mock-data';
+import { useCommandPalette } from '@/components/dashboard/CommandPalette';
 
 export function TopBar({ title, subtitle }: { title: string; subtitle?: string }) {
   const router = useRouter();
+  const { setOpen } = useCommandPalette();
   const [search, setSearch] = useState('');
 
   const submitSearch = (e: React.FormEvent) => {
@@ -36,7 +38,15 @@ export function TopBar({ title, subtitle }: { title: string; subtitle?: string }
               placeholder="Search posts, people, communities…"
               className="w-full bg-transparent text-sm text-ink placeholder:text-ink-dim focus:outline-none"
             />
-            <span className="badge text-[10px]">⌘ K</span>
+            <button
+              type="button"
+              onClick={() => setOpen(true)}
+              aria-label="Open command palette"
+              title="Command palette"
+              className="badge text-[10px] transition-colors hover:text-ink"
+            >
+              ⌘ K
+            </button>
           </div>
         </form>
 
