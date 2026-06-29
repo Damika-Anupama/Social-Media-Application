@@ -18,6 +18,7 @@ import { Avatar } from '@/components/Avatar';
 import { PostCard } from '@/components/dashboard/PostCard';
 import { formatCount, posts, type Post, type User } from '@/lib/mock-data';
 import { useToast } from '@/components/Toast';
+import { useFollowing } from '@/lib/useFollowing';
 import { buildShareUrl, shareLink } from '@/lib/share';
 
 const tabs = ['Posts', 'Replies', 'Media', 'Long-form', 'Likes'] as const;
@@ -34,9 +35,21 @@ export function PublicProfileClient({
   followsBack: User[];
   basePosts: Post[];
 }) {
-  const [following, setFollowing] = useState(false);
   const [tab, setTab] = useState<Tab>('Posts');
   const { toast } = useToast();
+  const { isFollowing, toggleFollow } = useFollowing();
+
+  // Follow state lives in the shared, persistent store so it stays in sync with
+  // Explore and the right-rail suggestions and survives reloads.
+  const following = isFollowing(user.id);
+
+  const onToggleFollow = () => {
+    const wasFollowing = following;
+    toggleFollow(user.id);
+    toast(wasFollowing ? `Unfollowed @${user.handle}` : `Following @${user.handle}`, {
+      action: { label: 'Undo', onClick: () => toggleFollow(user.id) },
+    });
+  };
 
   const onShare = async () => {
     const result = await shareLink({
@@ -94,7 +107,7 @@ export function PublicProfileClient({
               </Link>
               <button
                 type="button"
-                onClick={() => setFollowing((v) => !v)}
+                onClick={onToggleFollow}
                 aria-pressed={following}
                 className={clsx(
                   'px-4 py-2 text-sm font-semibold transition-colors',
