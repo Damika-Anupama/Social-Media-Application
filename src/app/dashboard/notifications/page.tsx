@@ -7,6 +7,8 @@ import { Heart, MessageCircle, UserPlus, AtSign, Award, Sparkles, CheckCheck } f
 import { TopBar } from '@/components/dashboard/TopBar';
 import { Avatar } from '@/components/Avatar';
 import { notifications as seed, type Notification } from '@/lib/mock-data';
+import { useReadNotifications } from '@/lib/useReadNotifications';
+import { useToast } from '@/components/Toast';
 
 const iconMap = {
   like: { icon: Heart, tint: 'text-accent-coral bg-accent-coral/10' },
@@ -25,21 +27,29 @@ const filters: { id: string; label: string; types?: Notification['type'][] }[] =
 ];
 
 export default function NotificationsPage() {
-  const [items, setItems] = useState<Notification[]>(seed);
   const [active, setActive] = useState('all');
+  const { readIds, markRead, markUnread, markManyRead } = useReadNotifications();
+  const { toast } = useToast();
 
   const filter = filters.find((f) => f.id === active)!;
+
+  // Read state comes from the persistent store, so it survives navigation and
+  // reloads and stays in sync with the sidebar unread badge.
+  const decorated = useMemo(
+    () => seed.map((n) => ({ ...n, unread: !!n.unread && !readIds.has(n.id) })),
+    [readIds],
+  );
   const view = useMemo(() => {
-    if (!filter.types) return items;
-    return items.filter((n) => filter.types!.includes(n.type));
-  }, [items, filter]);
+    if (!filter.types) return decorated;
+    return decorated.filter((n) => filter.types!.includes(n.type));
+  }, [decorated, filter]);
 
-  const unreadCount = items.filter((n) => n.unread).length;
+  const unreadCount = decorated.filter((n) => n.unread).length;
 
-  const markAllRead = () => setItems((arr) => arr.map((n) => ({ ...n, unread: false })));
-
-  const toggleRead = (id: string) =>
-    setItems((arr) => arr.map((n) => (n.id === id ? { ...n, unread: !n.unread } : n)));
+  const markAllRead = () => {
+    markManyRead(decorated.filter((n) => n.unread).map((n) => n.id));
+    toast('All caught up');
+  };
 
   return (
     <div className="px-4 pt-1 sm:px-6">
@@ -106,7 +116,8 @@ export default function NotificationsPage() {
                     onClick={(e) => {
                       e.stopPropagation();
                       e.preventDefault();
-                      toggleRead(n.id);
+                      if (n.unread) markRead(n.id);
+                      else markUnread(n.id);
                     }}
                     className={clsx(
                       'mt-2 h-2 w-2 shrink-0 rounded-full',

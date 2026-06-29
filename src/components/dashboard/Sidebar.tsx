@@ -17,14 +17,15 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { Avatar } from '@/components/Avatar';
-import { currentUser } from '@/lib/mock-data';
+import { currentUser, notifications } from '@/lib/mock-data';
 import { useComposeOpener } from '@/components/dashboard/ComposeContext';
+import { useReadNotifications, countUnread } from '@/lib/useReadNotifications';
 
 const navItems = [
-  { href: '/dashboard', label: 'Home', icon: Home, badge: null },
-  { href: '/dashboard/explore', label: 'Explore', icon: Compass, badge: null },
-  { href: '/dashboard/notifications', label: 'Notifications', icon: Bell, badge: 3 },
-  { href: '/dashboard/messages', label: 'Messages', icon: MessageCircle, badge: 5 },
+  { href: '/dashboard', label: 'Home', icon: Home, badge: null as number | null },
+  { href: '/dashboard/explore', label: 'Explore', icon: Compass, badge: null as number | null },
+  { href: '/dashboard/notifications', label: 'Notifications', icon: Bell, badge: null as number | null },
+  { href: '/dashboard/messages', label: 'Messages', icon: MessageCircle, badge: 5 as number | null },
   { href: '/dashboard/bookmarks', label: 'Bookmarks', icon: Bookmark, badge: null },
   { href: '/dashboard/communities', label: 'Communities', icon: Users2, badge: null },
   { href: '/dashboard/profile', label: 'Profile', icon: User, badge: null },
@@ -34,6 +35,8 @@ const navItems = [
 export function Sidebar() {
   const pathname = usePathname();
   const openCompose = useComposeOpener();
+  const { readIds } = useReadNotifications();
+  const unreadNotifications = countUnread(notifications, readIds);
 
   return (
     <aside className="sticky top-0 hidden h-screen w-[260px] shrink-0 flex-col border-r border-line/70 bg-bg/80 backdrop-blur-sm lg:flex">
@@ -50,6 +53,10 @@ export function Sidebar() {
                 ? pathname === '/dashboard'
                 : pathname.startsWith(item.href);
             const Icon = item.icon;
+            const badge =
+              item.href === '/dashboard/notifications'
+                ? unreadNotifications || null
+                : item.badge;
             return (
               <Link
                 key={item.href}
@@ -63,9 +70,12 @@ export function Sidebar() {
               >
                 <Icon className={clsx('h-[18px] w-[18px]', active ? 'text-brand-300' : '')} />
                 <span className="flex-1 font-medium">{item.label}</span>
-                {item.badge && (
-                  <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-brand-500 px-1.5 text-[11px] font-semibold text-white">
-                    {item.badge}
+                {badge && (
+                  <span
+                    className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-brand-500 px-1.5 text-[11px] font-semibold text-white"
+                    aria-label={`${badge} unread`}
+                  >
+                    {badge}
                   </span>
                 )}
               </Link>
