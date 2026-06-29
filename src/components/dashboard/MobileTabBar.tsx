@@ -48,6 +48,7 @@ export function MobileTabBar() {
             <li key={item.label}>
               <Link
                 href={item.href}
+                aria-current={active ? 'page' : undefined}
                 className={clsx(
                   'flex flex-col items-center gap-1 px-3 py-1.5 text-[10px] font-medium',
                   active ? 'text-ink' : 'text-ink-dim',

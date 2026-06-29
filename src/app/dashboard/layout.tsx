@@ -14,11 +14,23 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <UserPostsProvider>
           <ComposeProvider>
             <CommandPaletteProvider>
+              <a
+                href="#main-content"
+                className="sr-only z-[100] rounded-full bg-brand-500 px-4 py-2 text-sm font-semibold text-white shadow-lg focus:not-sr-only focus:fixed focus:left-4 focus:top-4"
+              >
+                Skip to content
+              </a>
               <div className="relative min-h-screen">
                 <div className="pointer-events-none absolute inset-x-0 top-0 h-[420px] bg-gradient-aurora opacity-50" />
                 <div className="relative z-10 mx-auto flex w-full max-w-[1400px] gap-0 px-0 sm:px-4">
                   <Sidebar />
-                  <main className="min-w-0 flex-1 pb-24 lg:pb-10">{children}</main>
+                  <main
+                    id="main-content"
+                    tabIndex={-1}
+                    className="min-w-0 flex-1 pb-24 focus:outline-none lg:pb-10"
+                  >
+                    {children}
+                  </main>
                 </div>
                 <MobileTabBar />
                 <ComposeModal />
