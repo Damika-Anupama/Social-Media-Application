@@ -202,7 +202,7 @@ export function PublicProfileClient({
               ))}
             </ul>
             <p className="mt-4 text-xs leading-relaxed text-ink-dim">
-              And {Math.max((user.followers ?? 0) - followsBack.length, 0).toLocaleString()} others you don't.
+              And {Math.max((user.followers ?? 0) - followsBack.length, 0).toLocaleString()} others you don&apos;t.
             </p>
           </div>
 

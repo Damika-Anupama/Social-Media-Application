@@ -145,7 +145,7 @@ export default function RegisterPage() {
             className="mt-0.5 h-4 w-4 rounded border-line bg-bg-subtle accent-brand-500"
           />
           <span>
-            I've read and agree to the{' '}
+            I&apos;ve read and agree to the{' '}
             <Link href="#" className="text-ink underline-offset-4 hover:underline">
               Community Charter
             </Link>{' '}

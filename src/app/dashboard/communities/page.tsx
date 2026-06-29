@@ -61,7 +61,7 @@ export default function CommunitiesPage() {
       <section className="mb-7">
         <h2 className="mb-3 text-sm font-semibold text-ink">Your communities ({myList.length})</h2>
         {myList.length === 0 ? (
-          <div className="card p-6 text-sm text-ink-muted">You haven't joined any communities yet. Browse below.</div>
+          <div className="card p-6 text-sm text-ink-muted">You haven&apos;t joined any communities yet. Browse below.</div>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {myList.map((c) => (
@@ -80,7 +80,7 @@ export default function CommunitiesPage() {
         <h2 className="mb-3 text-sm font-semibold text-ink">Discover more</h2>
         <div className="card divide-y divide-line/40">
           {discoverList.length === 0 ? (
-            <p className="p-6 text-sm text-ink-muted">Nothing new matching "{query}".</p>
+            <p className="p-6 text-sm text-ink-muted">Nothing new matching &quot;{query}&quot;.</p>
           ) : (
             discoverList.map((c) => {
               const isJoined = joined.has(c.id);

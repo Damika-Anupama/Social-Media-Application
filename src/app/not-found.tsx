@@ -12,7 +12,7 @@ export default function NotFound() {
           404 · Page not found
         </span>
         <h1 className="font-display text-5xl font-semibold leading-tight tracking-tight sm:text-6xl">
-          That corner of <span className="gradient-text">Pulse</span> doesn't exist.
+          That corner of <span className="gradient-text">Pulse</span> doesn&apos;t exist.
         </h1>
         <p className="mt-5 text-base text-ink-muted">
           The link may be broken, the post may have been deleted, or you may have a typo in the URL. Either way, the

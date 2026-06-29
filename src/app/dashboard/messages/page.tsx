@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -99,7 +98,7 @@ export default function MessagesPage() {
           </div>
           <ul className="flex-1 overflow-y-auto">
             {filtered.length === 0 ? (
-              <li className="p-6 text-center text-xs text-ink-muted">No conversations match "{search}".</li>
+              <li className="p-6 text-center text-xs text-ink-muted">No conversations match &quot;{search}&quot;.</li>
             ) : (
               filtered.map((c) => (
                 <li key={c.id}>
