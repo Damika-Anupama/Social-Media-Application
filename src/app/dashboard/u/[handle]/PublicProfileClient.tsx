@@ -17,6 +17,8 @@ import {
 import { Avatar } from '@/components/Avatar';
 import { PostCard } from '@/components/dashboard/PostCard';
 import { formatCount, posts, type Post, type User } from '@/lib/mock-data';
+import { useToast } from '@/components/Toast';
+import { buildShareUrl, shareLink } from '@/lib/share';
 
 const tabs = ['Posts', 'Replies', 'Media', 'Long-form', 'Likes'] as const;
 type Tab = (typeof tabs)[number];
@@ -34,6 +36,17 @@ export function PublicProfileClient({
 }) {
   const [following, setFollowing] = useState(false);
   const [tab, setTab] = useState<Tab>('Posts');
+  const { toast } = useToast();
+
+  const onShare = async () => {
+    const result = await shareLink({
+      url: buildShareUrl(`/dashboard/u/${user.handle}`),
+      title: `${user.name} (@${user.handle}) on Pulse`,
+      text: user.bio,
+    });
+    if (result === 'copied') toast('Profile link copied to clipboard');
+    else if (result === 'failed') toast('Could not share this profile', { tone: 'info' });
+  };
 
   const tabPosts = useMemo(() => {
     const decorated = basePosts.map((p) => ({ ...p, author: user }));
@@ -73,7 +86,7 @@ export function PublicProfileClient({
               </div>
             </div>
             <div className="flex items-center gap-2 pb-2">
-              <button className="btn-icon" aria-label="Share profile">
+              <button type="button" onClick={onShare} className="btn-icon" aria-label="Share profile">
                 <Share2 className="h-4 w-4" />
               </button>
               <Link href="/dashboard/messages" className="btn-ghost px-4 py-2 text-sm">

@@ -19,11 +19,22 @@ import { formatCount } from '@/lib/mock-data';
 import { Avatar } from '@/components/Avatar';
 import { useReactions } from '@/lib/useReactions';
 import { useToast } from '@/components/Toast';
+import { buildShareUrl, shareLink } from '@/lib/share';
 
 export function PostCard({ post }: { post: Post }) {
   const { isLiked, isBookmarked, toggleLike, toggleBookmark } = useReactions();
   const { toast } = useToast();
   const [reshared, setReshared] = useState(false);
+
+  const onShare = async () => {
+    const result = await shareLink({
+      url: buildShareUrl(`/dashboard/p/${post.id}`),
+      title: `${post.author.name} on Pulse`,
+      text: post.body.slice(0, 120),
+    });
+    if (result === 'copied') toast('Link copied to clipboard');
+    else if (result === 'failed') toast('Could not share this post', { tone: 'info' });
+  };
 
   const onToggleBookmark = () => {
     const wasBookmarked = isBookmarked(post.id);
@@ -128,7 +139,7 @@ export function PostCard({ post }: { post: Post }) {
             label="Bookmark"
           />
         </div>
-        <button className="btn-icon h-8 w-8" aria-label="Share">
+        <button type="button" onClick={onShare} className="btn-icon h-8 w-8" aria-label="Share post">
           <Share2 className="h-4 w-4" />
         </button>
       </footer>
