@@ -18,10 +18,20 @@ import type { Post } from '@/lib/mock-data';
 import { formatCount } from '@/lib/mock-data';
 import { Avatar } from '@/components/Avatar';
 import { useReactions } from '@/lib/useReactions';
+import { useToast } from '@/components/Toast';
 
 export function PostCard({ post }: { post: Post }) {
   const { isLiked, isBookmarked, toggleLike, toggleBookmark } = useReactions();
+  const { toast } = useToast();
   const [reshared, setReshared] = useState(false);
+
+  const onToggleBookmark = () => {
+    const wasBookmarked = isBookmarked(post.id);
+    toggleBookmark(post.id);
+    toast(wasBookmarked ? 'Removed from bookmarks' : 'Saved to bookmarks', {
+      action: { label: 'Undo', onClick: () => toggleBookmark(post.id) },
+    });
+  };
 
   // The persisted reactions store is the single source of truth for the viewer's
   // own like/bookmark state, so it survives navigation and reloads.
@@ -114,7 +124,7 @@ export function PostCard({ post }: { post: Post }) {
             count={post.metrics.bookmarks + (bookmarked ? 1 : 0)}
             active={bookmarked}
             tone="brand"
-            onClick={() => toggleBookmark(post.id)}
+            onClick={onToggleBookmark}
             label="Bookmark"
           />
         </div>

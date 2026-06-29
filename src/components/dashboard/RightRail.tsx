@@ -7,6 +7,8 @@ import { Sparkles, TrendingUp, Calendar, Plus, Check } from 'lucide-react';
 import { trending, suggestions, formatCount } from '@/lib/mock-data';
 import { Avatar } from '@/components/Avatar';
 import { useFollowing } from '@/lib/useFollowing';
+import { useToast } from '@/components/Toast';
+import type { User } from '@/lib/mock-data';
 
 const events = [
   { id: 'e1', title: 'Lina x Coastline studio tour', date: 'Sat, Jun 8 · 6:00 PM', city: 'Lagos' },
@@ -16,7 +18,16 @@ const events = [
 
 export function RightRail() {
   const { isFollowing, toggleFollow } = useFollowing();
+  const { toast } = useToast();
   const [rsvped, setRsvped] = useState<Set<string>>(new Set());
+
+  const onFollow = (u: User) => {
+    const wasFollowing = isFollowing(u.id);
+    toggleFollow(u.id);
+    toast(wasFollowing ? `Unfollowed @${u.handle}` : `Following @${u.handle}`, {
+      action: { label: 'Undo', onClick: () => toggleFollow(u.id) },
+    });
+  };
 
   const toggleRsvp = (id: string) =>
     setRsvped((s) => {
@@ -83,7 +94,7 @@ export function RightRail() {
                   </div>
                   <button
                     type="button"
-                    onClick={() => toggleFollow(u.id)}
+                    onClick={() => onFollow(u)}
                     aria-pressed={following}
                     className={clsx(
                       'inline-flex items-center gap-1 rounded-full border px-3 py-1 text-xs font-medium transition-colors',

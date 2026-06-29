@@ -8,6 +8,7 @@ import { PostCard } from './PostCard';
 import { useInfiniteList } from '@/lib/useInfiniteList';
 import { generatePost, postsForCategory, type Post, type PostCategory } from '@/lib/mock-data';
 import { useUserPostsContext } from '@/lib/UserPostsContext';
+import { useToast } from '@/components/Toast';
 
 const tabs: { id: PostCategory; label: string; accent?: boolean; icon?: React.ComponentType<{ className?: string }> }[] = [
   { id: 'foryou', label: 'For you' },
@@ -19,6 +20,7 @@ const tabs: { id: PostCategory; label: string; accent?: boolean; icon?: React.Co
 export function HomeFeed() {
   const [category, setCategory] = useState<PostCategory>('foryou');
   const { posts: userPosts, removePost } = useUserPostsContext();
+  const { toast } = useToast();
 
   const initialFor = useCallback((cat: PostCategory) => {
     const base = postsForCategory(cat);
@@ -83,7 +85,10 @@ export function HomeFeed() {
             <PostCard post={p} />
             <button
               type="button"
-              onClick={() => removePost(p.id)}
+              onClick={() => {
+                removePost(p.id);
+                toast('Post deleted');
+              }}
               aria-label="Delete your post"
               className="absolute right-4 top-4 rounded-full border border-line bg-bg-subtle/80 px-2.5 py-1 text-xs text-ink-muted backdrop-blur transition-colors hover:border-accent-coral/40 hover:text-accent-coral"
             >

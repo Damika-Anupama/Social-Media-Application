@@ -17,6 +17,8 @@ import {
 } from '@/lib/mock-data';
 import { useInfiniteList } from '@/lib/useInfiniteList';
 import { useFollowing } from '@/lib/useFollowing';
+import { useToast } from '@/components/Toast';
+import type { User } from '@/lib/mock-data';
 
 const chips = ['For you', 'Trending', 'News', 'Design', 'Climate', 'Tech', 'Sports', 'Film', 'Music', 'Books'];
 
@@ -26,6 +28,15 @@ export function ExploreClient() {
   const [query, setQuery] = useState(initialQ);
   const [activeChip, setActiveChip] = useState('For you');
   const { isFollowing, toggleFollow } = useFollowing();
+  const { toast } = useToast();
+
+  const onFollow = (u: User) => {
+    const wasFollowing = isFollowing(u.id);
+    toggleFollow(u.id);
+    toast(wasFollowing ? `Unfollowed @${u.handle}` : `Following @${u.handle}`, {
+      action: { label: 'Undo', onClick: () => toggleFollow(u.id) },
+    });
+  };
 
   const q = query.trim().toLowerCase();
 
@@ -146,7 +157,7 @@ export function ExploreClient() {
                   </div>
                   <button
                     type="button"
-                    onClick={() => toggleFollow(u.id)}
+                    onClick={() => onFollow(u)}
                     aria-pressed={followed}
                     className={clsx(
                       'inline-flex items-center gap-1 rounded-full border px-3 py-1 text-xs font-medium transition-colors',
