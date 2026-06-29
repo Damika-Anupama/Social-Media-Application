@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 
 const LIKES_KEY = 'pulse.likes.v1';
 const BOOKMARKS_KEY = 'pulse.bookmarks.v1';
+const RESHARES_KEY = 'pulse.reshares.v1';
 
 /** Parse a persisted id set from a raw JSON string (array of post ids). */
 export function parseIdSet(raw: string | null): string[] {
@@ -49,14 +50,17 @@ function write(key: string, ids: Set<string>): void {
 export function useReactions() {
   const [likes, setLikes] = useState<Set<string>>(new Set());
   const [bookmarks, setBookmarks] = useState<Set<string>>(new Set());
+  const [reshares, setReshares] = useState<Set<string>>(new Set());
 
   // Hydrate after mount to avoid an SSR/client markup mismatch.
   useEffect(() => {
     setLikes(read(LIKES_KEY));
     setBookmarks(read(BOOKMARKS_KEY));
+    setReshares(read(RESHARES_KEY));
     const onStorage = (e: StorageEvent) => {
       if (e.key === LIKES_KEY) setLikes(read(LIKES_KEY));
       if (e.key === BOOKMARKS_KEY) setBookmarks(read(BOOKMARKS_KEY));
+      if (e.key === RESHARES_KEY) setReshares(read(RESHARES_KEY));
     };
     window.addEventListener('storage', onStorage);
     return () => window.removeEventListener('storage', onStorage);
@@ -64,6 +68,7 @@ export function useReactions() {
 
   const isLiked = useCallback((id: string) => likes.has(id), [likes]);
   const isBookmarked = useCallback((id: string) => bookmarks.has(id), [bookmarks]);
+  const isReshared = useCallback((id: string) => reshares.has(id), [reshares]);
 
   const toggleLike = useCallback((id: string) => {
     setLikes((current) => {
@@ -85,14 +90,28 @@ export function useReactions() {
     });
   }, []);
 
+  const toggleReshare = useCallback((id: string) => {
+    setReshares((current) => {
+      const next = new Set(current);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      write(RESHARES_KEY, next);
+      return next;
+    });
+  }, []);
+
   return {
     likes,
     bookmarks,
+    reshares,
     isLiked,
     isBookmarked,
+    isReshared,
     toggleLike,
     toggleBookmark,
+    toggleReshare,
     bookmarkCount: bookmarks.size,
     likeCount: likes.size,
+    reshareCount: reshares.size,
   };
 }

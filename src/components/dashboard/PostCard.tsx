@@ -1,7 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 'use client';
 
-import { useState } from 'react';
 import Link from 'next/link';
 import clsx from 'clsx';
 import {
@@ -22,9 +21,17 @@ import { useToast } from '@/components/Toast';
 import { buildShareUrl, shareLink } from '@/lib/share';
 
 export function PostCard({ post }: { post: Post }) {
-  const { isLiked, isBookmarked, toggleLike, toggleBookmark } = useReactions();
+  const { isLiked, isBookmarked, isReshared, toggleLike, toggleBookmark, toggleReshare } =
+    useReactions();
   const { toast } = useToast();
-  const [reshared, setReshared] = useState(false);
+
+  const onToggleReshare = () => {
+    const wasReshared = isReshared(post.id);
+    toggleReshare(post.id);
+    toast(wasReshared ? 'Removed re-share' : 'Re-shared to your feed', {
+      action: { label: 'Undo', onClick: () => toggleReshare(post.id) },
+    });
+  };
 
   const onShare = async () => {
     const result = await shareLink({
@@ -48,6 +55,7 @@ export function PostCard({ post }: { post: Post }) {
   // own like/bookmark state, so it survives navigation and reloads.
   const liked = isLiked(post.id);
   const bookmarked = isBookmarked(post.id);
+  const reshared = isReshared(post.id);
 
   const likeCount = post.metrics.likes + (liked ? 1 : 0);
 
@@ -127,7 +135,7 @@ export function PostCard({ post }: { post: Post }) {
             count={post.metrics.shares + (reshared ? 1 : 0)}
             active={reshared}
             tone="mint"
-            onClick={() => setReshared((v) => !v)}
+            onClick={onToggleReshare}
             label="Re-share"
           />
           <ReactionButton
