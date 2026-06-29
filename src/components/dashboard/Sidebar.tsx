@@ -79,6 +79,7 @@ export function Sidebar() {
           className="btn-primary mx-auto mt-1 w-full justify-center py-3 text-sm"
         >
           <PenSquare className="h-4 w-4" /> Compose
+          <kbd className="ml-auto rounded border border-white/20 bg-white/10 px-1.5 py-0.5 font-mono text-[10px]">N</kbd>
         </button>
 
         <div className="card mt-2 p-4">

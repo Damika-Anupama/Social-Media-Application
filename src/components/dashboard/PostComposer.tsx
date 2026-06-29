@@ -1,9 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { Image as ImageIcon, Smile, MapPin, Calendar, Hash, Globe2, ChevronDown } from 'lucide-react';
+import { Image as ImageIcon, Smile, MapPin, Calendar, Hash, Globe2, ChevronDown, Check } from 'lucide-react';
 import { Avatar } from '@/components/Avatar';
 import { currentUser } from '@/lib/mock-data';
+import { useUserPostsContext } from '@/lib/UserPostsContext';
 import clsx from 'clsx';
 
 const tones = [
@@ -16,29 +17,34 @@ const tones = [
 
 export function PostComposer({
   onPosted,
-  onSubmitText,
   variant = 'card',
 }: {
   onPosted?: () => void;
-  onSubmitText?: (text: string) => void;
   variant?: 'card' | 'naked';
 }) {
   const [text, setText] = useState('');
   const [tone, setTone] = useState('thought');
+  const [posted, setPosted] = useState(false);
+  const { addPost } = useUserPostsContext();
+
   const remaining = 500 - text.length;
   const remainingTone =
     remaining < 0 ? 'text-accent-coral' : remaining < 40 ? 'text-accent-sun' : 'text-ink-dim';
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const trimmed = text.trim();
+    if (!trimmed || remaining < 0) return;
+    addPost(trimmed);
+    setText('');
+    setPosted(true);
+    setTimeout(() => setPosted(false), 2500);
+    onPosted?.();
+  };
+
   return (
     <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        const trimmed = text.trim();
-        if (trimmed.length === 0 || remaining < 0) return;
-        onSubmitText?.(trimmed);
-        setText('');
-        onPosted?.();
-      }}
+      onSubmit={handleSubmit}
       className={variant === 'card' ? 'card p-5' : 'p-5'}
     >
       <div className="flex items-start gap-3">
@@ -87,9 +93,19 @@ export function PostComposer({
                 <Globe2 className="h-3.5 w-3.5" /> Everyone <ChevronDown className="h-3 w-3" />
               </button>
               <span className={clsx('text-xs tabular-nums', remainingTone)}>{remaining}</span>
-              <button type="submit" disabled={text.trim().length === 0 || remaining < 0} className="btn-primary px-5 py-2 text-sm">
-                Post
-              </button>
+              {posted ? (
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-accent-mint/10 px-5 py-2 text-sm font-medium text-accent-mint animate-fade-up">
+                  <Check className="h-4 w-4" /> Posted!
+                </span>
+              ) : (
+                <button
+                  type="submit"
+                  disabled={text.trim().length === 0 || remaining < 0}
+                  className="btn-primary px-5 py-2 text-sm"
+                >
+                  Post
+                </button>
+              )}
             </div>
           </div>
         </div>

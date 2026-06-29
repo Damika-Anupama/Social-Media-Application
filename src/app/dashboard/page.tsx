@@ -1,4 +1,10 @@
+import type { Metadata } from 'next';
 import { TopBar } from '@/components/dashboard/TopBar';
+
+export const metadata: Metadata = {
+  title: 'Home',
+  description: 'Your personalised Pulse feed — quiet, ranked by what you actually engage with.',
+};
 import { StoryRail } from '@/components/dashboard/StoryRail';
 import { RightRail } from '@/components/dashboard/RightRail';
 import { HomeColumn } from '@/components/dashboard/HomeColumn';

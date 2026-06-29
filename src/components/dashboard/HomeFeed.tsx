@@ -7,6 +7,7 @@ import { Sparkles, Radio, BookOpen, Loader2 } from 'lucide-react';
 import { PostCard } from './PostCard';
 import { useInfiniteList } from '@/lib/useInfiniteList';
 import { generatePost, postsForCategory, type Post, type PostCategory } from '@/lib/mock-data';
+import { useUserPostsContext } from '@/lib/UserPostsContext';
 
 const tabs: { id: PostCategory; label: string; accent?: boolean; icon?: React.ComponentType<{ className?: string }> }[] = [
   { id: 'foryou', label: 'For you' },
@@ -15,14 +16,9 @@ const tabs: { id: PostCategory; label: string; accent?: boolean; icon?: React.Co
   { id: 'live', label: 'Live now', accent: true, icon: Radio },
 ];
 
-export function HomeFeed({
-  userPosts = [],
-  onRemoveUserPost,
-}: {
-  userPosts?: Post[];
-  onRemoveUserPost?: (id: string) => void;
-} = {}) {
+export function HomeFeed() {
   const [category, setCategory] = useState<PostCategory>('foryou');
+  const { posts: userPosts, removePost } = useUserPostsContext();
 
   const initialFor = useCallback((cat: PostCategory) => {
     const base = postsForCategory(cat);
@@ -44,6 +40,9 @@ export function HomeFeed({
   useEffect(() => {
     reset(initial);
   }, [initial, reset]);
+
+  const pinnedPosts = category === 'foryou' || category === 'following' ? userPosts : [];
+  const isEmpty = pinnedPosts.length === 0 && items.length === 0;
 
   return (
     <>
@@ -79,23 +78,20 @@ export function HomeFeed({
       </div>
 
       <div className="space-y-5">
-        {category === 'foryou' &&
-          userPosts.map((p) => (
-            <div key={p.id} className="relative" data-testid="user-post">
-              <PostCard post={p} />
-              {onRemoveUserPost && (
-                <button
-                  type="button"
-                  onClick={() => onRemoveUserPost(p.id)}
-                  aria-label="Delete your post"
-                  className="absolute right-4 top-4 rounded-full border border-line bg-bg-subtle px-2 py-1 text-xs text-ink-muted hover:text-accent-coral"
-                >
-                  Delete
-                </button>
-              )}
-            </div>
-          ))}
-        {items.length === 0 && userPosts.length === 0 ? (
+        {pinnedPosts.map((p) => (
+          <div key={p.id} className="relative" data-testid="user-post">
+            <PostCard post={p} />
+            <button
+              type="button"
+              onClick={() => removePost(p.id)}
+              aria-label="Delete your post"
+              className="absolute right-4 top-4 rounded-full border border-line bg-bg-subtle/80 px-2.5 py-1 text-xs text-ink-muted backdrop-blur transition-colors hover:border-accent-coral/40 hover:text-accent-coral"
+            >
+              Delete
+            </button>
+          </div>
+        ))}
+        {isEmpty ? (
           <EmptyState category={category} />
         ) : (
           items.map((p) => <PostCard key={p.id} post={p} />)

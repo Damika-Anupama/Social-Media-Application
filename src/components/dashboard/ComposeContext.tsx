@@ -13,25 +13,42 @@ export function ComposeProvider({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    if (!open) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setOpen(false);
-    };
-    document.body.style.overflow = 'hidden';
-    document.addEventListener('keydown', onKey);
-    return () => {
-      document.body.style.overflow = '';
-      document.removeEventListener('keydown', onKey);
-    };
+    document.body.style.overflow = open ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
   }, [open]);
 
-  return <Ctx.Provider value={{ open, setOpen }}>{children}</Ctx.Provider>;
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement;
+      const isTyping =
+        target.tagName === 'INPUT' ||
+        target.tagName === 'TEXTAREA' ||
+        target.isContentEditable;
+      if (e.key === 'Escape' && open) {
+        setOpen(false);
+      } else if (e.key === 'n' && !open && !isTyping && !e.metaKey && !e.ctrlKey && !e.altKey) {
+        e.preventDefault();
+        setOpen(true);
+      }
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [open]);
+
+  return (
+    <Ctx.Provider value={{ open, setOpen }}>
+      {children}
+    </Ctx.Provider>
+  );
 }
 
 export function useCompose() {
   const ctx = useContext(Ctx);
   if (!ctx) {
-    return { open: false, setOpen: () => {} } as ComposeContextValue;
+    return {
+      open: false,
+      setOpen: () => {},
+    } as ComposeContextValue;
   }
   return ctx;
 }
