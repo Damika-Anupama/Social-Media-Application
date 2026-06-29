@@ -3,11 +3,37 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    /* Dark theme (default). RGB channel triplets so Tailwind alpha modifiers
+       (e.g. bg-bg-subtle/60) keep working through the variables. */
+    --bg: 7 7 11;
+    --bg-subtle: 13 13 20;
+    --bg-raised: 19 19 28;
+    --bg-elevated: 26 26 36;
+    --ink: 245 245 250;
+    --ink-muted: 167 167 184;
+    --ink-dim: 110 110 128;
+    --line: 34 34 46;
+    color-scheme: dark;
+  }
+
+  :root.theme-light {
+    --bg: 247 247 251;
+    --bg-subtle: 237 238 244;
+    --bg-raised: 255 255 255;
+    --bg-elevated: 240 241 247;
+    --ink: 23 23 31;
+    --ink-muted: 74 76 92;
+    --ink-dim: 120 122 138;
+    --line: 224 226 236;
+    color-scheme: light;
+  }
+
   html,
   body {
     height: 100%;
-    background: #07070b;
-    color: #f5f5fa;
+    background: rgb(var(--bg));
+    color: rgb(var(--ink));
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -30,13 +56,13 @@
     background: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    background: #22222e;
+    background: rgb(var(--line));
     border-radius: 999px;
     border: 2px solid transparent;
     background-clip: padding-box;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #2e2e3d;
+    background: rgb(var(--ink-dim) / 0.6);
     background-clip: padding-box;
     border: 2px solid transparent;
   }
@@ -84,7 +110,12 @@
   }
 
   .shimmer-block {
-    background: linear-gradient(90deg, #1a1a24 25%, #22222e 50%, #1a1a24 75%);
+    background: linear-gradient(
+      90deg,
+      rgb(var(--bg-elevated)) 25%,
+      rgb(var(--line)) 50%,
+      rgb(var(--bg-elevated)) 75%
+    );
     background-size: 200% 100%;
     animation: shimmer 2s linear infinite;
   }
@@ -101,7 +132,7 @@
   .gradient-border {
     position: relative;
     background:
-      linear-gradient(#13131c, #13131c) padding-box,
+      linear-gradient(rgb(var(--bg-raised)), rgb(var(--bg-raised))) padding-box,
       linear-gradient(135deg, rgba(124, 92, 255, 0.7), rgba(76, 201, 240, 0.5), rgba(61, 219, 179, 0.7)) border-box;
     border: 1px solid transparent;
   }

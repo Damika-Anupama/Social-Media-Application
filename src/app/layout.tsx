@@ -34,7 +34,16 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        {/* Apply saved display preferences before paint to avoid a flash of the
+            wrong theme. Mirrors PreferencesProvider; kept tiny and dependency-free. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var p=JSON.parse(localStorage.getItem('pulse.preferences.v1')||'{}');var t=p.theme||'dark';var light=t==='light'||(t==='system'&&window.matchMedia('(prefers-color-scheme: light)').matches);var r=document.documentElement;r.classList.toggle('theme-light',light);if(p.reduceMotion)r.classList.add('reduce-motion');if(p.largerType)r.classList.add('text-larger');}catch(e){}})();`,
+          }}
+        />
+      </head>
       <body className="min-h-screen bg-bg text-ink antialiased">
         {children}
       </body>

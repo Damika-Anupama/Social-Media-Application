@@ -117,8 +117,9 @@ function PrivacySection() {
 }
 
 function AppearanceSection() {
-  const [theme, setTheme] = useState<'system' | 'dark' | 'light'>('dark');
   const { preferences, setPreference } = usePreferences();
+  const theme = preferences.theme;
+  const setTheme = (t: 'system' | 'dark' | 'light') => setPreference('theme', t);
   return (
     <div className="space-y-6">
       <h2 className="text-lg font-semibold text-ink">Appearance</h2>

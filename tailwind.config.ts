@@ -5,18 +5,21 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        // Semantic tokens are driven by CSS variables (see globals.css) so the
+        // whole UI re-themes (dark/light) without touching component classes.
+        // <alpha-value> keeps Tailwind opacity modifiers (e.g. bg-bg/80) working.
         bg: {
-          DEFAULT: '#07070b',
-          subtle: '#0d0d14',
-          raised: '#13131c',
-          elevated: '#1a1a24',
+          DEFAULT: 'rgb(var(--bg) / <alpha-value>)',
+          subtle: 'rgb(var(--bg-subtle) / <alpha-value>)',
+          raised: 'rgb(var(--bg-raised) / <alpha-value>)',
+          elevated: 'rgb(var(--bg-elevated) / <alpha-value>)',
         },
         ink: {
-          DEFAULT: '#f5f5fa',
-          muted: '#a7a7b8',
-          dim: '#6e6e80',
+          DEFAULT: 'rgb(var(--ink) / <alpha-value>)',
+          muted: 'rgb(var(--ink-muted) / <alpha-value>)',
+          dim: 'rgb(var(--ink-dim) / <alpha-value>)',
         },
-        line: '#22222e',
+        line: 'rgb(var(--line) / <alpha-value>)',
         brand: {
           50: '#f3f0ff',
           100: '#e6e0ff',

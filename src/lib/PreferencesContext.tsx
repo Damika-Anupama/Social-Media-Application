@@ -4,7 +4,11 @@ import { createContext, useCallback, useContext, useEffect, useState } from 'rea
 
 const STORAGE_KEY = 'pulse.preferences.v1';
 
+export type Theme = 'system' | 'dark' | 'light';
+
 export type Preferences = {
+  /** Color theme; 'system' follows the OS preference. */
+  theme: Theme;
   /** User-forced reduced motion, independent of the OS-level setting. */
   reduceMotion: boolean;
   /** Slightly larger base type for readability. */
@@ -12,9 +16,12 @@ export type Preferences = {
 };
 
 export const DEFAULT_PREFERENCES: Preferences = {
+  theme: 'dark',
   reduceMotion: false,
   largerType: false,
 };
+
+const THEMES: Theme[] = ['system', 'dark', 'light'];
 
 /** Parse persisted preferences, tolerating absent keys and corrupt JSON. */
 export function parsePreferences(raw: string | null): Preferences {
@@ -23,6 +30,7 @@ export function parsePreferences(raw: string | null): Preferences {
     const parsed = JSON.parse(raw);
     if (!parsed || typeof parsed !== 'object') return { ...DEFAULT_PREFERENCES };
     return {
+      theme: THEMES.includes(parsed.theme) ? parsed.theme : DEFAULT_PREFERENCES.theme,
       reduceMotion:
         typeof parsed.reduceMotion === 'boolean'
           ? parsed.reduceMotion
@@ -33,6 +41,12 @@ export function parsePreferences(raw: string | null): Preferences {
   } catch {
     return { ...DEFAULT_PREFERENCES };
   }
+}
+
+/** Resolve a theme choice to the concrete light/dark to apply. */
+export function resolveTheme(theme: Theme, prefersLight: boolean): 'light' | 'dark' {
+  if (theme === 'system') return prefersLight ? 'light' : 'dark';
+  return theme;
 }
 
 type PreferencesContextValue = {
@@ -63,12 +77,27 @@ export function PreferencesProvider({ children }: { children: React.ReactNode })
     return () => window.removeEventListener('storage', onStorage);
   }, []);
 
-  // Reflect preferences as classes on the document root.
+  // Reflect motion / type preferences as classes on the document root.
   useEffect(() => {
     const root = document.documentElement;
     root.classList.toggle('reduce-motion', preferences.reduceMotion);
     root.classList.toggle('text-larger', preferences.largerType);
-  }, [preferences]);
+  }, [preferences.reduceMotion, preferences.largerType]);
+
+  // Apply the theme, and (when set to 'system') react live to OS changes.
+  useEffect(() => {
+    const root = document.documentElement;
+    const mql = window.matchMedia('(prefers-color-scheme: light)');
+    const apply = () => {
+      const resolved = resolveTheme(preferences.theme, mql.matches);
+      root.classList.toggle('theme-light', resolved === 'light');
+    };
+    apply();
+    if (preferences.theme === 'system') {
+      mql.addEventListener('change', apply);
+      return () => mql.removeEventListener('change', apply);
+    }
+  }, [preferences.theme]);
 
   const setPreference = useCallback<PreferencesContextValue['setPreference']>((key, value) => {
     setPreferences((prev) => {
