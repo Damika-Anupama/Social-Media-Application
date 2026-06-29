@@ -127,3 +127,21 @@
     scroll-behavior: auto !important;
   }
 }
+
+/*
+ * User-controlled display preferences (Settings → Appearance), applied as
+ * classes on <html> by PreferencesProvider.
+ */
+.reduce-motion *,
+.reduce-motion *::before,
+.reduce-motion *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* Gentle, proportional bump to base type for readability (rem-based UI scales). */
+html.text-larger {
+  font-size: 110%;
+}

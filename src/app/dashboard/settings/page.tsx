@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { TopBar } from '@/components/dashboard/TopBar';
 import { currentUser } from '@/lib/mock-data';
 import { Avatar } from '@/components/Avatar';
+import { usePreferences } from '@/lib/PreferencesContext';
 import {
   User as UserIcon,
   Bell,
@@ -117,6 +118,7 @@ function PrivacySection() {
 
 function AppearanceSection() {
   const [theme, setTheme] = useState<'system' | 'dark' | 'light'>('dark');
+  const { preferences, setPreference } = usePreferences();
   return (
     <div className="space-y-6">
       <h2 className="text-lg font-semibold text-ink">Appearance</h2>
@@ -138,8 +140,18 @@ function AppearanceSection() {
           ))}
         </div>
       </div>
-      <Toggle label="Reduce motion" hint="Disable animations across the app." />
-      <Toggle label="Larger type" hint="Bump base font up by 1 step." />
+      <Toggle
+        label="Reduce motion"
+        hint="Disable animations across the app."
+        checked={preferences.reduceMotion}
+        onChange={(v) => setPreference('reduceMotion', v)}
+      />
+      <Toggle
+        label="Larger type"
+        hint="Bump base font up by 1 step."
+        checked={preferences.largerType}
+        onChange={(v) => setPreference('largerType', v)}
+      />
     </div>
   );
 }
@@ -161,13 +173,24 @@ function Toggle({
   hint,
   defaultOn,
   disabled,
+  checked,
+  onChange,
 }: {
   label: string;
   hint: string;
   defaultOn?: boolean;
   disabled?: boolean;
+  checked?: boolean;
+  onChange?: (next: boolean) => void;
 }) {
-  const [on, setOn] = useState(!!defaultOn);
+  // Controlled when `checked` is provided; otherwise self-managed (cosmetic).
+  const isControlled = checked !== undefined;
+  const [internalOn, setInternalOn] = useState(!!defaultOn);
+  const on = isControlled ? checked : internalOn;
+  const toggle = () => {
+    if (isControlled) onChange?.(!on);
+    else setInternalOn((s) => !s);
+  };
   return (
     <div className="flex items-start justify-between gap-4 border-t border-line/40 pt-4">
       <div className="flex-1">
@@ -177,7 +200,7 @@ function Toggle({
       <button
         type="button"
         disabled={disabled}
-        onClick={() => setOn((s) => !s)}
+        onClick={toggle}
         className={clsx(
           'relative h-6 w-11 shrink-0 rounded-full transition-colors',
           disabled && 'opacity-50',
