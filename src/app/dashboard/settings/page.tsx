@@ -13,6 +13,7 @@ import {
   Shield,
   Download,
   ChevronRight,
+  Check,
 } from 'lucide-react';
 import clsx from 'clsx';
 
@@ -130,13 +131,17 @@ function AppearanceSection() {
             <button
               key={t}
               onClick={() => setTheme(t)}
+              aria-pressed={theme === t}
               className={clsx(
                 'rounded-2xl border bg-bg-subtle p-4 text-left transition-colors',
-                theme === t ? 'border-brand-400/50' : 'border-line hover:border-line',
+                theme === t ? 'border-brand-400/50 ring-1 ring-brand-400/40' : 'border-line hover:border-brand-400/30',
               )}
             >
-              <div className="mb-2 h-12 rounded-lg bg-gradient-to-br from-bg-elevated to-bg-raised" />
-              <div className="text-xs font-semibold capitalize text-ink">{t}</div>
+              <ThemePreview theme={t} />
+              <div className="mt-2 flex items-center justify-between">
+                <span className="text-xs font-semibold capitalize text-ink">{t}</span>
+                {theme === t && <Check className="h-3.5 w-3.5 text-brand-300" />}
+              </div>
             </button>
           ))}
         </div>
@@ -152,6 +157,43 @@ function AppearanceSection() {
         hint="Bump base font up by 1 step."
         checked={preferences.largerType}
         onChange={(v) => setPreference('largerType', v)}
+      />
+    </div>
+  );
+}
+
+/**
+ * A theme-independent mini mock of each theme, drawn with literal colors so the
+ * swatch always shows what that theme looks like regardless of the active one.
+ */
+function ThemePreview({ theme }: { theme: 'system' | 'dark' | 'light' }) {
+  if (theme === 'system') {
+    return (
+      <div className="relative h-12 overflow-hidden rounded-lg border border-line">
+        <div className="absolute inset-0 flex">
+          <div className="w-1/2" style={{ background: '#0d0d14' }} />
+          <div className="w-1/2" style={{ background: '#f7f7fb' }} />
+        </div>
+        <div className="absolute left-2 top-2 h-1.5 w-7 rounded-full" style={{ background: '#7c5cff' }} />
+        <div className="absolute bottom-2 left-2 h-1 w-5 rounded-full" style={{ background: 'rgba(245,245,250,0.7)' }} />
+        <div className="absolute bottom-2 right-2 h-1 w-5 rounded-full" style={{ background: 'rgba(21,21,28,0.45)' }} />
+      </div>
+    );
+  }
+  const dark = theme === 'dark';
+  return (
+    <div
+      className="relative h-12 overflow-hidden rounded-lg border"
+      style={{ background: dark ? '#0d0d14' : '#f7f7fb', borderColor: dark ? '#22222e' : '#e0e2ec' }}
+    >
+      <div className="absolute left-2 top-2 h-1.5 w-7 rounded-full" style={{ background: '#7c5cff' }} />
+      <div
+        className="absolute left-2 top-5 h-1 w-9 rounded-full"
+        style={{ background: dark ? 'rgba(245,245,250,0.55)' : 'rgba(21,21,28,0.55)' }}
+      />
+      <div
+        className="absolute left-2 top-7 h-1 w-6 rounded-full"
+        style={{ background: dark ? 'rgba(167,167,184,0.4)' : 'rgba(74,76,92,0.4)' }}
       />
     </div>
   );
