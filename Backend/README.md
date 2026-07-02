@@ -117,11 +117,14 @@ values via environment variables / a secret store before running:
 
 ## Local development
 
-Requires a JDK and a running MySQL 8 (`palindrome` database is auto-created via
-`createDatabaseIfNotExist=true`).
+Requires **JDK 17** for the current Maven wrapper/build path and a running MySQL 8
+(`palindrome` database is auto-created via `createDatabaseIfNotExist=true`). Newer
+local JDKs may fail Lombok annotation processing, so pin `JAVA_HOME` before running
+Maven if multiple JDKs are installed.
 
 ```bash
 cd Backend
+export JAVA_HOME=$(/usr/libexec/java_home -v 17)  # macOS; use your JDK 17 path elsewhere
 ./mvnw spring-boot:run        # starts on the default Spring Boot port (8080)
 ```
 
@@ -143,8 +146,12 @@ cd Backend
 ```
 
 ```
-Tests run: 3, Failures: 0, Errors: 0, Skipped: 0
+Tests run: 4, Failures: 0, Errors: 0, Skipped: 0
 ```
+
+The current JWT unit coverage verifies token generation, subject extraction,
+matching-user validation, username-mismatch rejection, and the configured expiry
+window without starting Spring or a database.
 
 CI (GitHub Actions, `.github/workflows/backend-ci.yml`) compiles the backend and
 runs the test suite on every push / pull request that touches `Backend/`.
