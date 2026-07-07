@@ -6,6 +6,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Collections;
+import java.util.Date;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -61,5 +62,24 @@ public class JWTUtilTest {
         String token = util.generateToken(userNamed("alice"));
 
         assertFalse(util.validateToken(token, userNamed("bob")));
+    }
+
+    @Test
+    public void generatedTokenCarriesFutureExpiration() {
+        JWTUtil util = newUtil(SECRET, ONE_HOUR_MS);
+
+        long beforeIssue = System.currentTimeMillis();
+        String token = util.generateToken(userNamed("alice"));
+        Date expiration = util.extractExpiration(token);
+        long afterIssue = System.currentTimeMillis();
+
+        assertTrue(
+                "expiration should be after token creation",
+                expiration.getTime() > afterIssue
+        );
+        assertTrue(
+                "expiration should be within the configured one-hour TTL",
+                expiration.getTime() <= beforeIssue + Long.parseLong(ONE_HOUR_MS) + 1000
+        );
     }
 }
