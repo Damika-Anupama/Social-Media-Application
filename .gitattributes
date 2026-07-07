@@ -1,0 +1,3 @@
+# Angular component templates are framework markup, not the primary language.
+# Exclude them from language stats so the backend language (Java) is represented.
+*.component.html linguist-detectable=false
