@@ -219,8 +219,8 @@ export function ExploreClient() {
             {filteredUsers.map((u) => {
               const followed = isFollowing(u.id);
               return (
-                <div key={u.id} className="flex items-center gap-3 rounded-xl border border-line/60 bg-bg-subtle/60 p-3">
-                  <Link href={`/dashboard/u/${u.handle}`} aria-label={`${u.name}'s profile`}>
+                <div key={u.id} className="flex min-w-0 items-center gap-3 rounded-xl border border-line/60 bg-bg-subtle/60 p-3">
+                  <Link href={`/dashboard/u/`} aria-label={`'s profile`} className="shrink-0">
                     <Avatar user={u} size={44} />
                   </Link>
                   <div className="min-w-0 flex-1">
@@ -239,7 +239,7 @@ export function ExploreClient() {
                     onClick={() => onFollow(u)}
                     aria-pressed={followed}
                     className={clsx(
-                      'inline-flex items-center gap-1 rounded-full border px-3 py-1 text-xs font-medium transition-colors',
+                      'inline-flex shrink-0 items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-medium transition-colors sm:px-3',
                       followed
                         ? 'border-accent-mint/40 bg-accent-mint/10 text-accent-mint-fg'
                         : 'border-line bg-bg-raised text-ink-muted hover:border-brand-400/40 hover:text-ink',

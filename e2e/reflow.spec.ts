@@ -105,6 +105,33 @@ test.describe("Pulse — reflow at 320px (WCAG 1.4.10)", () => {
   }
 });
 
+/**
+ * The harshest case, and the one that earns its keep: narrowest viewport AND
+ * scaled-up text at once.
+ *
+ * Settings passed at 320px on my machine and failed on CI, because Linux
+ * renders the font wider than macOS and a row like "Indian Standard Time
+ * (UTC+05:30)" tipped over the edge. Layout that only survives on one
+ * platform's font metrics is not layout that survives. Larger type widens
+ * text further than that difference ever could, so this catches the whole
+ * class locally instead of at the end of a CI run.
+ */
+test.describe("Pulse — 320px with larger type", () => {
+  test.use({ viewport: { width: 320, height: 640 } });
+
+  for (const route of ROUTES) {
+    test(`${route} survives 320px + larger type`, async ({ page }) => {
+      await useLargerType(page);
+      if (route.startsWith("/dashboard")) await signIn(page);
+      await page.goto(route);
+      await page.waitForLoadState("networkidle");
+
+      expect(await offscreenElements(page)).toEqual([]);
+      expect(await horizontalOverflow(page)).toBeLessThanOrEqual(2);
+    });
+  }
+});
+
 test.describe("Pulse — larger type (WCAG 1.4.4)", () => {
   test.use({ viewport: { width: 390, height: 844 } });
 

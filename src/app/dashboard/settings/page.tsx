@@ -43,10 +43,12 @@ export default function SettingsPage() {
       <TopBar title="Settings" subtitle="Make Pulse yours. Every setting on this screen is reversible." />
 
       <div className="card grid overflow-hidden md:grid-cols-[240px_1fr]">
+        {/* min-w-0: a grid item also defaults to min-width:auto, so the nav
+            refused to shrink below its widest label and overflowed the card. */}
         <nav
           {...tabListProps}
           aria-label="Settings sections"
-          className="border-b border-line/60 p-3 md:border-b-0 md:border-r"
+          className="min-w-0 border-b border-line/60 p-3 md:border-b-0 md:border-r"
         >
           {sections.map((s, i) => {
             const Icon = s.icon;
@@ -61,17 +63,17 @@ export default function SettingsPage() {
                     : 'text-ink-muted hover:bg-bg-elevated/50 hover:text-ink',
                 )}
               >
-                <span className="flex items-center gap-2.5">
+                <span className="flex min-w-0 items-center gap-2.5">
                   <Icon className={clsx('h-4 w-4', active === s.id && 'text-brand-300')} />
                   {s.label}
                 </span>
-                <ChevronRight className="h-3.5 w-3.5 opacity-50" />
+                <ChevronRight className="h-3.5 w-3.5 shrink-0 opacity-50" />
               </button>
             );
           })}
         </nav>
 
-        <div className="p-6 sm:p-8">
+        <div className="min-w-0 p-6 sm:p-8">
           {active === 'account' && <AccountSection />}
           {active === 'notifications' && <NotificationsSection />}
           {active === 'privacy' && <PrivacySection />}
@@ -88,13 +90,13 @@ function AccountSection() {
   return (
     <div className="space-y-6">
       <h2 className="text-lg font-semibold text-ink">Account</h2>
-      <div className="flex items-center gap-4">
+      <div className="flex flex-wrap items-center gap-4">
         <Avatar user={currentUser} size={64} ring="brand" />
-        <div className="flex-1">
-          <div className="text-sm font-semibold text-ink">{currentUser.name}</div>
-          <div className="text-xs text-ink-dim">@{currentUser.handle}</div>
+        <div className="min-w-0 flex-1">
+          <div className="truncate text-sm font-semibold text-ink">{currentUser.name}</div>
+          <div className="truncate text-xs text-ink-dim">@{currentUser.handle}</div>
         </div>
-        <button className="btn-ghost px-4 py-2 text-sm">Change photo</button>
+        <button className="btn-ghost shrink-0 px-4 py-2 text-sm">Change photo</button>
       </div>
       <Row label="Display name" value="Damika Anupama" />
       <Row label="Username" value={`@${currentUser.handle}`} />
@@ -261,14 +263,22 @@ function ThemePreview({ theme }: { theme: 'system' | 'dark' | 'light' }) {
 
 function Row({ label, value, muted }: { label: string; value: string; muted?: boolean }) {
   return (
-    <div className="flex items-center justify-between border-t border-line/40 pt-4">
-      <div>
+    // min-w-0 + break-words: a value like "Indian Standard Time (UTC+05:30)"
+    // cannot shrink otherwise, and pushes the page sideways on a 320px phone.
+    // My machine rendered the font narrow enough to hide it; CI on Linux did not.
+    <div className="flex items-center justify-between gap-3 border-t border-line/40 pt-4">
+      <div className="min-w-0 flex-1">
         <div className="text-sm font-medium text-ink">{label}</div>
-        <div className={clsx('text-sm', muted ? 'text-ink-dim' : 'text-ink-muted')}>{value}</div>
+        <div className={clsx('break-words text-sm', muted ? 'text-ink-dim' : 'text-ink-muted')}>
+          {value}
+        </div>
       </div>
       {/* Five identical "Edit" buttons read as five identical "Edit" buttons —
           name each by the row it belongs to. */}
-      <button className="btn-ghost px-3 py-1.5 text-xs" aria-label={`Edit ${label.toLowerCase()}`}>
+      <button
+        className="btn-ghost shrink-0 px-3 py-1.5 text-xs"
+        aria-label={`Edit ${label.toLowerCase()}`}
+      >
         Edit
       </button>
     </div>
@@ -302,11 +312,11 @@ function Toggle({
 
   return (
     <div className="flex items-start justify-between gap-4 border-t border-line/40 pt-4">
-      <div className="flex-1">
+      <div className="min-w-0 flex-1">
         <div id={labelId} className="text-sm font-medium text-ink">
           {label}
         </div>
-        <div id={hintId} className="text-xs text-ink-dim">
+        <div id={hintId} className="break-words text-xs text-ink-dim">
           {hint}
         </div>
       </div>
