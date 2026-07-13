@@ -1,5 +1,6 @@
-/* eslint-disable @next/next/no-img-element */
 'use client';
+
+import Image from 'next/image';
 
 import Link from 'next/link';
 import clsx from 'clsx';
@@ -209,12 +210,26 @@ function ReactionButton({
   );
 }
 
+/**
+ * Post media, served through next/image.
+ *
+ * The aspect box already reserved the space; what was missing was the
+ * optimizer — every one of these was a full-size original, hand-fetched.
+ */
 function PostMedia({ media }: { media: NonNullable<Post['media']> }) {
   if (media.type === 'gallery' && Array.isArray(media.src)) {
     return (
       <div className="mt-4 grid grid-cols-3 gap-2 overflow-hidden rounded-2xl border border-line/60">
         {media.src.map((src, i) => (
-          <img key={i} src={src} alt="" className="aspect-square w-full object-cover" />
+          <div key={i} className="relative aspect-square w-full">
+            <Image
+              src={src}
+              alt=""
+              fill
+              sizes="(min-width: 640px) 200px, 33vw"
+              className="object-cover"
+            />
+          </div>
         ))}
       </div>
     );
@@ -225,7 +240,15 @@ function PostMedia({ media }: { media: NonNullable<Post['media']> }) {
 
   return (
     <div className="mt-4 overflow-hidden rounded-2xl border border-line/60">
-      <img src={media.src as string} alt="" className={clsx('w-full object-cover', aspect)} />
+      <div className={clsx('relative w-full', aspect)}>
+        <Image
+          src={media.src as string}
+          alt=""
+          fill
+          sizes="(min-width: 1024px) 600px, 100vw"
+          className="object-cover"
+        />
+      </div>
     </div>
   );
 }

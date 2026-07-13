@@ -1,4 +1,8 @@
-/* eslint-disable @next/next/no-img-element */
+/* eslint-disable @next/next/no-img-element -- Avatars are remote SVGs (dicebear).
+   next/image refuses SVG unless dangerouslyAllowSVG is set, which would let any
+   remote SVG ship script through the optimizer — not worth it for an asset that
+   raster optimization cannot shrink anyway. Width/height are set below, so this
+   causes no layout shift. */
 import clsx from 'clsx';
 import type { User } from '@/lib/mock-data';
 

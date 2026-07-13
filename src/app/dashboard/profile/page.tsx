@@ -2,6 +2,7 @@
 'use client';
 
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
+import Image from 'next/image';
 import clsx from 'clsx';
 import {
   Calendar,
@@ -59,10 +60,14 @@ export default function ProfilePage() {
 
       <div className="card relative overflow-hidden">
         <div className="relative h-48 sm:h-56">
-          <img
+          {/* LCP element on this route — priority so it is not lazy-loaded. */}
+          <Image
             src="https://images.unsplash.com/photo-1502691876148-a84978e59af8?auto=format&fit=crop&w=1600&q=80"
             alt=""
-            className="absolute inset-0 h-full w-full object-cover"
+            fill
+            priority
+            sizes="(min-width: 1024px) 900px, 100vw"
+            className="object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-bg-raised via-bg-raised/40 to-transparent" />
         </div>

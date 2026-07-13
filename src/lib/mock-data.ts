@@ -152,7 +152,7 @@ const corePosts: Post[] = [
     postedAt: '12m',
     body:
       'Spent the weekend in our studio rethinking type pairing for the new identity. The longer I work with this Söhne / Tiempos combo, the more it feels like a quiet conversation between two voices.\n\nBoth refined. Neither trying to win.',
-    media: { type: 'image', src: img('1561070791-2526d30994b8'), aspect: 'wide' },
+    media: { type: 'image', src: img('1504384308090-c894fdcc538d'), aspect: 'wide' },
     metrics: { likes: 2148, comments: 187, shares: 64, bookmarks: 412 },
     liked: true,
     tags: ['design', 'typography', 'studio-notes'],
@@ -425,7 +425,7 @@ const mediaPool = [
   img('1518770660439-4636190af475'),
   img('1473163928189-364b2c4e1135'),
   img('1542038784456-1ea8e935640e'),
-  img('1561070791-2526d30994b8'),
+  img('1504384308090-c894fdcc538d'),
   img('1469474968028-56623f02e42e'),
   img('1488646953014-85cb44e25828'),
   img('1542751371-adc38448a05e'),
@@ -646,13 +646,13 @@ export const exploreImages = [
   img('1483985988355-763728e1935b', 800, 700),
   img('1502134249126-9f3755a50d78', 800, 1100),
   img('1470225620780-dba8ba36b745', 800, 900),
-  img('1561070791-2526d30994b8', 800, 1000),
+  img('1504384308090-c894fdcc538d', 800, 1000),
   img('1500051638674-ff996a0ec29e', 800, 800),
   img('1500382017468-9049fed747ef', 800, 1100),
 ];
 
 const moreImages = [
-  img('1473655087683-fe7e0a8c4e09', 800, 1100),
+  img('1441974231531-c6227db76b6e', 800, 1100),
   img('1500530855697-b586d89ba3ee', 800, 700),
   img('1542038784456-1ea8e935640e', 800, 900),
   img('1500382017468-9049fed747ef', 800, 1000),
@@ -667,12 +667,12 @@ export function generateExploreImage(index: number): string {
 export const communities: Community[] = [
   { id: 'cm1', name: 'Slow Web Society', slug: 'slow-web', members: 12400, online: 318, cover: img('1500530855697-b586d89ba3ee', 1200, 600), description: 'For people building software that respects attention.', topic: 'Calm tech', joined: true },
   { id: 'cm2', name: 'Open Climate Lab', slug: 'open-climate', members: 8100, online: 96, cover: img('1469474968028-56623f02e42e', 1200, 600), description: 'Field notes, datasets, and methods from climate researchers.', topic: 'Science', joined: true },
-  { id: 'cm3', name: 'Halftone', slug: 'halftone', members: 24000, online: 540, cover: img('1561070791-2526d30994b8', 1200, 600), description: 'Design studios talking shop about type, identity, and craft.', topic: 'Design', joined: true },
+  { id: 'cm3', name: 'Halftone', slug: 'halftone', members: 24000, online: 540, cover: img('1504384308090-c894fdcc538d', 1200, 600), description: 'Design studios talking shop about type, identity, and craft.', topic: 'Design', joined: true },
   { id: 'cm4', name: 'Roastery', slug: 'roastery', members: 3210, online: 84, cover: img('1504674900247-0877df9cc836', 1200, 600), description: 'A small room for specialty coffee nerds.', topic: 'Coffee' },
   { id: 'cm5', name: 'Pixel Diaries', slug: 'pixel-diaries', members: 6810, online: 122, cover: img('1542751371-adc38448a05e', 1200, 600), description: 'Indie game devs sharing daily progress.', topic: 'Gamedev' },
   { id: 'cm6', name: 'Long-form Cycling', slug: 'long-form-cycling', members: 2140, online: 28, cover: img('1488646953014-85cb44e25828', 1200, 600), description: 'Endurance riding, slow travel, and good coffee at the top.', topic: 'Cycling' },
   { id: 'cm7', name: 'Postgres Wizards', slug: 'postgres-wizards', members: 5640, online: 188, cover: img('1518770660439-4636190af475', 1200, 600), description: 'Database deep-dives at scale.', topic: 'Databases' },
-  { id: 'cm8', name: 'Field Notes', slug: 'field-notes', members: 4120, online: 64, cover: img('1473655087683-fe7e0a8c4e09', 1200, 600), description: 'Naturalists, illustrators, and the practice of looking carefully.', topic: 'Nature' },
+  { id: 'cm8', name: 'Field Notes', slug: 'field-notes', members: 4120, online: 64, cover: img('1441974231531-c6227db76b6e', 1200, 600), description: 'Naturalists, illustrators, and the practice of looking carefully.', topic: 'Nature' },
   { id: 'cm9', name: 'Type Foundry', slug: 'type-foundry', members: 9210, online: 218, cover: img('1473163928189-364b2c4e1135', 1200, 600), description: 'Letterforms, kerning fights, and the joy of italics.', topic: 'Type' },
   { id: 'cm10', name: 'Adaptive Reuse', slug: 'adaptive-reuse', members: 3810, online: 41, cover: img('1502691876148-a84978e59af8', 1200, 600), description: 'Architects making the most of what is already standing.', topic: 'Architecture' },
 ];

@@ -1,8 +1,8 @@
-/* eslint-disable @next/next/no-img-element */
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
+import Image from 'next/image';
 import Link from 'next/link';
 import clsx from 'clsx';
 import { Flame, Globe2, MapPin, Search, Plus, Check, Loader2, SearchX, X } from 'lucide-react';
@@ -19,6 +19,7 @@ import { useInfiniteList } from '@/lib/useInfiniteList';
 import { useFollowing } from '@/lib/useFollowing';
 import { useToast } from '@/components/Toast';
 import { buildSearchQuery, describeResults, isEmptySearch, normalizeQuery } from '@/lib/search';
+import { parseImageSize } from '@/lib/images';
 import type { User } from '@/lib/mock-data';
 
 const chips = ['For you', 'Trending', 'News', 'Design', 'Climate', 'Tech', 'Sports', 'Film', 'Music', 'Books'];
@@ -268,17 +269,29 @@ export function ExploreClient() {
           <h2 className="text-sm font-semibold text-ink">Visual feed</h2>
         </div>
         <div className="mt-4 columns-2 gap-3 sm:columns-3 lg:columns-4">
-          {feedImages.map((src, i) => (
-            <button
-              key={i}
-              type="button"
-              onClick={() => setLightbox(src)}
-              aria-label={`Open image ${i + 1} full size`}
-              className="mb-3 block w-full break-inside-avoid overflow-hidden rounded-2xl border border-line/60 transition-transform hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400/60"
-            >
-              <img src={src} alt="" className="w-full" />
-            </button>
-          ))}
+          {feedImages.map((src, i) => {
+            const { width, height } = parseImageSize(src);
+            return (
+              <button
+                key={i}
+                type="button"
+                onClick={() => setLightbox(src)}
+                aria-label={`Open image ${i + 1} full size`}
+                className="mb-3 block w-full break-inside-avoid overflow-hidden rounded-2xl border border-line/60 transition-transform hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400/60"
+              >
+                {/* width/height reserve the box before the bytes land, so the
+                    masonry stops reflowing as images stream in. */}
+                <Image
+                  src={src}
+                  alt=""
+                  width={width}
+                  height={height}
+                  sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
+                  className="h-auto w-full"
+                />
+              </button>
+            );
+          })}
         </div>
         <div ref={sentinelRef} className="flex items-center justify-center pt-6">
           {loading && (
@@ -331,7 +344,14 @@ function Lightbox({ src, onClose }: { src: string; onClose: () => void }) {
         >
           <X className="h-4 w-4" />
         </button>
-        <img src={src} alt="" className="max-h-[80vh] w-full object-contain" />
+        <Image
+          src={src}
+          alt=""
+          width={parseImageSize(src).width}
+          height={parseImageSize(src).height}
+          sizes="(min-width: 768px) 768px, 100vw"
+          className="max-h-[80vh] w-full object-contain"
+        />
       </div>
     </div>
   );
