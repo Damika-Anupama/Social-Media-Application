@@ -17,6 +17,7 @@ import {
 import { TopBar } from '@/components/dashboard/TopBar';
 import { Avatar } from '@/components/Avatar';
 import { useConversations } from '@/lib/useConversations';
+import { scrollBehavior, useReducedMotion } from '@/lib/useReducedMotion';
 import {
   conversations as seedConversations,
   threadsByConversation,
@@ -49,6 +50,7 @@ export default function MessagesPage() {
   const replyTimer = useRef<number | null>(null);
 
   const { sent, append } = useConversations();
+  const reducedMotion = useReducedMotion();
 
   const active = convos.find((c) => c.id === activeId) ?? convos[0];
   // Seeded history first, then everything said since (restored from storage).
@@ -69,10 +71,11 @@ export default function MessagesPage() {
     setConvos((cs) => cs.map((c) => (c.id === activeId ? { ...c, unread: undefined } : c)));
   }, [activeId]);
 
-  // Keep the newest message in view without yanking the whole page around.
+  // Keep the newest message in view without yanking the whole page around —
+  // and jump instantly rather than gliding if motion is unwelcome.
   useEffect(() => {
-    endRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  }, [thread.length, typing, activeId]);
+    endRef.current?.scrollIntoView({ behavior: scrollBehavior(reducedMotion), block: 'nearest' });
+  }, [thread.length, typing, activeId, reducedMotion]);
 
   const openConversation = useCallback((id: string) => {
     setActiveId(id);

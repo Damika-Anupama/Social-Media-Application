@@ -12,7 +12,7 @@
     --bg-elevated: 26 26 36;
     --ink: 245 245 250;
     --ink-muted: 167 167 184;
-    --ink-dim: 110 110 128;
+    --ink-dim: 130 130 151;
     --line: 34 34 46;
     color-scheme: dark;
   }
@@ -24,7 +24,7 @@
     --bg-elevated: 240 241 247;
     --ink: 23 23 31;
     --ink-muted: 74 76 92;
-    --ink-dim: 120 122 138;
+    --ink-dim: 104 106 120;
     --line: 224 226 236;
     color-scheme: light;
   }

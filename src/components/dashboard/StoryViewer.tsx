@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import { useCallback, useEffect, useState } from 'react';
 import clsx from 'clsx';
-import { X, ChevronLeft, ChevronRight, Heart, Send, Radio } from 'lucide-react';
+import { X, ChevronLeft, ChevronRight, Heart, Send, Radio, Pause, Play } from 'lucide-react';
 import { Avatar } from '@/components/Avatar';
 import type { Story } from '@/lib/mock-data';
 
@@ -74,6 +74,18 @@ export function StoryViewer({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-bg/95 backdrop-blur-xl">
+      {/* Stories advance on their own. WCAG 2.2.2 wants a way to stop that, and
+          "hold the mouse down" is not a way anyone can find. */}
+      <button
+        type="button"
+        onClick={() => setPaused((p) => !p)}
+        aria-pressed={paused}
+        aria-label={paused ? 'Resume stories' : 'Pause stories'}
+        className="absolute right-[4.5rem] top-5 z-50 btn-icon h-10 w-10"
+      >
+        {paused ? <Play className="h-4 w-4" /> : <Pause className="h-4 w-4" />}
+      </button>
+
       <button
         type="button"
         onClick={onClose}

@@ -84,6 +84,9 @@ function Grid({ stories, onOpen }: { stories: typeof import('@/lib/mock-data').s
           key={s.id}
           type="button"
           onClick={() => onOpen(i)}
+          // Without this the tile's name is whatever text lands inside it —
+          // a name, a caption, and the word "Live", run together.
+          aria-label={`View ${s.user.name}'s story`}
           className="group relative overflow-hidden rounded-2xl border border-line/60 text-left transition-transform hover:-translate-y-0.5"
         >
           <div className="relative aspect-[3/4]">
