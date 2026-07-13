@@ -2,6 +2,7 @@
 
 import { useId, useState } from 'react';
 import { TopBar } from '@/components/dashboard/TopBar';
+import { useTabs } from '@/components/Tabs';
 import { currentUser } from '@/lib/mock-data';
 import { Avatar } from '@/components/Avatar';
 import { usePreferences } from '@/lib/PreferencesContext';
@@ -29,6 +30,13 @@ const sections = [
 
 export default function SettingsPage() {
   const [active, setActive] = useState('account');
+  // Vertical strip, so it arrows with Up/Down — Left/Right would be wrong here.
+  const { tabListProps, getTabProps } = useTabs({
+    items: sections,
+    selected: sections.findIndex((s) => s.id === active),
+    onSelect: (i) => setActive(sections[i].id),
+    orientation: 'vertical',
+  });
 
   return (
     <div className="px-4 pt-1 sm:px-6">
@@ -36,20 +44,16 @@ export default function SettingsPage() {
 
       <div className="card grid overflow-hidden md:grid-cols-[240px_1fr]">
         <nav
-          role="tablist"
-          aria-orientation="vertical"
+          {...tabListProps}
           aria-label="Settings sections"
           className="border-b border-line/60 p-3 md:border-b-0 md:border-r"
         >
-          {sections.map((s) => {
+          {sections.map((s, i) => {
             const Icon = s.icon;
             return (
               <button
                 key={s.id}
-                type="button"
-                role="tab"
-                aria-selected={active === s.id}
-                onClick={() => setActive(s.id)}
+                {...getTabProps(i)}
                 className={clsx(
                   'flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-sm font-medium transition-colors',
                   active === s.id

@@ -15,6 +15,7 @@ import {
   Image as ImageIcon,
 } from 'lucide-react';
 import { TopBar } from '@/components/dashboard/TopBar';
+import { useTabs } from '@/components/Tabs';
 import { PostCard } from '@/components/dashboard/PostCard';
 import { useProfile } from '@/lib/useProfile';
 import { useDialog } from '@/lib/useDialog';
@@ -38,6 +39,11 @@ export default function ProfilePage() {
   const { toast } = useToast();
   const [tab, setTab] = useState<Tab>('Posts');
   const [editing, setEditing] = useState(false);
+  const { tabListProps, getTabProps } = useTabs({
+    items: tabs,
+    selected: tabs.indexOf(tab),
+    onSelect: (i) => setTab(tabs[i]),
+  });
 
   const tabPosts = useMemo(() => {
     const withMe = posts.map((p) => ({ ...p, author: user }));
@@ -131,14 +137,11 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      <div role="tablist" aria-label="Profile content" className="mt-6 flex gap-2 overflow-x-auto pb-2">
-        {tabs.map((t) => (
+      <div {...tabListProps} aria-label="Profile content" className="mt-6 flex gap-2 overflow-x-auto pb-2">
+        {tabs.map((t, i) => (
           <button
             key={t}
-            type="button"
-            role="tab"
-            aria-selected={tab === t}
-            onClick={() => setTab(t)}
+            {...getTabProps(i)}
             className={clsx(
               'rounded-full px-4 py-1.5 text-xs transition-colors',
               tab === t

@@ -4,6 +4,7 @@ import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import clsx from 'clsx';
 import { Bookmark, Search, FolderPlus, X, Check, Trash2 } from 'lucide-react';
 import { TopBar } from '@/components/dashboard/TopBar';
+import { useTabs } from '@/components/Tabs';
 import { PostCard } from '@/components/dashboard/PostCard';
 import { posts } from '@/lib/mock-data';
 import { useReactions } from '@/lib/useReactions';
@@ -32,6 +33,24 @@ export default function BookmarksPage() {
   const builtIn = BUILT_IN.find((c) => c.id === active);
   const collection = collections.find((c) => c.id === active);
   const activeLabel = builtIn?.label ?? collection?.name ?? 'All';
+
+  // Built-in filters and the viewer's own collections are one tab strip.
+  const allTabs = [
+    ...BUILT_IN.map((c) => ({ id: c.id, label: c.label, count: undefined as number | undefined })),
+    ...collections.map((c) => ({
+      id: c.id,
+      label: c.name,
+      count: collectionCount(c, bookmarks),
+    })),
+  ];
+  const { tabListProps, getTabProps } = useTabs({
+    items: allTabs,
+    selected: Math.max(
+      allTabs.findIndex((t) => t.id === active),
+      0,
+    ),
+    onSelect: (i) => setActive(allTabs[i].id),
+  });
 
   // Deleting the active collection must not strand the viewer on a filter that
   // no longer exists, staring at an empty list.
@@ -77,77 +96,58 @@ export default function BookmarksPage() {
       </div>
 
       <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center">
+        {/* A tablist may contain only tabs, so the per-collection delete button
+            cannot live in here. It sits beside the strip, acting on whichever
+            collection is selected — which is also a far bigger target than a
+            28px bin icon wedged inside a chip. */}
         <div
-          role="tablist"
+          {...tabListProps}
           aria-label="Filter bookmarks"
           className="-mx-1 flex flex-1 gap-2 overflow-x-auto px-1 pb-1"
         >
-          {BUILT_IN.map((c) => (
+          {allTabs.map((t, i) => (
             <button
-              key={c.id}
-              type="button"
-              role="tab"
-              aria-selected={active === c.id}
-              onClick={() => setActive(c.id)}
+              key={t.id}
+              {...getTabProps(i)}
               className={clsx(
                 'shrink-0 rounded-full px-4 py-1.5 text-xs transition-colors',
-                active === c.id
+                active === t.id
                   ? 'bg-brand-500/15 font-semibold text-brand-200'
                   : 'border border-line bg-bg-subtle font-medium text-ink-muted hover:text-ink',
               )}
             >
-              {c.label}
+              {t.label}
+              {t.count !== undefined && <span className="ml-1.5 text-ink-dim">{t.count}</span>}
             </button>
-          ))}
-
-          {collections.map((c) => (
-            <span
-              key={c.id}
-              className={clsx(
-                'inline-flex shrink-0 items-center rounded-full transition-colors',
-                active === c.id
-                  ? 'bg-brand-500/15 text-brand-200'
-                  : 'border border-line bg-bg-subtle text-ink-muted',
-              )}
-            >
-              <button
-                type="button"
-                role="tab"
-                aria-selected={active === c.id}
-                onClick={() => setActive(c.id)}
-                className={clsx(
-                  'py-1.5 pl-4 pr-1.5 text-xs',
-                  active === c.id ? 'font-semibold' : 'font-medium hover:text-ink',
-                )}
-              >
-                {c.name}
-                <span className="ml-1.5 text-ink-dim">{collectionCount(c, bookmarks)}</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  deleteCollection(c.id);
-                  toast(`Deleted ${c.name}`);
-                }}
-                aria-label={`Delete collection ${c.name}`}
-                className="flex h-7 w-7 items-center justify-center rounded-full text-ink-dim transition-colors hover:text-accent-coral"
-              >
-                <Trash2 aria-hidden="true" className="h-3 w-3" />
-              </button>
-            </span>
           ))}
         </div>
 
-        <div className="flex items-center gap-2 rounded-full border border-line/60 bg-bg-subtle px-3 py-1.5">
-          <Search aria-hidden="true" className="h-3.5 w-3.5 text-ink-dim" />
-          <input
-            type="search"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Filter saved"
-            aria-label="Filter saved posts"
-            className="w-40 bg-transparent text-xs text-ink placeholder:text-ink-dim focus:outline-none"
-          />
+        <div className="flex items-center gap-2">
+          {collection && (
+            <button
+              type="button"
+              onClick={() => {
+                deleteCollection(collection.id);
+                toast(`Deleted ${collection.name}`);
+              }}
+              aria-label={`Delete collection ${collection.name}`}
+              className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-line bg-bg-subtle px-3 py-1.5 text-xs font-medium text-ink-muted transition-colors hover:border-accent-coral/40 hover:text-accent-coral"
+            >
+              <Trash2 aria-hidden="true" className="h-3.5 w-3.5" /> Delete
+            </button>
+          )}
+
+          <div className="flex items-center gap-2 rounded-full border border-line/60 bg-bg-subtle px-3 py-1.5">
+            <Search aria-hidden="true" className="h-3.5 w-3.5 text-ink-dim" />
+            <input
+              type="search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Filter saved"
+              aria-label="Filter saved posts"
+              className="w-40 bg-transparent text-xs text-ink placeholder:text-ink-dim focus:outline-none"
+            />
+          </div>
         </div>
       </div>
 

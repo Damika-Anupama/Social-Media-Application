@@ -5,6 +5,7 @@ import Link from 'next/link';
 import clsx from 'clsx';
 import { Heart, MessageCircle, UserPlus, AtSign, Award, Sparkles, CheckCheck } from 'lucide-react';
 import { TopBar } from '@/components/dashboard/TopBar';
+import { useTabs } from '@/components/Tabs';
 import { Avatar } from '@/components/Avatar';
 import { notifications as seed, type Notification } from '@/lib/mock-data';
 import { useReadNotifications } from '@/lib/useReadNotifications';
@@ -28,6 +29,11 @@ const filters: { id: string; label: string; types?: Notification['type'][] }[] =
 
 export default function NotificationsPage() {
   const [active, setActive] = useState('all');
+  const { tabListProps, getTabProps } = useTabs({
+    items: filters,
+    selected: filters.findIndex((f) => f.id === active),
+    onSelect: (i) => setActive(filters[i].id),
+  });
   const { readIds, markRead, markUnread, markManyRead, markManyUnread } = useReadNotifications();
   const { toast } = useToast();
 
@@ -62,14 +68,11 @@ export default function NotificationsPage() {
       <TopBar title="Notifications" subtitle="Only what matters. Everything else stays in the activity log." />
 
       <div className="mb-5 flex flex-wrap items-center gap-2">
-        <div role="tablist" aria-label="Filter notifications" className="flex flex-wrap items-center gap-2">
-          {filters.map((f) => (
+        <div {...tabListProps} aria-label="Filter notifications" className="flex flex-wrap items-center gap-2">
+          {filters.map((f, i) => (
             <button
               key={f.id}
-              type="button"
-              role="tab"
-              aria-selected={active === f.id}
-              onClick={() => setActive(f.id)}
+              {...getTabProps(i)}
               className={clsx(
                 'rounded-full px-4 py-1.5 text-xs transition-colors',
                 active === f.id
