@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import { writeRaw } from '@/lib/storage';
 
 const LIKES_KEY = 'pulse.likes.v1';
 const BOOKMARKS_KEY = 'pulse.bookmarks.v1';
@@ -30,12 +31,7 @@ function read(key: string): Set<string> {
 }
 
 function write(key: string, ids: Set<string>): void {
-  if (typeof window === 'undefined') return;
-  try {
-    window.localStorage.setItem(key, serializeIdSet(ids));
-  } catch {
-    // storage full / disabled — fail silently, in-memory state still works.
-  }
+  writeRaw(key, serializeIdSet(ids));
 }
 
 /**

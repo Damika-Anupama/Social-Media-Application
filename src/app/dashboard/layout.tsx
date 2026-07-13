@@ -7,6 +7,7 @@ import { ToastProvider } from '@/components/Toast';
 import { CommandPaletteProvider } from '@/components/dashboard/CommandPalette';
 import { KeyboardShortcuts } from '@/components/dashboard/KeyboardShortcuts';
 import { ConnectionBanner } from '@/components/ConnectionBanner';
+import { StorageNotice } from '@/components/StorageNotice';
 import { PreferencesProvider } from '@/lib/PreferencesContext';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -38,6 +39,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 <ComposeModal />
                 <KeyboardShortcuts />
                 <ConnectionBanner />
+                <StorageNotice />
               </div>
             </CommandPaletteProvider>
           </ComposeProvider>

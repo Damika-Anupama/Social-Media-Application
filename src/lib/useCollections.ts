@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import { writeJson } from '@/lib/storage';
 import {
   parseCollections,
   togglePostInCollection,
@@ -15,12 +16,7 @@ function read(): Collection[] {
 }
 
 function write(collections: Collection[]): void {
-  if (typeof window === 'undefined') return;
-  try {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(collections));
-  } catch {
-    // storage full / disabled — keep the in-memory collections this session.
-  }
+  writeJson(STORAGE_KEY, collections);
 }
 
 /**

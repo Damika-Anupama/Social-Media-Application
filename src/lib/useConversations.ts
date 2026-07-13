@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import { writeJson } from '@/lib/storage';
 import type { ChatMessage } from '@/lib/mock-data';
 
 const STORAGE_KEY = 'pulse.conversations.v1';
@@ -59,12 +60,7 @@ function read(): SentThreads {
 }
 
 function write(threads: SentThreads): void {
-  if (typeof window === 'undefined') return;
-  try {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(threads));
-  } catch {
-    // storage full / disabled — the in-memory thread still works this session.
-  }
+  writeJson(STORAGE_KEY, threads);
 }
 
 /**

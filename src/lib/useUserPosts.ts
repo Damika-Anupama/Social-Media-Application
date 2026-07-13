@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import { writeJson } from '@/lib/storage';
 import { currentUser, type Post } from '@/lib/mock-data';
 
 const STORAGE_KEY = 'pulse.userPosts.v1';
@@ -30,12 +31,7 @@ function read(): Post[] {
 }
 
 function write(posts: Post[]): void {
-  if (typeof window === 'undefined') return;
-  try {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(posts));
-  } catch {
-    // storage full / disabled — fail silently, the in-memory state still works
-  }
+  writeJson(STORAGE_KEY, posts);
 }
 
 /**

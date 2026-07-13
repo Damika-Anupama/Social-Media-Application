@@ -1,6 +1,7 @@
 'use client';
 
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
+import { writeJson } from '@/lib/storage';
 
 const STORAGE_KEY = 'pulse.preferences.v1';
 
@@ -102,11 +103,7 @@ export function PreferencesProvider({ children }: { children: React.ReactNode })
   const setPreference = useCallback<PreferencesContextValue['setPreference']>((key, value) => {
     setPreferences((prev) => {
       const next = { ...prev, [key]: value };
-      try {
-        window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-      } catch {
-        // storage full / disabled — keep the in-memory value.
-      }
+      writeJson(STORAGE_KEY, next);
       return next;
     });
   }, []);

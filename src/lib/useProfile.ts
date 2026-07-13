@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import { writeJson } from '@/lib/storage';
 import { currentUser } from '@/lib/mock-data';
 import { normalizeProfile, parseProfileEdits, type ProfileEdits } from '@/lib/profile';
 import type { User } from '@/lib/mock-data';
@@ -13,12 +14,7 @@ function read(): Partial<ProfileEdits> {
 }
 
 function write(edits: ProfileEdits): void {
-  if (typeof window === 'undefined') return;
-  try {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(edits));
-  } catch {
-    // storage full / disabled — keep the in-memory profile for this session.
-  }
+  writeJson(STORAGE_KEY, edits);
 }
 
 /**

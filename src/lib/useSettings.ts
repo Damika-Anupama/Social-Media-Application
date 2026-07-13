@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import { writeJson } from '@/lib/storage';
 
 const STORAGE_KEY = 'pulse.settings.v1';
 
@@ -57,12 +58,7 @@ function read(): Settings {
 }
 
 function write(settings: Settings): void {
-  if (typeof window === 'undefined') return;
-  try {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
-  } catch {
-    // storage full / disabled — the in-memory value still holds this session.
-  }
+  writeJson(STORAGE_KEY, settings);
 }
 
 /**

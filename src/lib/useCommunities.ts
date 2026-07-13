@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import { writeJson } from '@/lib/storage';
 import { communities as seed, type Community } from '@/lib/mock-data';
 import {
   EMPTY_STATE,
@@ -20,12 +21,7 @@ function read(): CommunityState {
 }
 
 function write(state: CommunityState): void {
-  if (typeof window === 'undefined') return;
-  try {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  } catch {
-    // storage full / disabled — in-memory membership still holds this session.
-  }
+  writeJson(STORAGE_KEY, state);
 }
 
 /**

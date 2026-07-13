@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import { writeRaw } from '@/lib/storage';
 
 const STORAGE_KEY = 'pulse.following.v1';
 
@@ -28,12 +29,7 @@ function read(): Set<string> {
 }
 
 function write(ids: Set<string>): void {
-  if (typeof window === 'undefined') return;
-  try {
-    window.localStorage.setItem(STORAGE_KEY, serializeFollowing(ids));
-  } catch {
-    // storage full / disabled — fail silently, in-memory state still works.
-  }
+  writeRaw(STORAGE_KEY, serializeFollowing(ids));
 }
 
 /**
