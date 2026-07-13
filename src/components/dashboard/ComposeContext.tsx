@@ -17,19 +17,12 @@ export function ComposeProvider({ children }: { children: React.ReactNode }) {
     return () => { document.body.style.overflow = ''; };
   }, [open]);
 
+  // Escape closes the composer. Opening it with `n` belongs to the global
+  // shortcuts layer (see lib/shortcuts.ts) so all bindings live in one place.
   useEffect(() => {
+    if (!open) return;
     const onKey = (e: KeyboardEvent) => {
-      const target = e.target as HTMLElement;
-      const isTyping =
-        target.tagName === 'INPUT' ||
-        target.tagName === 'TEXTAREA' ||
-        target.isContentEditable;
-      if (e.key === 'Escape' && open) {
-        setOpen(false);
-      } else if (e.key === 'n' && !open && !isTyping && !e.metaKey && !e.ctrlKey && !e.altKey) {
-        e.preventDefault();
-        setOpen(true);
-      }
+      if (e.key === 'Escape') setOpen(false);
     };
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);

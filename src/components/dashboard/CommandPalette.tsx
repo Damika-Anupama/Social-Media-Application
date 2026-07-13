@@ -227,6 +227,13 @@ export function CommandPaletteProvider({ children }: { children: React.ReactNode
                 })
               )}
             </ul>
+
+            <div className="flex items-center justify-end gap-2 border-t border-line/60 px-4 py-2.5 text-[11px] text-ink-dim">
+              <span>Keyboard shortcuts</span>
+              <kbd className="rounded border border-line bg-bg-subtle px-1.5 py-0.5 font-mono text-[10px]">
+                ?
+              </kbd>
+            </div>
           </div>
         </div>
       )}

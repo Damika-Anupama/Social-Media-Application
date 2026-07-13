@@ -16,10 +16,20 @@ export function ComposeModal() {
         onClick={() => setOpen(false)}
         className="absolute inset-0 bg-bg/80 backdrop-blur-sm"
       />
-      <div className="relative w-full max-w-2xl animate-fade-up">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="compose-title"
+        className="relative w-full max-w-2xl animate-fade-up"
+      >
         <div className="card relative overflow-hidden p-1.5 shadow-2xl shadow-brand-500/10">
           <div className="flex items-center justify-between px-4 pt-3">
-            <div className="text-xs font-medium uppercase tracking-[0.18em] text-ink-muted">New post</div>
+            <div
+              id="compose-title"
+              className="text-xs font-medium uppercase tracking-[0.18em] text-ink-muted"
+            >
+              New post
+            </div>
             <button
               type="button"
               onClick={() => setOpen(false)}
