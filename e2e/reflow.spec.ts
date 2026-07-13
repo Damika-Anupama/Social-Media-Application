@@ -94,7 +94,8 @@ test.describe("Pulse — reflow at 320px (WCAG 1.4.10)", () => {
     test(`${route} does not scroll sideways at 320px`, async ({ page }) => {
       if (route.startsWith("/dashboard")) await signIn(page);
       await page.goto(route);
-      await page.waitForLoadState("networkidle");
+      await page.waitForLoadState("load");
+      await page.waitForTimeout(300);
 
       expect(
         await offscreenElements(page),
@@ -124,7 +125,8 @@ test.describe("Pulse — 320px with larger type", () => {
       await useLargerType(page);
       if (route.startsWith("/dashboard")) await signIn(page);
       await page.goto(route);
-      await page.waitForLoadState("networkidle");
+      await page.waitForLoadState("load");
+      await page.waitForTimeout(300);
 
       expect(await offscreenElements(page)).toEqual([]);
       expect(await horizontalOverflow(page)).toBeLessThanOrEqual(2);
@@ -141,7 +143,8 @@ test.describe("Pulse — larger type (WCAG 1.4.4)", () => {
       if (route.startsWith("/dashboard")) await signIn(page);
       await page.goto(route);
       await expect(page.locator("html")).toHaveClass(/text-larger/);
-      await page.waitForLoadState("networkidle");
+      await page.waitForLoadState("load");
+      await page.waitForTimeout(300);
 
       expect(
         await offscreenElements(page),

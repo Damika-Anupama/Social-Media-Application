@@ -68,7 +68,9 @@ async function audit(page: import("@playwright/test").Page) {
   // Neutralise fade-ins and let the page settle, so axe measures what a user
   // actually sees rather than an intermediate frame.
   await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.waitForLoadState("networkidle");
+  // NOT networkidle: Explore lazy-loads an endless image feed, so it never goes
+  // idle by design. Waiting for that is waiting forever — it timed out in CI.
+  await page.waitForLoadState("load");
   await page.waitForTimeout(400);
   return new AxeBuilder({ page }).withTags(WCAG);
 }
