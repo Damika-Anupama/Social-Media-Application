@@ -1,26 +1,30 @@
 /* eslint-disable @next/next/no-img-element */
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import clsx from 'clsx';
-import { Users2, Plus, Search, Check } from 'lucide-react';
+import { Users2, Plus, Search, Check, X } from 'lucide-react';
 import { TopBar } from '@/components/dashboard/TopBar';
-import { communities, formatCount } from '@/lib/mock-data';
+import { useCommunities } from '@/lib/useCommunities';
+import { NAME_LIMIT, TOPIC_LIMIT, validateCommunityName } from '@/lib/communities';
+import { useToast } from '@/components/Toast';
+import { formatCount, type Community } from '@/lib/mock-data';
 
 export default function CommunitiesPage() {
-  const [joined, setJoined] = useState<Set<string>>(
-    new Set(communities.filter((c) => c.joined).map((c) => c.id)),
-  );
+  // Persisted: joining and leaving used to be forgotten on reload.
+  const { communities, isJoined, toggleJoin, createCommunity } = useCommunities();
+  const { toast } = useToast();
   const [query, setQuery] = useState('');
+  const [creating, setCreating] = useState(false);
 
-  const toggleJoin = (id: string) =>
-    setJoined((s) => {
-      const next = new Set(s);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
+  const onToggleJoin = (c: Community) => {
+    const wasJoined = isJoined(c);
+    toggleJoin(c);
+    toast(wasJoined ? `Left ${c.name}` : `Joined ${c.name}`, {
+      action: { label: 'Undo', onClick: () => toggleJoin(c) },
     });
+  };
 
   const q = query.trim().toLowerCase();
   const visible = useMemo(
@@ -32,11 +36,11 @@ export default function CommunitiesPage() {
           c.topic.toLowerCase().includes(q) ||
           c.description.toLowerCase().includes(q),
       ),
-    [q],
+    [communities, q],
   );
 
-  const myList = visible.filter((c) => joined.has(c.id));
-  const discoverList = visible.filter((c) => !joined.has(c.id));
+  const myList = visible.filter((c) => isJoined(c));
+  const discoverList = visible.filter((c) => !isJoined(c));
 
   return (
     <div className="px-4 pt-1 sm:px-6">
@@ -53,7 +57,11 @@ export default function CommunitiesPage() {
             className="w-full bg-transparent text-sm text-ink placeholder:text-ink-dim focus:outline-none"
           />
         </div>
-        <button className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-brand-400/40 bg-brand-500/10 px-4 py-2 text-xs font-semibold text-brand-200 hover:bg-brand-500/20">
+        <button
+          type="button"
+          onClick={() => setCreating(true)}
+          className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-brand-400/40 bg-brand-500/10 px-4 py-2 text-xs font-semibold text-brand-200 hover:bg-brand-500/20"
+        >
           <Plus className="h-3.5 w-3.5" /> Create community
         </button>
       </div>
@@ -65,12 +73,7 @@ export default function CommunitiesPage() {
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {myList.map((c) => (
-              <CommunityCard
-                key={c.id}
-                community={c}
-                joined
-                onToggle={() => toggleJoin(c.id)}
-              />
+              <CommunityCard key={c.id} community={c} joined onToggle={() => onToggleJoin(c)} />
             ))}
           </div>
         )}
@@ -83,7 +86,7 @@ export default function CommunitiesPage() {
             <p className="p-6 text-sm text-ink-muted">Nothing new matching &quot;{query}&quot;.</p>
           ) : (
             discoverList.map((c) => {
-              const isJoined = joined.has(c.id);
+              const joined = isJoined(c);
               return (
                 <div key={c.id} className="flex items-center gap-3 p-4">
                   <Link
@@ -106,16 +109,17 @@ export default function CommunitiesPage() {
                   </Link>
                   <button
                     type="button"
-                    onClick={() => toggleJoin(c.id)}
-                    aria-pressed={isJoined}
+                    onClick={() => onToggleJoin(c)}
+                    aria-pressed={joined}
+                    aria-label={joined ? `Leave ${c.name}` : `Join ${c.name}`}
                     className={clsx(
                       'rounded-full px-4 py-2 text-xs font-semibold transition-colors',
-                      isJoined
+                      joined
                         ? 'border border-accent-mint/40 bg-accent-mint/10 text-accent-mint'
                         : 'btn-primary',
                     )}
                   >
-                    {isJoined ? 'Joined' : 'Join'}
+                    {joined ? 'Joined' : 'Join'}
                   </button>
                 </div>
               );
@@ -123,6 +127,145 @@ export default function CommunitiesPage() {
           )}
         </div>
       </section>
+
+      {creating && (
+        <CreateCommunityModal
+          existing={communities}
+          onClose={() => setCreating(false)}
+          onCreate={(name, topic) => {
+            const c = createCommunity(name, topic);
+            setCreating(false);
+            setQuery('');
+            toast(`Created ${c.name}`);
+          }}
+        />
+      )}
+    </div>
+  );
+}
+
+/** Create-community dialog: labelled, Escape-closable, validated. */
+function CreateCommunityModal({
+  existing,
+  onClose,
+  onCreate,
+}: {
+  existing: Community[];
+  onClose: () => void;
+  onCreate: (name: string, topic: string) => void;
+}) {
+  const [name, setName] = useState('');
+  const [topic, setTopic] = useState('');
+  const [showError, setShowError] = useState(false);
+  const nameRef = useRef<HTMLInputElement | null>(null);
+  const id = useId();
+  const errorId = `${id}-error`;
+
+  const error = validateCommunityName(name, existing);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', onKey);
+    document.body.style.overflow = 'hidden';
+    nameRef.current?.focus();
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      document.body.style.overflow = '';
+    };
+  }, [onClose]);
+
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (error) {
+      setShowError(true);
+      return;
+    }
+    onCreate(name, topic);
+  };
+
+  return (
+    <div className="fixed inset-0 z-[60] flex items-center justify-center px-4">
+      <button
+        type="button"
+        onClick={onClose}
+        aria-label="Close"
+        className="absolute inset-0 bg-bg/80 backdrop-blur-sm"
+      />
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={`${id}-title`}
+        className="card relative w-full max-w-md p-6 shadow-2xl"
+      >
+        <div className="flex items-center justify-between">
+          <h3 id={`${id}-title`} className="text-lg font-semibold text-ink">
+            Create community
+          </h3>
+          <button type="button" onClick={onClose} className="btn-icon h-8 w-8" aria-label="Close">
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+
+        <form className="mt-5 space-y-4" onSubmit={submit} noValidate>
+          <div>
+            <div className="flex items-baseline justify-between">
+              <label htmlFor={`${id}-name`} className="text-xs font-medium text-ink-muted">
+                Name
+              </label>
+              <span className="text-[11px] tabular-nums text-ink-dim">
+                {name.trim().length}/{NAME_LIMIT}
+              </span>
+            </div>
+            <input
+              ref={nameRef}
+              id={`${id}-name`}
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Rust & systems"
+              aria-invalid={showError && !!error}
+              aria-describedby={showError && error ? errorId : undefined}
+              className={clsx('input-field mt-1.5', showError && error && 'border-accent-coral/60')}
+            />
+            {showError && error && (
+              <p id={errorId} role="alert" className="mt-1 text-xs text-accent-coral">
+                {error}
+              </p>
+            )}
+          </div>
+
+          <div>
+            <div className="flex items-baseline justify-between">
+              <label htmlFor={`${id}-topic`} className="text-xs font-medium text-ink-muted">
+                Topic <span className="text-ink-dim">(optional)</span>
+              </label>
+              <span className="text-[11px] tabular-nums text-ink-dim">
+                {topic.trim().length}/{TOPIC_LIMIT}
+              </span>
+            </div>
+            <input
+              id={`${id}-topic`}
+              type="text"
+              value={topic}
+              onChange={(e) => setTopic(e.target.value)}
+              placeholder="systems programming"
+              maxLength={TOPIC_LIMIT}
+              className="input-field mt-1.5"
+            />
+          </div>
+
+          <div className="flex items-center justify-end gap-2 pt-2">
+            <button type="button" onClick={onClose} className="btn-ghost px-4 py-2 text-sm">
+              Cancel
+            </button>
+            <button type="submit" className="btn-primary px-4 py-2 text-sm">
+              Create
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }
@@ -132,7 +275,7 @@ function CommunityCard({
   joined,
   onToggle,
 }: {
-  community: (typeof communities)[number];
+  community: Community;
   joined: boolean;
   onToggle: () => void;
 }) {
@@ -156,10 +299,13 @@ function CommunityCard({
             {community.online} online
           </span>
         </div>
+        {/* Named the same way as the Discover row's control, so "Joined" is not
+            an unlabelled button whose meaning depends on where it sits. */}
         <button
           type="button"
           onClick={onToggle}
           aria-pressed={joined}
+          aria-label={joined ? `Leave ${community.name}` : `Join ${community.name}`}
           className={clsx(
             'mt-4 w-full rounded-full py-2 text-xs font-semibold transition-colors',
             joined
