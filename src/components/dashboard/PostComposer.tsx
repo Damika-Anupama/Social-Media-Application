@@ -49,7 +49,10 @@ export function PostComposer({
     >
       <div className="flex items-start gap-3">
         <Avatar user={currentUser} size={44} />
-        <div className="flex-1">
+        {/* min-w-0: a flex child defaults to min-width:auto, so it refuses to
+            shrink below its content. Without this the composer was 409px wide
+            inside a 320px phone and dragged the whole page sideways. */}
+        <div className="min-w-0 flex-1">
           <div className="mb-3 flex flex-wrap gap-1.5">
             {tones.map((t) => (
               <button
@@ -76,8 +79,8 @@ export function PostComposer({
             className="w-full resize-none rounded-xl bg-transparent text-[15px] leading-relaxed text-ink placeholder:text-ink-dim focus:outline-none"
           />
 
-          <div className="mt-3 flex items-center justify-between border-t border-line/60 pt-3">
-            <div className="flex items-center gap-1 text-ink-muted">
+          <div className="mt-3 flex flex-wrap items-center justify-between gap-y-3 border-t border-line/60 pt-3">
+            <div className="flex flex-wrap items-center gap-1 text-ink-muted">
               <ToolbarButton icon={<ImageIcon className="h-4 w-4" />} label="Photo" />
               <ToolbarButton icon={<Smile className="h-4 w-4" />} label="Emoji" />
               <ToolbarButton icon={<MapPin className="h-4 w-4" />} label="Location" />
@@ -85,7 +88,7 @@ export function PostComposer({
               <ToolbarButton icon={<Hash className="h-4 w-4" />} label="Tag" />
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex min-w-0 flex-wrap items-center justify-end gap-2 sm:gap-3">
               <button
                 type="button"
                 className="inline-flex items-center gap-1.5 rounded-full border border-line bg-bg-subtle px-3 py-1.5 text-xs text-ink-muted hover:text-ink"
@@ -101,7 +104,7 @@ export function PostComposer({
                 <button
                   type="submit"
                   disabled={text.trim().length === 0 || remaining < 0}
-                  className="btn-primary px-5 py-2 text-sm"
+                  className="btn-primary px-4 py-2 text-sm sm:px-5"
                 >
                   Post
                 </button>

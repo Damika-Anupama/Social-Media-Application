@@ -115,8 +115,10 @@ export function PostCard({ post }: { post: Post }) {
 
       {post.media && <PostMedia media={post.media} />}
 
-      <footer className="mt-4 flex items-center justify-between">
-        <div className="flex items-center gap-1 -ml-2 text-ink-muted">
+      <footer className="mt-4 flex items-center justify-between gap-2">
+        {/* The four reaction buttons could not shrink, so a post card had a
+            min-content width wider than a 320px phone. */}
+        <div className="-ml-2 flex min-w-0 flex-1 items-center gap-0.5 text-ink-muted sm:gap-1">
           <ReactionButton
             icon={<Heart className={clsx('h-[18px] w-[18px]', liked && 'fill-accent-coral text-accent-coral-fg')} />}
             count={likeCount}
@@ -197,7 +199,7 @@ function ReactionButton({
       aria-label={label}
       aria-pressed={active}
       className={clsx(
-        'inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-colors',
+        'inline-flex min-w-0 shrink items-center gap-1 rounded-full px-2 py-1.5 text-xs font-medium transition-colors sm:gap-1.5 sm:px-3',
         active && tone === 'coral' && 'text-accent-coral-fg',
         active && tone === 'mint' && 'text-accent-mint-fg',
         active && tone === 'brand' && 'text-brand-300',
