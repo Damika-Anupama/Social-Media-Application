@@ -95,7 +95,7 @@ export function Sidebar() {
 
         <div className="card mt-2 p-4">
           <div className="flex items-center gap-2 text-xs text-ink-muted">
-            <Sparkles className="h-4 w-4 text-accent-sun" />
+            <Sparkles className="h-4 w-4 text-accent-sun-fg" />
             Pulse Pro
           </div>
           <p className="mt-2 text-sm leading-snug text-ink">

@@ -23,8 +23,11 @@ const config: Config = {
         brand: {
           50: '#f3f0ff',
           100: '#e6e0ff',
-          200: '#c9bfff',
-          300: '#a18cff',
+          // 200/300 are only ever used as text or icon fill, so they flip with
+          // the theme: a pale lilac that reads on near-black is invisible on
+          // white. The rest of the ramp is fixed — those are surfaces.
+          200: 'rgb(var(--brand-200) / <alpha-value>)',
+          300: 'rgb(var(--brand-300) / <alpha-value>)',
           400: '#7c5cff',
           500: '#6435ff',
           600: '#5226e0',
@@ -33,10 +36,18 @@ const config: Config = {
           900: '#1d0c55',
         },
         accent: {
+          // The accents are backgrounds as well as text (the LIVE badge is
+          // bg-accent-coral), so the hue stays fixed and the *foreground*
+          // variant flips instead. Using accent-coral as text on white was the
+          // bug; using it as a badge behind black text is fine.
           coral: '#ff6b6b',
           mint: '#3ddbb3',
           sun: '#ffd166',
           sky: '#4cc9f0',
+          'coral-fg': 'rgb(var(--accent-coral-fg) / <alpha-value>)',
+          'mint-fg': 'rgb(var(--accent-mint-fg) / <alpha-value>)',
+          'sun-fg': 'rgb(var(--accent-sun-fg) / <alpha-value>)',
+          'sky-fg': 'rgb(var(--accent-sky-fg) / <alpha-value>)',
         },
       },
       fontFamily: {

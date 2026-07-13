@@ -131,7 +131,7 @@ export default function BookmarksPage() {
                 toast(`Deleted ${collection.name}`);
               }}
               aria-label={`Delete collection ${collection.name}`}
-              className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-line bg-bg-subtle px-3 py-1.5 text-xs font-medium text-ink-muted transition-colors hover:border-accent-coral/40 hover:text-accent-coral"
+              className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-line bg-bg-subtle px-3 py-1.5 text-xs font-medium text-ink-muted transition-colors hover:border-accent-coral/40 hover:text-accent-coral-fg"
             >
               <Trash2 aria-hidden="true" className="h-3.5 w-3.5" /> Delete
             </button>
@@ -209,7 +209,7 @@ function CollectionPicker({
             className={clsx(
               'inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[11px] font-medium transition-colors',
               filed
-                ? 'border-accent-mint/40 bg-accent-mint/10 text-accent-mint'
+                ? 'border-accent-mint/40 bg-accent-mint/10 text-accent-mint-fg'
                 : 'border-line bg-bg-subtle text-ink-muted hover:text-ink',
             )}
           >
@@ -297,7 +297,7 @@ function CreateCollectionModal({
               className={clsx('input-field mt-1.5', showError && error && 'border-accent-coral/60')}
             />
             {showError && error && (
-              <p id={errorId} role="alert" className="mt-1 text-xs text-accent-coral">
+              <p id={errorId} role="alert" className="mt-1 text-xs text-accent-coral-fg">
                 {error}
               </p>
             )}

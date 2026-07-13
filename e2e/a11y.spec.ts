@@ -40,6 +40,22 @@ async function signIn(page: import("@playwright/test").Page) {
 }
 
 /**
+ * Seed the light theme before the app boots.
+ *
+ * The audit only ever ran in dark, at desktop width. Half the themed surfaces
+ * in the app had therefore never been checked by anything — and a token that
+ * passes on a near-black background says nothing about how it reads on white.
+ */
+async function useLightTheme(page: import("@playwright/test").Page) {
+  await page.addInitScript(() => {
+    window.localStorage.setItem(
+      "pulse.preferences.v1",
+      JSON.stringify({ theme: "light", reduceMotion: false, largerType: false }),
+    );
+  });
+}
+
+/**
  * Audit the settled page.
  *
  * Elements fade in, and axe sampling mid-fade reports contrast failures that
@@ -107,4 +123,39 @@ test.describe("Pulse — accessibility audit", () => {
     const { violations } = await (await audit(page)).analyze();
     expect(describeViolations(violations)).toBe("");
   });
+});
+
+/**
+ * The light theme is a whole second palette. It shipped audited by nobody.
+ */
+test.describe("Pulse — accessibility audit (light theme)", () => {
+  for (const route of ROUTES) {
+    test(`${route} has no WCAG violations in light theme`, async ({ page }) => {
+      await useLightTheme(page);
+      if (route.startsWith("/dashboard")) await signIn(page);
+      await page.goto(route);
+      await expect(page.locator("html")).toHaveClass(/theme-light/);
+
+      const { violations } = await (await audit(page)).analyze();
+      expect(describeViolations(violations)).toBe("");
+    });
+  }
+});
+
+/**
+ * Mobile is a different layout, not a narrower one — the messages pane, the tab
+ * bar, and the sidebar all swap out below md. None of it had been audited.
+ */
+test.describe("Pulse — accessibility audit (mobile)", () => {
+  test.use({ viewport: { width: 390, height: 844 } });
+
+  for (const route of ROUTES) {
+    test(`${route} has no WCAG violations on mobile`, async ({ page }) => {
+      if (route.startsWith("/dashboard")) await signIn(page);
+      await page.goto(route);
+
+      const { violations } = await (await audit(page)).analyze();
+      expect(describeViolations(violations)).toBe("");
+    });
+  }
 });

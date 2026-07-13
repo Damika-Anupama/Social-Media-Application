@@ -61,7 +61,7 @@ export function TopBar({ title, subtitle }: { title: string; subtitle?: string }
             <MessageCircle className="h-4 w-4" />
           </Link>
           <button className="btn-icon hidden sm:inline-flex" aria-label="What's new">
-            <Sparkles className="h-4 w-4 text-accent-sun" />
+            <Sparkles className="h-4 w-4 text-accent-sun-fg" />
           </button>
           <Link href="/dashboard/profile" aria-label="Profile" className="ml-1">
             <Avatar user={currentUser} size={36} />

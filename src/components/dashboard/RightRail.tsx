@@ -70,7 +70,7 @@ export function RightRail() {
 
         <div className="card overflow-hidden">
           <div className="flex items-center gap-2 border-b border-line/60 px-5 py-3.5">
-            <Sparkles className="h-4 w-4 text-accent-sun" />
+            <Sparkles className="h-4 w-4 text-accent-sun-fg" />
             <h2 className="text-sm font-semibold text-ink">People worth following</h2>
           </div>
           <ul className="divide-y divide-line/40">
@@ -99,7 +99,7 @@ export function RightRail() {
                     className={clsx(
                       'inline-flex items-center gap-1 rounded-full border px-3 py-1 text-xs font-medium transition-colors',
                       following
-                        ? 'border-accent-mint/40 bg-accent-mint/10 text-accent-mint'
+                        ? 'border-accent-mint/40 bg-accent-mint/10 text-accent-mint-fg'
                         : 'border-brand-400/40 bg-brand-500/10 text-brand-200 hover:bg-brand-500/20',
                     )}
                   >
@@ -127,7 +127,7 @@ export function RightRail() {
 
         <div className="card overflow-hidden">
           <div className="flex items-center gap-2 border-b border-line/60 px-5 py-3.5">
-            <Calendar className="h-4 w-4 text-accent-mint" />
+            <Calendar className="h-4 w-4 text-accent-mint-fg" />
             <h2 className="text-sm font-semibold text-ink">Happening soon</h2>
           </div>
           <ul className="divide-y divide-line/40">
@@ -146,7 +146,7 @@ export function RightRail() {
                       className={clsx(
                         'rounded-full border px-3 py-1 text-[11px] font-semibold transition-colors',
                         going
-                          ? 'border-accent-mint/40 bg-accent-mint/10 text-accent-mint'
+                          ? 'border-accent-mint/40 bg-accent-mint/10 text-accent-mint-fg'
                           : 'border-line bg-bg-subtle text-ink-muted hover:text-ink',
                       )}
                     >

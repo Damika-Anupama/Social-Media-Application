@@ -76,7 +76,7 @@ export function Field({
           </button>
         )}
       </div>
-      {showError && <p className="mt-2 text-xs text-accent-coral">{error}</p>}
+      {showError && <p className="mt-2 text-xs text-accent-coral-fg">{error}</p>}
     </div>
   );
 }

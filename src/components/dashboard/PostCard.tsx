@@ -118,7 +118,7 @@ export function PostCard({ post }: { post: Post }) {
       <footer className="mt-4 flex items-center justify-between">
         <div className="flex items-center gap-1 -ml-2 text-ink-muted">
           <ReactionButton
-            icon={<Heart className={clsx('h-[18px] w-[18px]', liked && 'fill-accent-coral text-accent-coral')} />}
+            icon={<Heart className={clsx('h-[18px] w-[18px]', liked && 'fill-accent-coral text-accent-coral-fg')} />}
             count={likeCount}
             active={liked}
             tone="coral"
@@ -132,7 +132,7 @@ export function PostCard({ post }: { post: Post }) {
             label="Comment"
           />
           <ReactionButton
-            icon={<Repeat2 className={clsx('h-[18px] w-[18px]', reshared && 'text-accent-mint')} />}
+            icon={<Repeat2 className={clsx('h-[18px] w-[18px]', reshared && 'text-accent-mint-fg')} />}
             count={post.metrics.shares + (reshared ? 1 : 0)}
             active={reshared}
             tone="mint"
@@ -185,8 +185,8 @@ function ReactionButton({
   label: string;
 }) {
   const hover = {
-    coral: 'hover:text-accent-coral hover:bg-accent-coral/10',
-    mint: 'hover:text-accent-mint hover:bg-accent-mint/10',
+    coral: 'hover:text-accent-coral-fg hover:bg-accent-coral/10',
+    mint: 'hover:text-accent-mint-fg hover:bg-accent-mint/10',
     brand: 'hover:text-brand-300 hover:bg-brand-500/10',
   }[tone];
 
@@ -198,8 +198,8 @@ function ReactionButton({
       aria-pressed={active}
       className={clsx(
         'inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-colors',
-        active && tone === 'coral' && 'text-accent-coral',
-        active && tone === 'mint' && 'text-accent-mint',
+        active && tone === 'coral' && 'text-accent-coral-fg',
+        active && tone === 'mint' && 'text-accent-mint-fg',
         active && tone === 'brand' && 'text-brand-300',
         hover,
       )}

@@ -29,7 +29,7 @@ export function PostComposer({
 
   const remaining = 500 - text.length;
   const remainingTone =
-    remaining < 0 ? 'text-accent-coral' : remaining < 40 ? 'text-accent-sun' : 'text-ink-dim';
+    remaining < 0 ? 'text-accent-coral-fg' : remaining < 40 ? 'text-accent-sun-fg' : 'text-ink-dim';
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -94,7 +94,7 @@ export function PostComposer({
               </button>
               <span className={clsx('text-xs tabular-nums', remainingTone)}>{remaining}</span>
               {posted ? (
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-accent-mint/10 px-5 py-2 text-sm font-medium text-accent-mint animate-fade-up">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-accent-mint/10 px-5 py-2 text-sm font-medium text-accent-mint-fg animate-fade-up">
                   <Check className="h-4 w-4" /> Posted!
                 </span>
               ) : (

@@ -179,7 +179,7 @@ export function StoryViewer({
               aria-label="Like story"
               className="btn-icon h-10 w-10"
             >
-              <Heart className={clsx('h-4 w-4', liked && 'fill-accent-coral text-accent-coral')} />
+              <Heart className={clsx('h-4 w-4', liked && 'fill-accent-coral text-accent-coral-fg')} />
             </button>
             <button type="submit" className="btn-icon h-10 w-10" aria-label="Send reply">
               <Send className="h-4 w-4" />

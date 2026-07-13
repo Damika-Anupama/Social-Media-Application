@@ -51,3 +51,38 @@ export const LIGHT = {
 
 export const SURFACES = ['bg', 'bg-subtle', 'bg-raised', 'bg-elevated'] as const;
 export const TEXT_TOKENS = ['ink', 'ink-muted', 'ink-dim'] as const;
+
+/**
+ * Accent foregrounds — brand and accent colours used as *text*.
+ *
+ * These were the gap. The original contrast test checked ink tokens against
+ * the neutral surfaces and passed, and I read that as "contrast is fine". It
+ * was not: every coloured text token failed AA somewhere, and axe found them
+ * later. A test proves what it measures and not one thing more.
+ */
+export const DARK_ACCENTS = {
+  'brand-200': [201, 191, 255],
+  'brand-300': [161, 140, 255],
+  'accent-coral-fg': [255, 107, 107],
+  'accent-mint-fg': [61, 219, 179],
+  'accent-sun-fg': [255, 209, 102],
+  'accent-sky-fg': [76, 201, 240],
+} as const satisfies Record<string, Rgb>;
+
+export const LIGHT_ACCENTS = {
+  'brand-200': [91, 46, 204],
+  'brand-300': [76, 31, 184],
+  'accent-coral-fg': [192, 38, 38],
+  'accent-mint-fg': [13, 122, 99],
+  'accent-sun-fg': [138, 90, 0],
+  'accent-sky-fg': [11, 106, 148],
+} as const satisfies Record<string, Rgb>;
+
+export const ACCENT_TOKENS = [
+  'brand-200',
+  'brand-300',
+  'accent-coral-fg',
+  'accent-mint-fg',
+  'accent-sun-fg',
+  'accent-sky-fg',
+] as const;

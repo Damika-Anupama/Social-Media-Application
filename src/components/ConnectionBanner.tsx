@@ -27,8 +27,8 @@ export function ConnectionBanner() {
       className={clsx(
         'motion-safe:animate-fade-up fixed inset-x-0 bottom-20 z-[65] mx-auto flex w-fit max-w-[calc(100vw-2rem)] items-center gap-2.5 rounded-full border px-4 py-2 text-xs shadow-lg backdrop-blur lg:bottom-6',
         offline
-          ? 'border-accent-sun/40 bg-accent-sun/10 text-accent-sun'
-          : 'border-accent-mint/40 bg-accent-mint/10 text-accent-mint',
+          ? 'border-accent-sun/40 bg-accent-sun/10 text-accent-sun-fg'
+          : 'border-accent-mint/40 bg-accent-mint/10 text-accent-mint-fg',
       )}
     >
       {offline ? (

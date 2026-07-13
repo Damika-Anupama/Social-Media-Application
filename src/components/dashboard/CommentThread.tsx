@@ -33,7 +33,7 @@ export function CommentThread({ comments }: { comments: Comment[] }) {
             className="w-full resize-none rounded-xl bg-transparent px-4 py-2.5 text-sm text-ink placeholder:text-ink-dim focus:outline-none"
           />
           <div className="flex items-center justify-end gap-2 border-t border-line/40 px-3 py-2 text-xs text-ink-dim">
-            <span className={clsx(draft.length > 280 && 'text-accent-coral')}>{300 - draft.length}</span>
+            <span className={clsx(draft.length > 280 && 'text-accent-coral-fg')}>{300 - draft.length}</span>
             <button
               type="submit"
               disabled={!draft.trim()}
@@ -74,8 +74,8 @@ function CommentItem({ comment, depth = 0 }: { comment: Comment; depth?: number 
             type="button"
             onClick={() => setLiked((v) => !v)}
             className={clsx(
-              'inline-flex items-center gap-1 rounded-full px-2 py-1 transition-colors hover:text-accent-coral',
-              liked && 'text-accent-coral',
+              'inline-flex items-center gap-1 rounded-full px-2 py-1 transition-colors hover:text-accent-coral-fg',
+              liked && 'text-accent-coral-fg',
             )}
             aria-pressed={liked}
           >

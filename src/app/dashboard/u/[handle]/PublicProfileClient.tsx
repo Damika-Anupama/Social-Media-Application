@@ -120,7 +120,7 @@ export function PublicProfileClient({
                 className={clsx(
                   'px-4 py-2 text-sm font-semibold transition-colors',
                   following
-                    ? 'inline-flex items-center gap-2 rounded-full border border-accent-mint/40 bg-accent-mint/10 text-accent-mint'
+                    ? 'inline-flex items-center gap-2 rounded-full border border-accent-mint/40 bg-accent-mint/10 text-accent-mint-fg'
                     : 'btn-primary',
                 )}
               >

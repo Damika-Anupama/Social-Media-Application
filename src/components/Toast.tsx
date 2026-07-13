@@ -70,7 +70,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
 
 function ToastCard({ toast, onDismiss }: { toast: Toast; onDismiss: () => void }) {
   const Icon = toast.tone === 'success' ? Check : Info;
-  const iconTone = toast.tone === 'success' ? 'text-accent-mint' : 'text-brand-300';
+  const iconTone = toast.tone === 'success' ? 'text-accent-mint-fg' : 'text-brand-300';
 
   return (
     <div className="motion-safe:animate-fade-up pointer-events-auto flex w-full max-w-sm items-center gap-3 rounded-2xl border border-line bg-bg-raised/95 px-4 py-3 text-sm text-ink shadow-2xl shadow-black/30 backdrop-blur">

@@ -12,11 +12,11 @@ import { useReadNotifications } from '@/lib/useReadNotifications';
 import { useToast } from '@/components/Toast';
 
 const iconMap = {
-  like: { icon: Heart, tint: 'text-accent-coral bg-accent-coral/10' },
+  like: { icon: Heart, tint: 'text-accent-coral-fg bg-accent-coral/10' },
   comment: { icon: MessageCircle, tint: 'text-brand-300 bg-brand-500/10' },
-  follow: { icon: UserPlus, tint: 'text-accent-mint bg-accent-mint/10' },
-  mention: { icon: AtSign, tint: 'text-accent-sky bg-accent-sky/10' },
-  milestone: { icon: Award, tint: 'text-accent-sun bg-accent-sun/10' },
+  follow: { icon: UserPlus, tint: 'text-accent-mint-fg bg-accent-mint/10' },
+  mention: { icon: AtSign, tint: 'text-accent-sky-fg bg-accent-sky/10' },
+  milestone: { icon: Award, tint: 'text-accent-sun-fg bg-accent-sun/10' },
 } as const;
 
 const filters: { id: string; label: string; types?: Notification['type'][] }[] = [
@@ -97,7 +97,7 @@ export default function NotificationsPage() {
 
       <div className="card overflow-hidden">
         <div className="flex items-center gap-2 border-b border-line/60 bg-bg-elevated/40 px-5 py-3 text-xs text-ink-dim">
-          <Sparkles className="h-3.5 w-3.5 text-accent-sun" />
+          <Sparkles className="h-3.5 w-3.5 text-accent-sun-fg" />
           <span>Pulse groups quiet activity for you — open it once a day, not seventeen times.</span>
         </div>
         {view.length === 0 ? (

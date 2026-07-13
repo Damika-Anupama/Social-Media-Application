@@ -82,7 +82,7 @@ export default function LoginPage() {
         </div>
 
         {formError && (
-          <div className="rounded-xl border border-accent-coral/40 bg-accent-coral/5 px-4 py-3 text-sm text-accent-coral">
+          <div className="rounded-xl border border-accent-coral/40 bg-accent-coral/5 px-4 py-3 text-sm text-accent-coral-fg">
             {formError}
           </div>
         )}

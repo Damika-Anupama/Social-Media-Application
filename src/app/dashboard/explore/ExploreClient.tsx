@@ -184,7 +184,7 @@ export function ExploreClient() {
         <>
       <section className="card mb-6 p-5">
         <div className="flex items-center gap-2">
-          <Flame className="h-4 w-4 text-accent-coral" />
+          <Flame className="h-4 w-4 text-accent-coral-fg" />
           <h2 className="text-sm font-semibold text-ink">Headline trends</h2>
         </div>
         {filteredTrending.length === 0 ? (
@@ -209,7 +209,7 @@ export function ExploreClient() {
 
       <section className="card mb-6 p-5">
         <div className="flex items-center gap-2">
-          <Globe2 className="h-4 w-4 text-accent-mint" />
+          <Globe2 className="h-4 w-4 text-accent-mint-fg" />
           <h2 className="text-sm font-semibold text-ink">People to discover</h2>
         </div>
         {filteredUsers.length === 0 ? (
@@ -241,7 +241,7 @@ export function ExploreClient() {
                     className={clsx(
                       'inline-flex items-center gap-1 rounded-full border px-3 py-1 text-xs font-medium transition-colors',
                       followed
-                        ? 'border-accent-mint/40 bg-accent-mint/10 text-accent-mint'
+                        ? 'border-accent-mint/40 bg-accent-mint/10 text-accent-mint-fg'
                         : 'border-line bg-bg-raised text-ink-muted hover:border-brand-400/40 hover:text-ink',
                     )}
                   >
@@ -266,7 +266,7 @@ export function ExploreClient() {
 
       <section className="card p-5">
         <div className="flex items-center gap-2">
-          <MapPin className="h-4 w-4 text-accent-sun" />
+          <MapPin className="h-4 w-4 text-accent-sun-fg" />
           <h2 className="text-sm font-semibold text-ink">Visual feed</h2>
         </div>
         <div className="mt-4 columns-2 gap-3 sm:columns-3 lg:columns-4">

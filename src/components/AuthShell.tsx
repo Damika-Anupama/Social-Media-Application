@@ -40,7 +40,7 @@ export function AuthShell({
           </div>
 
           <div className="flex items-center gap-2 text-xs text-ink-dim">
-            <ShieldCheck className="h-4 w-4 text-accent-mint" />
+            <ShieldCheck className="h-4 w-4 text-accent-mint-fg" />
             Frontend demonstration — any valid input will sign you in.
           </div>
         </aside>

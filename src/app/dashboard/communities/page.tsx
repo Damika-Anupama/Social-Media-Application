@@ -116,7 +116,7 @@ export default function CommunitiesPage() {
                     className={clsx(
                       'rounded-full px-4 py-2 text-xs font-semibold transition-colors',
                       joined
-                        ? 'border border-accent-mint/40 bg-accent-mint/10 text-accent-mint'
+                        ? 'border border-accent-mint/40 bg-accent-mint/10 text-accent-mint-fg'
                         : 'btn-primary',
                     )}
                   >
@@ -221,7 +221,7 @@ function CreateCommunityModal({
               className={clsx('input-field mt-1.5', showError && error && 'border-accent-coral/60')}
             />
             {showError && error && (
-              <p id={errorId} role="alert" className="mt-1 text-xs text-accent-coral">
+              <p id={errorId} role="alert" className="mt-1 text-xs text-accent-coral-fg">
                 {error}
               </p>
             )}
@@ -297,7 +297,7 @@ function CommunityCard({
         <p className="mt-1 text-xs leading-relaxed text-ink-muted">{community.description}</p>
         <div className="mt-3 flex items-center justify-between text-xs">
           <span className="text-ink-dim">{formatCount(community.members)} members</span>
-          <span className="inline-flex items-center gap-1 text-accent-mint">
+          <span className="inline-flex items-center gap-1 text-accent-mint-fg">
             <span className="h-1.5 w-1.5 rounded-full bg-accent-mint animate-pulse" />
             {community.online} online
           </span>
@@ -312,7 +312,7 @@ function CommunityCard({
           className={clsx(
             'mt-4 w-full rounded-full py-2 text-xs font-semibold transition-colors',
             joined
-              ? 'border border-accent-mint/40 bg-accent-mint/10 text-accent-mint'
+              ? 'border border-accent-mint/40 bg-accent-mint/10 text-accent-mint-fg'
               : 'btn-primary',
           )}
         >

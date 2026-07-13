@@ -52,7 +52,7 @@ export default function LandingPage() {
         </div>
 
         <p className="mt-12 flex items-center gap-2 text-xs text-ink-dim animate-fade-up [animation-delay:240ms]">
-          <ShieldCheck className="h-4 w-4 text-accent-mint" />
+          <ShieldCheck className="h-4 w-4 text-accent-mint-fg" />
           No trackers · No ads · Your data, your call
         </p>
 

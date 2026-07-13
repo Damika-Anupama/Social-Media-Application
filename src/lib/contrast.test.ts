@@ -1,8 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import {
   AA_BODY,
+  ACCENT_TOKENS,
   DARK,
+  DARK_ACCENTS,
   LIGHT,
+  LIGHT_ACCENTS,
   SURFACES,
   TEXT_TOKENS,
   contrastRatio,
@@ -43,6 +46,27 @@ describe.each([
         expect(
           ratio,
           `${text} on ${surface} is ${ratio.toFixed(2)}:1, needs ${AA_BODY}:1`,
+        ).toBeGreaterThanOrEqual(AA_BODY);
+      });
+    }
+  }
+});
+
+/**
+ * Coloured text — the case the original test did not model, and where every
+ * real failure turned out to be hiding.
+ */
+describe.each([
+  ['dark', DARK, DARK_ACCENTS],
+  ['light', LIGHT, LIGHT_ACCENTS],
+])('%s theme accent text meets WCAG AA', (_name, theme, accents) => {
+  for (const token of ACCENT_TOKENS) {
+    for (const surface of SURFACES) {
+      it(`${token} on ${surface}`, () => {
+        const ratio = contrastRatio(accents[token], theme[surface]);
+        expect(
+          ratio,
+          `${token} on ${surface} is ${ratio.toFixed(2)}:1, needs ${AA_BODY}:1`,
         ).toBeGreaterThanOrEqual(AA_BODY);
       });
     }

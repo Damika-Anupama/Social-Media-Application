@@ -79,7 +79,7 @@ export default async function CommunityPage({ params }: Params) {
 
       <section className="mt-6">
         <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold text-ink">
-          <Pin className="h-3.5 w-3.5 text-accent-sun" /> Pinned by moderators
+          <Pin className="h-3.5 w-3.5 text-accent-sun-fg" /> Pinned by moderators
         </h3>
         <PostCard post={pinned} />
       </section>

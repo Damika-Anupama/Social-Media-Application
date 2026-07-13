@@ -14,6 +14,13 @@
     --ink-muted: 167 167 184;
     --ink-dim: 130 130 151;
     --line: 34 34 46;
+    /* Foreground accents. Tuned for a near-black surface. */
+    --brand-200: 201 191 255;
+    --brand-300: 161 140 255;
+    --accent-coral-fg: 255 107 107;
+    --accent-mint-fg: 61 219 179;
+    --accent-sun-fg: 255 209 102;
+    --accent-sky-fg: 76 201 240;
     color-scheme: dark;
   }
 
@@ -26,6 +33,15 @@
     --ink-muted: 74 76 92;
     --ink-dim: 104 106 120;
     --line: 224 226 236;
+    /* Same roles, re-derived for a white surface: every one of these fails AA
+       as text on light at its dark-theme value. Checked against bg-subtle,
+       the darkest light surface. */
+    --brand-200: 91 46 204;
+    --brand-300: 76 31 184;
+    --accent-coral-fg: 192 38 38;
+    --accent-mint-fg: 13 122 99;
+    --accent-sun-fg: 138 90 0;
+    --accent-sky-fg: 11 106 148;
     color-scheme: light;
   }
 

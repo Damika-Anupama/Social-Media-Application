@@ -74,7 +74,7 @@ export function HomeFeed() {
           href="/dashboard/explore"
           className="ml-auto mr-2 inline-flex items-center gap-1.5 text-xs text-ink-dim hover:text-ink"
         >
-          <Sparkles className="h-3.5 w-3.5 text-accent-sun" />
+          <Sparkles className="h-3.5 w-3.5 text-accent-sun-fg" />
           Ranking is transparent — view signals
         </Link>
       </div>
@@ -90,7 +90,7 @@ export function HomeFeed() {
                 toast('Post deleted');
               }}
               aria-label="Delete your post"
-              className="absolute right-4 top-4 rounded-full border border-line bg-bg-subtle/80 px-2.5 py-1 text-xs text-ink-muted backdrop-blur transition-colors hover:border-accent-coral/40 hover:text-accent-coral"
+              className="absolute right-4 top-4 rounded-full border border-line bg-bg-subtle/80 px-2.5 py-1 text-xs text-ink-muted backdrop-blur transition-colors hover:border-accent-coral/40 hover:text-accent-coral-fg"
             >
               Delete
             </button>

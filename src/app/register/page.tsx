@@ -158,7 +158,7 @@ export default function RegisterPage() {
         </label>
 
         {formError && (
-          <div className="rounded-xl border border-accent-coral/40 bg-accent-coral/5 px-4 py-3 text-sm text-accent-coral">
+          <div className="rounded-xl border border-accent-coral/40 bg-accent-coral/5 px-4 py-3 text-sm text-accent-coral-fg">
             {formError}
           </div>
         )}
@@ -194,7 +194,7 @@ function PasswordMeter({ score, label }: { score: 0 | 1 | 2 | 3 | 4; label: stri
       <div className="mt-2 flex items-center justify-between text-[11px] text-ink-dim">
         <span>Password strength</span>
         <span className="flex items-center gap-1 text-ink-muted">
-          {score >= 3 && <Check className="h-3 w-3 text-accent-mint" />}
+          {score >= 3 && <Check className="h-3 w-3 text-accent-mint-fg" />}
           {label}
         </span>
       </div>

@@ -320,7 +320,7 @@ function FieldInput({
         <label htmlFor={id} className="text-xs font-medium text-ink-muted">
           {label}
         </label>
-        <span className={clsx('text-[11px] tabular-nums', over ? 'text-accent-coral' : 'text-ink-dim')}>
+        <span className={clsx('text-[11px] tabular-nums', over ? 'text-accent-coral-fg' : 'text-ink-dim')}>
           {value.trim().length}/{limit}
         </span>
       </div>
@@ -347,7 +347,7 @@ function FieldInput({
         />
       )}
       {error && (
-        <p id={errorId} role="alert" className="mt-1 text-xs text-accent-coral">
+        <p id={errorId} role="alert" className="mt-1 text-xs text-accent-coral-fg">
           {error}
         </p>
       )}
