@@ -28,7 +28,7 @@ const filters: { id: string; label: string; types?: Notification['type'][] }[] =
 
 export default function NotificationsPage() {
   const [active, setActive] = useState('all');
-  const { readIds, markRead, markUnread, markManyRead } = useReadNotifications();
+  const { readIds, markRead, markUnread, markManyRead, markManyUnread } = useReadNotifications();
   const { toast } = useToast();
 
   const filter = filters.find((f) => f.id === active)!;
@@ -47,8 +47,14 @@ export default function NotificationsPage() {
   const unreadCount = decorated.filter((n) => n.unread).length;
 
   const markAllRead = () => {
-    markManyRead(decorated.filter((n) => n.unread).map((n) => n.id));
-    toast('All caught up');
+    // Snapshot exactly what *this* action read, so undo restores that set and
+    // not anything the viewer had already read before.
+    const affected = decorated.filter((n) => n.unread).map((n) => n.id);
+    if (!affected.length) return;
+    markManyRead(affected);
+    toast('All caught up', {
+      action: { label: 'Undo', onClick: () => markManyUnread(affected) },
+    });
   };
 
   return (
@@ -56,21 +62,25 @@ export default function NotificationsPage() {
       <TopBar title="Notifications" subtitle="Only what matters. Everything else stays in the activity log." />
 
       <div className="mb-5 flex flex-wrap items-center gap-2">
-        {filters.map((f) => (
-          <button
-            key={f.id}
-            type="button"
-            onClick={() => setActive(f.id)}
-            className={clsx(
-              'rounded-full px-4 py-1.5 text-xs transition-colors',
-              active === f.id
-                ? 'bg-brand-500/15 font-semibold text-brand-200'
-                : 'border border-line bg-bg-subtle font-medium text-ink-muted hover:text-ink',
-            )}
-          >
-            {f.label}
-          </button>
-        ))}
+        <div role="tablist" aria-label="Filter notifications" className="flex flex-wrap items-center gap-2">
+          {filters.map((f) => (
+            <button
+              key={f.id}
+              type="button"
+              role="tab"
+              aria-selected={active === f.id}
+              onClick={() => setActive(f.id)}
+              className={clsx(
+                'rounded-full px-4 py-1.5 text-xs transition-colors',
+                active === f.id
+                  ? 'bg-brand-500/15 font-semibold text-brand-200'
+                  : 'border border-line bg-bg-subtle font-medium text-ink-muted hover:text-ink',
+              )}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
         <button
           type="button"
           onClick={markAllRead}
@@ -94,11 +104,25 @@ export default function NotificationsPage() {
             {view.map((n) => {
               const meta = iconMap[n.type];
               const Icon = meta.icon;
-              const body = (
-                <>
-                  <span className={clsx('inline-flex h-9 w-9 items-center justify-center rounded-full', meta.tint)}>
+              return (
+                <li
+                  key={n.id}
+                  data-testid="notification"
+                  className={clsx(
+                    'relative flex items-start gap-3 px-5 py-4 transition-colors hover:bg-bg-elevated/30',
+                    n.unread && 'bg-brand-500/5',
+                  )}
+                >
+                  <span
+                    aria-hidden="true"
+                    className={clsx(
+                      'inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full',
+                      meta.tint,
+                    )}
+                  >
                     <Icon className="h-4 w-4" />
                   </span>
+
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-baseline gap-2">
                       {n.user && (
@@ -107,40 +131,41 @@ export default function NotificationsPage() {
                           <span className="text-sm font-semibold text-ink">{n.user.name}</span>
                         </>
                       )}
-                      <span className="text-sm text-ink-muted">{n.text}</span>
+                      {/* The link stretches over the whole row, so the row stays
+                          one click target without nesting the toggle inside it. */}
+                      {n.postId ? (
+                        <Link
+                          href={`/dashboard/p/${n.postId}`}
+                          className="text-sm text-ink-muted after:absolute after:inset-0 hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400/60"
+                        >
+                          {n.text}
+                        </Link>
+                      ) : (
+                        <span className="text-sm text-ink-muted">{n.text}</span>
+                      )}
                     </div>
                     <div className="mt-0.5 text-xs text-ink-dim">{n.time}</div>
                   </div>
+
                   <button
                     type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      e.preventDefault();
-                      if (n.unread) markRead(n.id);
-                      else markUnread(n.id);
-                    }}
-                    className={clsx(
-                      'mt-2 h-2 w-2 shrink-0 rounded-full',
-                      n.unread ? 'bg-brand-400' : 'bg-line',
-                    )}
-                    aria-label={n.unread ? 'Mark as read' : 'Mark as unread'}
-                    title={n.unread ? 'Mark as read' : 'Mark as unread'}
-                  />
-                </>
-              );
-              const className = clsx(
-                'flex items-start gap-3 px-5 py-4 transition-colors hover:bg-bg-elevated/30',
-                n.unread && 'bg-brand-500/5',
-              );
-              return (
-                <li key={n.id}>
-                  {n.postId ? (
-                    <Link href={`/dashboard/p/${n.postId}`} className={className}>
-                      {body}
-                    </Link>
-                  ) : (
-                    <div className={className}>{body}</div>
-                  )}
+                    onClick={() => (n.unread ? markRead(n.id) : markUnread(n.id))}
+                    // z-10 keeps the toggle above the stretched link's ::after.
+                    className="relative z-10 -mr-2 -mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-full transition-colors hover:bg-bg-elevated/60"
+                    aria-label={
+                      n.unread
+                        ? `Mark "${n.text}" as read`
+                        : `Mark "${n.text}" as unread`
+                    }
+                    aria-pressed={!n.unread}
+                  >
+                    <span
+                      className={clsx(
+                        'h-2 w-2 rounded-full transition-colors',
+                        n.unread ? 'bg-brand-400' : 'bg-line',
+                      )}
+                    />
+                  </button>
                 </li>
               );
             })}

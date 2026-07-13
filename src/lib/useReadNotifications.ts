@@ -96,5 +96,15 @@ export function useReadNotifications() {
     });
   }, []);
 
-  return { readIds, isRead, markRead, markUnread, markManyRead };
+  /** Restore a batch to unread — the undo path for "mark all read". */
+  const markManyUnread = useCallback((ids: string[]) => {
+    setReadIds((current) => {
+      const next = new Set(current);
+      ids.forEach((id) => next.delete(id));
+      write(next);
+      return next;
+    });
+  }, []);
+
+  return { readIds, isRead, markRead, markUnread, markManyRead, markManyUnread };
 }
