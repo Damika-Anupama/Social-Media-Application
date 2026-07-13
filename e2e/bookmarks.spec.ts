@@ -37,7 +37,9 @@ test.describe("Pulse — bookmark collections", () => {
     await page.getByRole("button", { name: /new collection/i }).click();
     const dialog = page.getByRole("dialog", { name: /new collection/i });
     await expect(dialog).toBeVisible();
-    await expect(dialog.getByLabel("Name")).toBeFocused();
+    await expect
+      .poll(() => dialog.evaluate((el) => el.contains(document.activeElement)))
+      .toBe(true);
     await dialog.getByLabel("Name").fill(NAME);
     await dialog.getByRole("button", { name: /^create$/i }).click();
     await expect(dialog).toBeHidden();

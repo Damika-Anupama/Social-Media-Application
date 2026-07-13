@@ -9,7 +9,10 @@ import { useComposeOpener } from '@/components/dashboard/ComposeContext';
 const items = [
   { href: '/dashboard', label: 'Home', icon: Home },
   { href: '/dashboard/explore', label: 'Explore', icon: Compass },
-  { href: '__compose', label: 'Post', icon: PenSquare, primary: true },
+  // "Post" collided with the composer's own submit button: two controls, same
+  // name, different meanings, on the same screen. A screen-reader user hears
+  // "Post, button" twice and has no way to tell which one sends their post.
+  { href: '__compose', label: 'New post', icon: PenSquare, primary: true },
   { href: '/dashboard/notifications', label: 'Inbox', icon: Bell },
   { href: '/dashboard/profile', label: 'Me', icon: User },
 ];

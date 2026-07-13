@@ -18,12 +18,26 @@ async function signIn(page: import("@playwright/test").Page) {
   await expect(page).toHaveURL(/\/dashboard/);
 }
 
+
+/**
+ * On a phone the list and the thread are separate screens (by design), so the
+ * composer does not exist until a conversation is open. Desktop shows both.
+ */
+async function openThread(page: import("@playwright/test").Page) {
+  const composer = page.getByPlaceholder(/^Message /);
+  if (!(await composer.isVisible())) {
+    await page.getByRole("button", { name: /nadia/i }).first().click();
+    await expect(composer).toBeVisible();
+  }
+  return composer;
+}
+
 test.describe("Pulse — messages", () => {
   test("a sent message persists across a reload", async ({ page }) => {
     await signIn(page);
     await page.goto("/dashboard/messages");
 
-    const composer = page.getByPlaceholder(/^Message /);
+    const composer = await openThread(page);
     await composer.fill(UNIQUE);
     await page.getByRole("button", { name: /^send$/i }).click();
 
@@ -36,7 +50,10 @@ test.describe("Pulse — messages", () => {
     await expect(page.getByTestId("typing-indicator")).toBeHidden({ timeout: 10_000 });
 
     // Reload — the conversation is restored from storage, not reset to the seed.
+    // A reload on a phone lands back on the list, so re-open the thread: that is
+    // the master/detail split doing its job, not the message being lost.
     await page.reload();
+    await openThread(page);
     await expect(
       page.getByTestId("chat-message").filter({ hasText: UNIQUE })
     ).toBeVisible();
@@ -62,7 +79,9 @@ test.describe("Pulse — messages", () => {
     await expect(composer).toBeHidden();
   });
 
-  test("desktop shows both panes at once", async ({ page }) => {
+  test("desktop shows both panes at once", async ({ page }, testInfo) => {
+    // A phone deliberately does not: that is the master/detail split.
+    test.skip(testInfo.project.name === "mobile-safari", "phones show one pane");
     await signIn(page);
     await page.goto("/dashboard/messages");
 

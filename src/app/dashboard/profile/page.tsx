@@ -19,6 +19,7 @@ import { useTabs } from '@/components/Tabs';
 import { PostCard } from '@/components/dashboard/PostCard';
 import { useProfile } from '@/lib/useProfile';
 import { useDialog } from '@/lib/useDialog';
+import { Portal } from '@/components/Portal';
 import { useToast } from '@/components/Toast';
 import { LIMITS, validateProfile, type ProfileEdits, type ProfileErrors } from '@/lib/profile';
 import { posts, formatCount, type User } from '@/lib/mock-data';
@@ -225,6 +226,7 @@ function EditProfileModal({
   };
 
   return (
+    <Portal>
     <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
       <button
         type="button"
@@ -296,6 +298,7 @@ function EditProfileModal({
         </form>
       </div>
     </div>
+    </Portal>
   );
 }
 

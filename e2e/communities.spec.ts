@@ -58,7 +58,12 @@ test.describe("Pulse — communities", () => {
     await page.getByRole("button", { name: /create community/i }).click();
     const dialog = page.getByRole("dialog", { name: /create community/i });
     await expect(dialog).toBeVisible();
-    await expect(dialog.getByLabel("Name")).toBeFocused();
+    // Focus lands inside the dialog. Not necessarily *on the input*: iOS Safari
+    // refuses programmatic focus of a text field outside a user gesture, and
+    // fighting that would only force a keyboard up that nobody asked for.
+    await expect
+      .poll(() => dialog.evaluate((el) => el.contains(document.activeElement)))
+      .toBe(true);
 
     await dialog.getByLabel("Name").fill(NEW_NAME);
     await dialog.getByRole("button", { name: /^create$/i }).click();

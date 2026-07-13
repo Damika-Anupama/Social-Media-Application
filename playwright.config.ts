@@ -43,6 +43,20 @@ export default defineConfig({
       use: { ...devices["Desktop Firefox"] },
       testIgnore: /a11y\.spec\.ts/,
     },
+    /**
+     * An iPhone. Three engines is not three environments: everything above is a
+     * desktop with a mouse. This is a real social app's most common client —
+     * touch input, a 390px viewport, mobile Safari's own quirks (dvh, 100vh,
+     * tap behaviour) — and nothing had ever run there.
+     *
+     * Desktop-only suites (keyboard chords, focus traps, reflow sweeps) are
+     * excluded: they test things a phone does not have or already cover.
+     */
+    {
+      name: "mobile-safari",
+      use: { ...devices["iPhone 13"] },
+      testIgnore: [/a11y\.spec\.ts/, /reflow\.spec\.ts/, /focus\.spec\.ts/, /shortcuts\.spec\.ts/, /tabs\.spec\.ts/],
+    },
   ],
   webServer: process.env.E2E_BASE_URL
     ? undefined

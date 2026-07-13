@@ -10,6 +10,7 @@ import { posts } from '@/lib/mock-data';
 import { useReactions } from '@/lib/useReactions';
 import { useCollections } from '@/lib/useCollections';
 import { useDialog } from '@/lib/useDialog';
+import { Portal } from '@/components/Portal';
 import { useToast } from '@/components/Toast';
 import {
   BUILT_IN,
@@ -251,6 +252,7 @@ function CreateCollectionModal({
   };
 
   return (
+    <Portal>
     <div className="fixed inset-0 z-[60] flex items-center justify-center px-4">
       <button
         type="button"
@@ -314,5 +316,6 @@ function CreateCollectionModal({
         </form>
       </div>
     </div>
+    </Portal>
   );
 }

@@ -52,7 +52,12 @@ test.describe("Pulse — motion", () => {
     await page.goto("/dashboard/messages");
 
     // The thread still lands on the newest message — it just does not glide.
+    // On a phone the thread is a separate screen, so open it first.
     const composer = page.getByPlaceholder(/^Message /);
+    if (!(await composer.isVisible())) {
+      await page.getByRole("button", { name: /nadia/i }).first().click();
+      await expect(composer).toBeVisible();
+    }
     await composer.fill("reduced motion check");
     await page.getByRole("button", { name: /^send$/i }).click();
 

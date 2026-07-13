@@ -21,6 +21,7 @@ import { useToast } from '@/components/Toast';
 import { buildSearchQuery, describeResults, isEmptySearch, normalizeQuery } from '@/lib/search';
 import { parseImageSize } from '@/lib/images';
 import { useDialog } from '@/lib/useDialog';
+import { Portal } from '@/components/Portal';
 import type { User } from '@/lib/mock-data';
 
 const chips = ['For you', 'Trending', 'News', 'Design', 'Climate', 'Tech', 'Sports', 'Film', 'Music', 'Books'];
@@ -313,6 +314,7 @@ function Lightbox({ src, onClose }: { src: string; onClose: () => void }) {
   const dialogRef = useDialog<HTMLDivElement>({ onClose });
 
   return (
+    <Portal>
     <div
       ref={dialogRef}
       role="dialog"
@@ -347,5 +349,6 @@ function Lightbox({ src, onClose }: { src: string; onClose: () => void }) {
         />
       </div>
     </div>
+    </Portal>
   );
 }

@@ -8,6 +8,7 @@ import { Users2, Plus, Search, Check, X } from 'lucide-react';
 import { TopBar } from '@/components/dashboard/TopBar';
 import { useCommunities } from '@/lib/useCommunities';
 import { useDialog } from '@/lib/useDialog';
+import { Portal } from '@/components/Portal';
 import { NAME_LIMIT, TOPIC_LIMIT, validateCommunityName } from '@/lib/communities';
 import { useToast } from '@/components/Toast';
 import { formatCount, type Community } from '@/lib/mock-data';
@@ -175,6 +176,7 @@ function CreateCommunityModal({
   };
 
   return (
+    <Portal>
     <div className="fixed inset-0 z-[60] flex items-center justify-center px-4">
       <button
         type="button"
@@ -258,6 +260,7 @@ function CreateCommunityModal({
         </form>
       </div>
     </div>
+    </Portal>
   );
 }
 

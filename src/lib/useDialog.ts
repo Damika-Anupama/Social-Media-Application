@@ -67,6 +67,13 @@ export function useDialog<T extends HTMLElement = HTMLDivElement>({
     const target = initialFocus?.current ?? focusable()[0] ?? dialog;
     target?.focus();
 
+    // iOS Safari ignores programmatic focus on a text input outside a user
+    // gesture — the effect runs after the click, so the focus call is simply
+    // dropped and focus stays on <body>, outside the dialog. Verify rather than
+    // assume, and fall back to the dialog itself so focus is always *somewhere*
+    // inside it.
+    if (dialog && !dialog.contains(document.activeElement)) dialog.focus();
+
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         e.preventDefault();
