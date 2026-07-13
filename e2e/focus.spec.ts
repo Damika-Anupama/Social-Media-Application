@@ -16,6 +16,18 @@ async function signIn(page: import("@playwright/test").Page) {
   await expect(page).toHaveURL(/\/dashboard/);
 }
 
+/**
+ * The trap exists only once the dialog's effect has run. Tabbing before that is
+ * racing the mount, not testing the trap — and a slower engine loses that race.
+ */
+async function waitForFocusInside(
+  dialog: import("@playwright/test").Locator,
+) {
+  await expect
+    .poll(() => dialog.evaluate((el) => el.contains(document.activeElement)))
+    .toBe(true);
+}
+
 test.describe("Pulse — dialog focus management", () => {
   test("Tab cannot escape the compose dialog", async ({ page }) => {
     await signIn(page);
@@ -23,6 +35,8 @@ test.describe("Pulse — dialog focus management", () => {
 
     const dialog = page.getByRole("dialog", { name: /new post/i });
     await expect(dialog).toBeVisible();
+
+    await waitForFocusInside(dialog);
 
     // Tab a lot further than the dialog has focusable elements. If the trap
     // leaks, focus ends up in the page behind and this fails.
@@ -40,6 +54,8 @@ test.describe("Pulse — dialog focus management", () => {
     const dialog = page.getByRole("dialog", { name: /new post/i });
     await expect(dialog).toBeVisible();
 
+    await waitForFocusInside(dialog);
+
     for (let i = 0; i < 15; i++) {
       await page.keyboard.press("Shift+Tab");
       const inside = await dialog.evaluate((el) => el.contains(document.activeElement));
@@ -54,7 +70,14 @@ test.describe("Pulse — dialog focus management", () => {
     await page.goto("/dashboard/profile");
 
     const trigger = page.getByRole("button", { name: /edit profile/i });
-    await trigger.click();
+
+    // Open it the way a keyboard user does. Safari deliberately does not focus
+    // a button on click — so restoring focus to <body> after a mouse-open is
+    // correct platform behaviour there, and asserting otherwise would be
+    // asserting Chromium's habits. Focus restore exists for keyboard users;
+    // this is their journey, and it must hold in every engine.
+    await trigger.focus();
+    await page.keyboard.press("Enter");
 
     const dialog = page.getByRole("dialog", { name: /edit profile/i });
     await expect(dialog).toBeVisible();
@@ -73,10 +96,15 @@ test.describe("Pulse — dialog focus management", () => {
 
     const tile = page.getByRole("button", { name: /open image 1 full size/i });
     await expect(tile).toBeVisible();
-    await tile.click();
+    // Keyboard-open, so focus restore is meaningful in every engine (Safari
+    // does not focus a button on click).
+    await tile.focus();
+    await page.keyboard.press("Enter");
 
     const lightbox = page.getByTestId("lightbox");
     await expect(lightbox).toBeVisible();
+
+    await waitForFocusInside(lightbox);
 
     for (let i = 0; i < 6; i++) {
       await page.keyboard.press("Tab");
@@ -96,10 +124,13 @@ test.describe("Pulse — dialog focus management", () => {
     await page.goto("/dashboard/stories");
 
     const tile = page.getByRole("button", { name: /view .+'s story/i }).first();
-    await tile.click();
+    await tile.focus();
+    await page.keyboard.press("Enter");
 
     const story = page.getByRole("dialog", { name: /'s story/i });
     await expect(story).toBeVisible();
+
+    await waitForFocusInside(story);
 
     // It covers the entire screen; Tab used to walk out into the page beneath.
     for (let i = 0; i < 10; i++) {
@@ -119,6 +150,8 @@ test.describe("Pulse — dialog focus management", () => {
 
     const dialog = page.getByRole("dialog", { name: /keyboard shortcuts/i });
     await expect(dialog).toBeVisible();
+
+    await waitForFocusInside(dialog);
 
     for (let i = 0; i < 8; i++) {
       await page.keyboard.press("Tab");

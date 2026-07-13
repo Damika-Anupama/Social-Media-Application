@@ -8,8 +8,16 @@ import { useComposeOpener } from './ComposeContext';
 import { useCommandPalette } from './CommandPalette';
 import { useDialog } from '@/lib/useDialog';
 
-/** How long a `g` prefix stays armed before it expires. */
-const CHORD_TIMEOUT_MS = 1200;
+/**
+ * How long a `g` prefix stays armed before it expires.
+ *
+ * Was 1.2s. That is a fine window for a fast typist on a quiet machine and a
+ * mean one for anyone else: users with motor impairments, switch devices, or
+ * just a busy laptop can easily take longer between two keys, and the chord
+ * silently evaporates with no feedback. A slower engine failed it under load,
+ * which is the same complaint in a different voice.
+ */
+const CHORD_TIMEOUT_MS = 2500;
 
 const GROUPS = ['Navigate', 'Actions'] as const;
 

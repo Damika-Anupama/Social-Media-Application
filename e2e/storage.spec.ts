@@ -7,13 +7,17 @@ import { test, expect } from "@playwright/test";
  * browsing or a full quota — by breaking setItem before the app boots.
  */
 
+/**
+ * setItem lives on Storage.prototype, not on the localStorage instance.
+ * Patching the instance happens to work in Chromium and silently does nothing
+ * in Firefox and WebKit — so this test was passing there while verifying
+ * nothing at all. Patch the prototype, which is where the method actually is.
+ */
 async function breakStorage(page: import("@playwright/test").Page) {
   await page.addInitScript(() => {
-    Object.defineProperty(window.localStorage, "setItem", {
-      value: () => {
-        throw new DOMException("full", "QuotaExceededError");
-      },
-    });
+    Storage.prototype.setItem = () => {
+      throw new DOMException("full", "QuotaExceededError");
+    };
   });
 }
 
@@ -60,12 +64,17 @@ test.describe("Pulse — storage failures", () => {
     await breakStorage(page);
     await signIn(page);
 
-    // Several failing writes in a row.
+    // First failing write warns.
     const like = page.getByRole("button", { name: /^like$/i });
     await like.nth(0).click();
+    const warning = page.getByText(/storage is full/i);
+    await expect(warning).toHaveCount(1);
+
+    // Two more failing writes must not stack up a second and third warning.
+    // (Asserting only at the end raced the toast's own dismissal on a slow
+    // engine — a disappeared toast is not the same as a deduplicated one.)
     await like.nth(1).click();
     await like.nth(2).click();
-
-    await expect(page.getByText(/storage is full/i)).toHaveCount(1);
+    await expect(warning).toHaveCount(1);
   });
 });

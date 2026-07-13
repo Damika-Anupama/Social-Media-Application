@@ -10,9 +10,11 @@ describe('nextFocusIndex', () => {
     expect(nextFocusIndex(3, 0, true)).toBe(2);
   });
 
-  it('leaves the middle of the dialog to the browser', () => {
-    expect(nextFocusIndex(3, 1, false)).toBeNull();
-    expect(nextFocusIndex(3, 1, true)).toBeNull();
+  it('manages the middle of the cycle too, not just the edges', () => {
+    // Deferring the middle to the browser assumed the browser agrees about
+    // what is tabbable. Safari skips buttons, so it does not.
+    expect(nextFocusIndex(3, 1, false)).toBe(2);
+    expect(nextFocusIndex(3, 1, true)).toBe(0);
   });
 
   it('pulls focus back in when it is outside the dialog', () => {
