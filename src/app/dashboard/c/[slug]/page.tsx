@@ -1,4 +1,4 @@
-/* eslint-disable @next/next/no-img-element */
+import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { ArrowLeft, Pin, Users2, Sparkles, MessageCircle } from 'lucide-react';
 import Link from 'next/link';
@@ -41,7 +41,14 @@ export default async function CommunityPage({ params }: Params) {
 
       <div className="card overflow-hidden">
         <div className="relative h-40 sm:h-56">
-          <img src={community.cover} alt="" className="absolute inset-0 h-full w-full object-cover" />
+          <Image
+            src={community.cover}
+            alt=""
+            fill
+            priority
+            sizes="(min-width: 1024px) 900px, 100vw"
+            className="object-cover"
+          />
           <div className="absolute inset-0 bg-gradient-to-t from-bg-raised via-bg-raised/30 to-transparent" />
         </div>
         <div className="p-6 sm:p-8">

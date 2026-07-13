@@ -1,6 +1,6 @@
-/* eslint-disable @next/next/no-img-element */
 'use client';
 
+import Image from 'next/image';
 import { useState } from 'react';
 import clsx from 'clsx';
 import { Radio } from 'lucide-react';
@@ -87,7 +87,13 @@ function Grid({ stories, onOpen }: { stories: typeof import('@/lib/mock-data').s
           className="group relative overflow-hidden rounded-2xl border border-line/60 text-left transition-transform hover:-translate-y-0.5"
         >
           <div className="relative aspect-[3/4]">
-            <img src={s.thumbnail} alt="" className="absolute inset-0 h-full w-full object-cover" />
+            <Image
+              src={s.thumbnail}
+              alt=""
+              fill
+              sizes="(min-width: 1024px) 260px, 45vw"
+              className="object-cover"
+            />
             <div className="absolute inset-0 bg-gradient-to-t from-bg via-bg/30 to-transparent" />
             {s.isLive && (
               <span className="absolute right-2 top-2 inline-flex items-center gap-1 rounded-full bg-accent-coral px-2 py-0.5 text-[10px] font-bold uppercase text-white">

@@ -1,6 +1,7 @@
-/* eslint-disable @next/next/no-img-element */
+/* eslint-disable @next/next/no-img-element -- avatars are remote SVGs; see components/Avatar.tsx */
 'use client';
 
+import Image from 'next/image';
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import clsx from 'clsx';
@@ -81,7 +82,14 @@ export function PublicProfileClient({
     <>
       <div className="card overflow-hidden">
         <div className="relative h-48 sm:h-60">
-          <img src={cover} alt="" className="absolute inset-0 h-full w-full object-cover" />
+          <Image
+            src={cover}
+            alt=""
+            fill
+            priority
+            sizes="(min-width: 1024px) 900px, 100vw"
+            className="object-cover"
+          />
           <div className="absolute inset-0 bg-gradient-to-t from-bg-raised via-bg-raised/40 to-transparent" />
         </div>
         <div className="px-6 pb-6 sm:px-8">

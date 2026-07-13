@@ -1,6 +1,7 @@
-/* eslint-disable @next/next/no-img-element */
+/* eslint-disable @next/next/no-img-element -- avatars are remote SVGs; see components/Avatar.tsx */
 'use client';
 
+import Image from 'next/image';
 import { useState } from 'react';
 import Link from 'next/link';
 import clsx from 'clsx';
@@ -48,7 +49,7 @@ export function StoryRail() {
               s.viewed ? 'border-line/60 opacity-70' : 'border-transparent',
             )}
           >
-            <img src={s.thumbnail} alt="" className="absolute inset-0 h-full w-full object-cover" />
+            <Image src={s.thumbnail} alt="" fill sizes="112px" className="object-cover" />
             <div className="absolute inset-0 bg-gradient-to-t from-bg/95 via-bg/30 to-bg/10" />
             {s.isLive ? (
               <span className="absolute left-2 top-2 inline-flex items-center gap-1 rounded-full bg-accent-coral px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">

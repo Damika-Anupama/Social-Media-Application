@@ -10,7 +10,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "check:images": "node --experimental-strip-types scripts/check-images.mjs"
   },
   "dependencies": {
     "clsx": "2.1.1",

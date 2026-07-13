@@ -1,6 +1,6 @@
-/* eslint-disable @next/next/no-img-element */
 'use client';
 
+import Image from 'next/image';
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import clsx from 'clsx';
@@ -283,7 +283,13 @@ function CommunityCard({
     <div className="card overflow-hidden">
       <Link href={`/dashboard/c/${community.slug}`} className="block">
         <div className="relative h-28">
-          <img src={community.cover} alt="" className="absolute inset-0 h-full w-full object-cover" />
+          <Image
+            src={community.cover}
+            alt=""
+            fill
+            sizes="(min-width: 1024px) 380px, (min-width: 640px) 50vw, 100vw"
+            className="object-cover"
+          />
           <div className="absolute inset-0 bg-gradient-to-t from-bg-raised to-transparent" />
         </div>
       </Link>

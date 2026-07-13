@@ -1,7 +1,8 @@
-/* eslint-disable @next/next/no-img-element */
 import { notFound } from 'next/navigation';
+import Image from 'next/image';
 import Link from 'next/link';
 import { commentsFor, findPost, posts } from '@/lib/mock-data';
+import { parseImageSize } from '@/lib/images';
 import { TopBar } from '@/components/dashboard/TopBar';
 import { PostCard } from '@/components/dashboard/PostCard';
 import { CommentThread } from '@/components/dashboard/CommentThread';
@@ -92,11 +93,28 @@ export default async function PostDetailPage({ params }: Params) {
             {post.media.type === 'gallery' && Array.isArray(post.media.src) ? (
               <div className="grid grid-cols-3 gap-1">
                 {post.media.src.map((src, i) => (
-                  <img key={i} src={src} alt="" className="aspect-square w-full object-cover" />
+                  <div key={i} className="relative aspect-square w-full">
+                    <Image
+                      src={src}
+                      alt=""
+                      fill
+                      sizes="(min-width: 640px) 220px, 33vw"
+                      className="object-cover"
+                    />
+                  </div>
                 ))}
               </div>
             ) : (
-              <img src={post.media.src as string} alt="" className="w-full" />
+              // This one had no aspect box at all — the page jumped when it landed.
+              <Image
+                src={post.media.src as string}
+                alt=""
+                width={parseImageSize(post.media.src as string).width}
+                height={parseImageSize(post.media.src as string).height}
+                sizes="(min-width: 1024px) 680px, 100vw"
+                priority
+                className="h-auto w-full"
+              />
             )}
           </div>
         )}

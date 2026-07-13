@@ -1,6 +1,6 @@
-/* eslint-disable @next/next/no-img-element */
 'use client';
 
+import Image from 'next/image';
 import { useCallback, useEffect, useState } from 'react';
 import clsx from 'clsx';
 import { X, ChevronLeft, ChevronRight, Heart, Send, Radio } from 'lucide-react';
@@ -109,7 +109,14 @@ export function StoryViewer({
         onTouchStart={() => setPaused(true)}
         onTouchEnd={() => setPaused(false)}
       >
-        <img src={current.thumbnail} alt="" className="absolute inset-0 h-full w-full object-cover" />
+        <Image
+          src={current.thumbnail}
+          alt=""
+          fill
+          priority
+          sizes="(min-width: 640px) 420px, 100vw"
+          className="object-cover"
+        />
         <div className="absolute inset-0 bg-gradient-to-b from-bg/40 via-transparent to-bg/80" />
 
         <div className="absolute inset-x-3 top-3 flex gap-1">
