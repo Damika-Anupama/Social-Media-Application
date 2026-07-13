@@ -6,6 +6,7 @@ import { UserPostsProvider } from '@/lib/UserPostsContext';
 import { ToastProvider } from '@/components/Toast';
 import { CommandPaletteProvider } from '@/components/dashboard/CommandPalette';
 import { KeyboardShortcuts } from '@/components/dashboard/KeyboardShortcuts';
+import { ConnectionBanner } from '@/components/ConnectionBanner';
 import { PreferencesProvider } from '@/lib/PreferencesContext';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -36,6 +37,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 <MobileTabBar />
                 <ComposeModal />
                 <KeyboardShortcuts />
+                <ConnectionBanner />
               </div>
             </CommandPaletteProvider>
           </ComposeProvider>
