@@ -99,7 +99,7 @@ function Grid({ stories, onOpen }: { stories: typeof import('@/lib/mock-data').s
             />
             <div className="absolute inset-0 bg-gradient-to-t from-bg via-bg/30 to-transparent" />
             {s.isLive && (
-              <span className="absolute right-2 top-2 inline-flex items-center gap-1 rounded-full bg-accent-coral px-2 py-0.5 text-[10px] font-bold uppercase text-white">
+              <span className="absolute right-2 top-2 inline-flex items-center gap-1 rounded-full bg-accent-coral px-2 py-0.5 text-[10px] font-bold uppercase text-black">
                 <Radio className="h-3 w-3" /> Live
               </span>
             )}

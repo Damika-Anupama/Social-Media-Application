@@ -236,7 +236,7 @@ export default function MessagesPage() {
                     {m.from === 'me' ? 'You' : active.user.name} said:{' '}
                   </span>
                   <p>{m.text}</p>
-                  <div className={clsx('mt-1 text-[10px]', m.from === 'me' ? 'text-brand-100/80' : 'text-ink-dim')}>
+                  <div className={clsx('mt-1 text-[10px]', m.from === 'me' ? 'text-white/85' : 'text-ink-dim')}>
                     {m.time}
                   </div>
                 </div>

@@ -272,7 +272,13 @@ function CommunityCard({
 }) {
   return (
     <div className="card overflow-hidden">
-      <Link href={`/dashboard/c/${community.slug}`} className="block">
+      {/* Wraps only the cover image, so it had no text and no name — a tab stop
+          that announced nothing at all. */}
+      <Link
+        href={`/dashboard/c/${community.slug}`}
+        aria-label={`Open ${community.name}`}
+        className="block"
+      >
         <div className="relative h-28">
           <Image
             src={community.cover}

@@ -39,10 +39,11 @@ export function Avatar({
         style={{ width: size, height: size }}
       />
       {online && (
-        <span
-          className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-accent-mint ring-2 ring-bg"
-          aria-label="Online"
-        />
+        // aria-label is prohibited on a bare span — it has no role to name, so
+        // assistive tech is free to ignore it (and axe flags it). Say it in text.
+        <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-accent-mint ring-2 ring-bg">
+          <span className="sr-only">Online</span>
+        </span>
       )}
     </span>
   );

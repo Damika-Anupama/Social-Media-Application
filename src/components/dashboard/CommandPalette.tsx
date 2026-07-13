@@ -228,7 +228,16 @@ export function CommandPaletteProvider({ children }: { children: React.ReactNode
                       >
                         <Icon className={clsx('h-4 w-4 shrink-0', active ? 'text-brand-300' : 'text-ink-dim')} />
                         <span className="flex-1 truncate">{c.label}</span>
-                        <span className="text-[10px] uppercase tracking-wider text-ink-dim">{c.group}</span>
+                        {/* ink-dim is tuned against the neutral surfaces; on the
+                            brand-tinted active row it lands at 4.44:1. */}
+                        <span
+                          className={clsx(
+                            'text-[10px] uppercase tracking-wider',
+                            active ? 'text-brand-200' : 'text-ink-dim',
+                          )}
+                        >
+                          {c.group}
+                        </span>
                         {active && <CornerDownLeft className="h-3.5 w-3.5 text-ink-dim" />}
                       </button>
                     </li>

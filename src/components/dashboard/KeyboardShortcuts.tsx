@@ -150,7 +150,14 @@ function ShortcutsDialog({ onClose }: { onClose: () => void }) {
           </button>
         </div>
 
-        <div className="max-h-[65vh] space-y-5 overflow-y-auto px-5 py-4">
+        {/* A scrollable region with no focusable child is unreachable by
+            keyboard — you can see the overflow and never scroll to it. */}
+        <div
+          tabIndex={0}
+          role="group"
+          aria-label="Shortcut list"
+          className="max-h-[65vh] space-y-5 overflow-y-auto px-5 py-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-400/60"
+        >
           {GROUPS.map((group) => (
             <section key={group}>
               <h3 className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-ink-dim">

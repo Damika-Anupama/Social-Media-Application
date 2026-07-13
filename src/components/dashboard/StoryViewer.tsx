@@ -148,7 +148,7 @@ export function StoryViewer({
             <div className="flex items-center gap-2 text-sm font-semibold text-white">
               {current.user.name}
               {current.isLive && (
-                <span className="inline-flex items-center gap-1 rounded-full bg-accent-coral px-1.5 py-0.5 text-[9px] font-bold uppercase">
+                <span className="inline-flex items-center gap-1 rounded-full bg-accent-coral px-1.5 py-0.5 text-[9px] font-bold uppercase text-black">
                   <Radio className="h-2.5 w-2.5" /> Live
                 </span>
               )}

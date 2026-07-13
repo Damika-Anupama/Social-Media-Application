@@ -52,7 +52,7 @@ export function StoryRail() {
             <Image src={s.thumbnail} alt="" fill sizes="112px" className="object-cover" />
             <div className="absolute inset-0 bg-gradient-to-t from-bg/95 via-bg/30 to-bg/10" />
             {s.isLive ? (
-              <span className="absolute left-2 top-2 inline-flex items-center gap-1 rounded-full bg-accent-coral px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
+              <span className="absolute left-2 top-2 inline-flex items-center gap-1 rounded-full bg-accent-coral px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-black">
                 <Radio className="h-3 w-3" /> Live
               </span>
             ) : (
