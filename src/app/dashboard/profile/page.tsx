@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import clsx from 'clsx';
 import {
   Calendar,
@@ -15,12 +15,10 @@ import {
 } from 'lucide-react';
 import { TopBar } from '@/components/dashboard/TopBar';
 import { PostCard } from '@/components/dashboard/PostCard';
-import {
-  currentUser as seedUser,
-  posts,
-  formatCount,
-  type User,
-} from '@/lib/mock-data';
+import { useProfile } from '@/lib/useProfile';
+import { useToast } from '@/components/Toast';
+import { LIMITS, validateProfile, type ProfileEdits, type ProfileErrors } from '@/lib/profile';
+import { posts, formatCount, type User } from '@/lib/mock-data';
 
 const stats = (u: User) => [
   { label: 'Posts', value: '184' },
@@ -33,7 +31,9 @@ const tabs = ['Posts', 'Replies', 'Media', 'Long-form', 'Likes'] as const;
 type Tab = (typeof tabs)[number];
 
 export default function ProfilePage() {
-  const [user, setUser] = useState<User>(seedUser);
+  // Persisted: an edit that disappears on reload is not an edit.
+  const { user, saveProfile } = useProfile();
+  const { toast } = useToast();
   const [tab, setTab] = useState<Tab>('Posts');
   const [editing, setEditing] = useState(false);
 
@@ -125,11 +125,13 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      <div className="mt-6 flex gap-2 overflow-x-auto pb-2">
+      <div role="tablist" aria-label="Profile content" className="mt-6 flex gap-2 overflow-x-auto pb-2">
         {tabs.map((t) => (
           <button
             key={t}
             type="button"
+            role="tab"
+            aria-selected={tab === t}
             onClick={() => setTab(t)}
             className={clsx(
               'rounded-full px-4 py-1.5 text-xs transition-colors',
@@ -155,9 +157,10 @@ export default function ProfilePage() {
         <EditProfileModal
           user={user}
           onClose={() => setEditing(false)}
-          onSave={(u) => {
-            setUser(u);
+          onSave={(edits) => {
+            saveProfile(edits);
             setEditing(false);
+            toast('Profile updated');
           }}
         />
       )}
@@ -165,6 +168,12 @@ export default function ProfilePage() {
   );
 }
 
+/**
+ * Edit-profile dialog.
+ *
+ * Was a plain <div> overlay: no dialog role, no Escape, no scroll lock, and no
+ * validation — you could save an empty display name and wipe your own identity.
+ */
 function EditProfileModal({
   user,
   onClose,
@@ -172,12 +181,46 @@ function EditProfileModal({
 }: {
   user: User;
   onClose: () => void;
-  onSave: (u: User) => void;
+  onSave: (edits: ProfileEdits) => void;
 }) {
-  const [name, setName] = useState(user.name);
-  const [bio, setBio] = useState(user.bio ?? '');
-  const [location, setLocation] = useState(user.location ?? '');
-  const [link, setLink] = useState(user.link ?? '');
+  const [edits, setEdits] = useState<ProfileEdits>({
+    name: user.name,
+    bio: user.bio ?? '',
+    location: user.location ?? '',
+    link: user.link ?? '',
+  });
+  /** Errors are only shown once the viewer has tried to save. */
+  const [showErrors, setShowErrors] = useState(false);
+  const nameRef = useRef<HTMLInputElement | null>(null);
+
+  const errors: ProfileErrors = validateProfile(edits);
+  const visibleErrors = showErrors ? errors : {};
+
+  const set = (key: keyof ProfileEdits) => (v: string) =>
+    setEdits((current) => ({ ...current, [key]: v }));
+
+  // Escape to close, and lock the page behind the dialog.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', onKey);
+    document.body.style.overflow = 'hidden';
+    nameRef.current?.focus();
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      document.body.style.overflow = '';
+    };
+  }, [onClose]);
+
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (Object.keys(errors).length) {
+      setShowErrors(true);
+      return;
+    }
+    onSave(edits);
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
@@ -187,30 +230,57 @@ function EditProfileModal({
         aria-label="Close"
         className="absolute inset-0 bg-bg/80 backdrop-blur-sm"
       />
-      <div className="card relative w-full max-w-lg p-6 shadow-2xl">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="edit-profile-title"
+        className="card relative w-full max-w-lg p-6 shadow-2xl"
+      >
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-ink">Edit profile</h3>
+          <h3 id="edit-profile-title" className="text-lg font-semibold text-ink">
+            Edit profile
+          </h3>
           <button type="button" onClick={onClose} className="btn-icon h-8 w-8" aria-label="Close">
             <X className="h-4 w-4" />
           </button>
         </div>
         <div className="mt-5 flex items-center gap-3 rounded-xl border border-line/60 bg-bg-subtle/60 p-3">
           <img src={user.avatar} alt="" className="h-12 w-12 rounded-full" />
-          <button className="btn-ghost px-3 py-1.5 text-xs">
+          <button type="button" className="btn-ghost px-3 py-1.5 text-xs">
             <ImageIcon className="h-3.5 w-3.5" /> Change avatar
           </button>
         </div>
-        <form
-          className="mt-5 space-y-4"
-          onSubmit={(e) => {
-            e.preventDefault();
-            onSave({ ...user, name, bio, location, link });
-          }}
-        >
-          <FieldInput label="Display name" value={name} onChange={setName} />
-          <FieldInput label="Bio" value={bio} onChange={setBio} multiline />
-          <FieldInput label="Location" value={location} onChange={setLocation} />
-          <FieldInput label="Link" value={link} onChange={setLink} />
+        <form className="mt-5 space-y-4" onSubmit={submit} noValidate>
+          <FieldInput
+            ref={nameRef}
+            label="Display name"
+            value={edits.name}
+            onChange={set('name')}
+            error={visibleErrors.name}
+            limit={LIMITS.name}
+          />
+          <FieldInput
+            label="Bio"
+            value={edits.bio}
+            onChange={set('bio')}
+            error={visibleErrors.bio}
+            limit={LIMITS.bio}
+            multiline
+          />
+          <FieldInput
+            label="Location"
+            value={edits.location}
+            onChange={set('location')}
+            error={visibleErrors.location}
+            limit={LIMITS.location}
+          />
+          <FieldInput
+            label="Link"
+            value={edits.link}
+            onChange={set('link')}
+            error={visibleErrors.link}
+            limit={LIMITS.link}
+          />
           <div className="flex items-center justify-end gap-2 pt-2">
             <button type="button" onClick={onClose} className="btn-ghost px-4 py-2 text-sm">
               Cancel
@@ -226,34 +296,63 @@ function EditProfileModal({
 }
 
 function FieldInput({
+  ref,
   label,
   value,
   onChange,
   multiline,
+  error,
+  limit,
 }: {
+  ref?: React.Ref<HTMLInputElement>;
   label: string;
   value: string;
   onChange: (v: string) => void;
   multiline?: boolean;
+  error?: string;
+  limit: number;
 }) {
+  const id = useId();
+  const errorId = `${id}-error`;
+  const over = value.trim().length > limit;
+
   return (
-    <label className="block">
-      <span className="text-xs font-medium text-ink-muted">{label}</span>
+    <div>
+      <div className="flex items-baseline justify-between">
+        <label htmlFor={id} className="text-xs font-medium text-ink-muted">
+          {label}
+        </label>
+        <span className={clsx('text-[11px] tabular-nums', over ? 'text-accent-coral' : 'text-ink-dim')}>
+          {value.trim().length}/{limit}
+        </span>
+      </div>
       {multiline ? (
         <textarea
+          id={id}
           value={value}
           onChange={(e) => onChange(e.target.value)}
           rows={3}
-          className="input-field mt-1.5"
+          aria-invalid={!!error}
+          aria-describedby={error ? errorId : undefined}
+          className={clsx('input-field mt-1.5', error && 'border-accent-coral/60')}
         />
       ) : (
         <input
+          ref={ref}
+          id={id}
           type="text"
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="input-field mt-1.5"
+          aria-invalid={!!error}
+          aria-describedby={error ? errorId : undefined}
+          className={clsx('input-field mt-1.5', error && 'border-accent-coral/60')}
         />
       )}
-    </label>
+      {error && (
+        <p id={errorId} role="alert" className="mt-1 text-xs text-accent-coral">
+          {error}
+        </p>
+      )}
+    </div>
   );
 }

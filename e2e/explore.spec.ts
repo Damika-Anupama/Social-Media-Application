@@ -73,7 +73,12 @@ test.describe("Pulse — explore", () => {
     await signIn(page);
     await page.goto("/dashboard/explore");
 
-    await page.getByRole("button", { name: /open image 1 full size/i }).click();
+    // The masonry images reflow as they load, so wait for the tile to settle
+    // before clicking — otherwise the click can land on moving layout.
+    const tile = page.getByRole("button", { name: /open image 1 full size/i });
+    await expect(tile).toBeVisible();
+    await tile.click();
+
     const lightbox = page.getByTestId("lightbox");
     await expect(lightbox).toBeVisible();
 

@@ -2,11 +2,21 @@ export function SkeletonBlock({ className }: { className?: string }) {
   return <div className={`shimmer-block ${className ?? ''}`} />;
 }
 
+/**
+ * Header placeholder for a route's loading screen.
+ *
+ * Rendered by every loading.tsx and nowhere else, so it is where the pending
+ * state gets announced: shimmer blocks are invisible to a screen reader, which
+ * otherwise sits in silence until the page swaps in.
+ */
 export function SkeletonTopBar() {
   return (
     <div className="mb-5 space-y-2 pt-4">
-      <div className="shimmer-block h-7 w-24 rounded-lg" />
-      <div className="shimmer-block h-3.5 w-56 rounded-lg" />
+      <p role="status" aria-live="polite" className="sr-only">
+        Loading…
+      </p>
+      <div aria-hidden="true" className="shimmer-block h-7 w-24 rounded-lg" />
+      <div aria-hidden="true" className="shimmer-block h-3.5 w-56 rounded-lg" />
     </div>
   );
 }
