@@ -1,11 +1,11 @@
 /* eslint-disable @next/next/no-img-element */
 'use client';
 
-import { useCallback, useMemo, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { usePathname, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import clsx from 'clsx';
-import { Flame, Globe2, MapPin, Search, Plus, Check, Loader2 } from 'lucide-react';
+import { Flame, Globe2, MapPin, Search, Plus, Check, Loader2, SearchX, X } from 'lucide-react';
 import { TopBar } from '@/components/dashboard/TopBar';
 import { Avatar } from '@/components/Avatar';
 import {
@@ -18,17 +18,53 @@ import {
 import { useInfiniteList } from '@/lib/useInfiniteList';
 import { useFollowing } from '@/lib/useFollowing';
 import { useToast } from '@/components/Toast';
+import { buildSearchQuery, describeResults, isEmptySearch, normalizeQuery } from '@/lib/search';
 import type { User } from '@/lib/mock-data';
 
 const chips = ['For you', 'Trending', 'News', 'Design', 'Climate', 'Tech', 'Sports', 'Film', 'Music', 'Books'];
 
+/** Debounce before rewriting the URL, so typing does not spam history. */
+const URL_SYNC_MS = 250;
+
 export function ExploreClient() {
   const searchParams = useSearchParams();
-  const initialQ = searchParams.get('q') ?? '';
-  const [query, setQuery] = useState(initialQ);
+  const pathname = usePathname();
+  const urlQuery = normalizeQuery(searchParams.get('q'));
+
+  const [query, setQuery] = useState(urlQuery);
   const [activeChip, setActiveChip] = useState('For you');
+  const [lightbox, setLightbox] = useState<string | null>(null);
   const { isFollowing, toggleFollow } = useFollowing();
   const { toast } = useToast();
+
+  /**
+   * The URL is the source of truth. Adopt it whenever it changes underneath us
+   * — the command palette pushes ?q=… even when Explore is already open, and
+   * Back/Forward move between searches. Without this the input silently
+   * ignored both.
+   */
+  useEffect(() => {
+    setQuery((current) => (normalizeQuery(current) === urlQuery ? current : urlQuery));
+  }, [urlQuery]);
+
+  /**
+   * Reflect typing back into the URL (debounced) so a search is shareable.
+   *
+   * Uses the native History API rather than router.replace: the App Router
+   * treats a replace to the same route as a no-op, so clearing the search
+   * would leave a stale ?q= behind forever. Next syncs useSearchParams with
+   * native history updates, so this stays the source of truth.
+   */
+  const syncTimer = useRef<number | null>(null);
+  useEffect(() => {
+    if (normalizeQuery(query) === urlQuery) return;
+    syncTimer.current = window.setTimeout(() => {
+      window.history.replaceState(null, '', `${pathname}${buildSearchQuery(query)}`);
+    }, URL_SYNC_MS);
+    return () => {
+      if (syncTimer.current !== null) window.clearTimeout(syncTimer.current);
+    };
+  }, [query, urlQuery, pathname]);
 
   const onFollow = (u: User) => {
     const wasFollowing = isFollowing(u.id);
@@ -61,17 +97,22 @@ export function ExploreClient() {
   );
   const { items: feedImages, loading, sentinelRef } = useInfiniteList<string>(exploreImages, loadMoreImages, 6);
 
+  const counts = { trends: filteredTrending.length, people: filteredUsers.length };
+  const resultSummary = describeResults(query, counts);
+  const nothingMatched = isEmptySearch(query, counts);
+
   return (
     <div className="px-4 pt-1 sm:px-6">
       <TopBar title="Explore" subtitle="What the rest of Pulse is paying attention to right now." />
 
       <div className="card mb-5 flex items-center gap-3 px-5 py-3">
-        <Search className="h-4 w-4 text-ink-dim" />
+        <Search aria-hidden="true" className="h-4 w-4 text-ink-dim" />
         <input
           type="search"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search topics, people, communities…"
+          aria-label="Search Pulse"
           className="w-full bg-transparent text-sm text-ink placeholder:text-ink-dim focus:outline-none"
         />
         {query && (
@@ -84,6 +125,12 @@ export function ExploreClient() {
           </button>
         )}
       </div>
+
+      {/* Search is instant, so results change with no navigation to announce.
+          This is the only signal a screen-reader user gets. */}
+      <p aria-live="polite" className="sr-only">
+        {resultSummary}
+      </p>
 
       <div className="mb-5 -mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
         {chips.map((c) => (
@@ -103,6 +150,36 @@ export function ExploreClient() {
         ))}
       </div>
 
+      {nothingMatched ? (
+        <section className="card mb-6 flex flex-col items-center px-6 py-14 text-center">
+          <span className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-full bg-bg-subtle text-ink-dim">
+            <SearchX aria-hidden="true" className="h-5 w-5" />
+          </span>
+          <h2 className="text-base font-semibold text-ink">
+            No results for &ldquo;{query.trim()}&rdquo;
+          </h2>
+          <p className="mt-1.5 max-w-sm text-sm text-ink-muted">
+            No trends or people match that. Try a shorter phrase, or pick up one of the
+            conversations already running.
+          </p>
+          <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
+            <button type="button" onClick={() => setQuery('')} className="btn-primary px-4 py-2 text-xs">
+              Clear search
+            </button>
+            {trending.slice(0, 3).map((t) => (
+              <button
+                key={t.title}
+                type="button"
+                onClick={() => setQuery(t.title)}
+                className="rounded-full border border-line bg-bg-subtle px-3 py-2 text-xs font-medium text-ink-muted transition-colors hover:text-ink"
+              >
+                {t.title}
+              </button>
+            ))}
+          </div>
+        </section>
+      ) : (
+        <>
       <section className="card mb-6 p-5">
         <div className="flex items-center gap-2">
           <Flame className="h-4 w-4 text-accent-coral" />
@@ -182,6 +259,8 @@ export function ExploreClient() {
           </div>
         )}
       </section>
+        </>
+      )}
 
       <section className="card p-5">
         <div className="flex items-center gap-2">
@@ -193,7 +272,9 @@ export function ExploreClient() {
             <button
               key={i}
               type="button"
-              className="mb-3 block w-full break-inside-avoid overflow-hidden rounded-2xl border border-line/60 transition-transform hover:-translate-y-0.5"
+              onClick={() => setLightbox(src)}
+              aria-label={`Open image ${i + 1} full size`}
+              className="mb-3 block w-full break-inside-avoid overflow-hidden rounded-2xl border border-line/60 transition-transform hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400/60"
             >
               <img src={src} alt="" className="w-full" />
             </button>
@@ -202,11 +283,56 @@ export function ExploreClient() {
         <div ref={sentinelRef} className="flex items-center justify-center pt-6">
           {loading && (
             <span className="inline-flex items-center gap-2 text-xs text-ink-muted">
-              <Loader2 className="h-4 w-4 animate-spin" /> Loading more
+              <Loader2 aria-hidden="true" className="h-4 w-4 animate-spin" /> Loading more
             </span>
           )}
         </div>
       </section>
+
+      {lightbox && <Lightbox src={lightbox} onClose={() => setLightbox(null)} />}
+    </div>
+  );
+}
+
+/** Full-size view of a visual-feed image. Closes on Escape or backdrop click. */
+function Lightbox({ src, onClose }: { src: string; onClose: () => void }) {
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', onKey);
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      document.body.style.overflow = '';
+    };
+  }, [onClose]);
+
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label="Image preview"
+      data-testid="lightbox"
+      className="fixed inset-0 z-[75] flex items-center justify-center px-4 py-10"
+    >
+      <button
+        type="button"
+        aria-label="Close image preview"
+        onClick={onClose}
+        className="absolute inset-0 bg-bg/85 backdrop-blur-sm"
+      />
+      <div className="motion-safe:animate-fade-up relative max-h-full w-full max-w-3xl overflow-hidden rounded-2xl border border-line bg-bg-raised shadow-2xl shadow-black/40">
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Close"
+          className="btn-icon absolute right-3 top-3 z-10 h-9 w-9 bg-bg/60 backdrop-blur"
+        >
+          <X className="h-4 w-4" />
+        </button>
+        <img src={src} alt="" className="max-h-[80vh] w-full object-contain" />
+      </div>
     </div>
   );
 }
