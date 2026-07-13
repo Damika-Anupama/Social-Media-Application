@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useCallback, useContext, useEffect, useState } from 'react';
+import { createContext, useCallback, useContext, useState } from 'react';
 
 type ComposeContextValue = {
   open: boolean;
@@ -12,21 +12,9 @@ const Ctx = createContext<ComposeContextValue | null>(null);
 export function ComposeProvider({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
 
-  useEffect(() => {
-    document.body.style.overflow = open ? 'hidden' : '';
-    return () => { document.body.style.overflow = ''; };
-  }, [open]);
-
-  // Escape closes the composer. Opening it with `n` belongs to the global
-  // shortcuts layer (see lib/shortcuts.ts) so all bindings live in one place.
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setOpen(false);
-    };
-    document.addEventListener('keydown', onKey);
-    return () => document.removeEventListener('keydown', onKey);
-  }, [open]);
+  // Escape-to-close and scroll lock belong to the dialog itself (useDialog, via
+  // ComposeModal); opening with `n` belongs to the shortcuts layer. This context
+  // only owns the open/closed bit.
 
   return (
     <Ctx.Provider value={{ open, setOpen }}>

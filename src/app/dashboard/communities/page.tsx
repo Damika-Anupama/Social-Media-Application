@@ -1,12 +1,13 @@
 'use client';
 
 import Image from 'next/image';
-import { useEffect, useId, useMemo, useRef, useState } from 'react';
+import { useId, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import clsx from 'clsx';
 import { Users2, Plus, Search, Check, X } from 'lucide-react';
 import { TopBar } from '@/components/dashboard/TopBar';
 import { useCommunities } from '@/lib/useCommunities';
+import { useDialog } from '@/lib/useDialog';
 import { NAME_LIMIT, TOPIC_LIMIT, validateCommunityName } from '@/lib/communities';
 import { useToast } from '@/components/Toast';
 import { formatCount, type Community } from '@/lib/mock-data';
@@ -158,23 +159,11 @@ function CreateCommunityModal({
   const [topic, setTopic] = useState('');
   const [showError, setShowError] = useState(false);
   const nameRef = useRef<HTMLInputElement | null>(null);
+  const dialogRef = useDialog<HTMLDivElement>({ onClose, initialFocus: nameRef });
   const id = useId();
   const errorId = `${id}-error`;
 
   const error = validateCommunityName(name, existing);
-
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
-    document.addEventListener('keydown', onKey);
-    document.body.style.overflow = 'hidden';
-    nameRef.current?.focus();
-    return () => {
-      document.removeEventListener('keydown', onKey);
-      document.body.style.overflow = '';
-    };
-  }, [onClose]);
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -194,10 +183,12 @@ function CreateCommunityModal({
         className="absolute inset-0 bg-bg/80 backdrop-blur-sm"
       />
       <div
+        ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby={`${id}-title`}
-        className="card relative w-full max-w-md p-6 shadow-2xl"
+        tabIndex={-1}
+        className="card relative w-full max-w-md p-6 shadow-2xl focus:outline-none"
       >
         <div className="flex items-center justify-between">
           <h3 id={`${id}-title`} className="text-lg font-semibold text-ink">

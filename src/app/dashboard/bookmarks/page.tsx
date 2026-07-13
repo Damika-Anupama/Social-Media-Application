@@ -8,6 +8,7 @@ import { PostCard } from '@/components/dashboard/PostCard';
 import { posts } from '@/lib/mock-data';
 import { useReactions } from '@/lib/useReactions';
 import { useCollections } from '@/lib/useCollections';
+import { useDialog } from '@/lib/useDialog';
 import { useToast } from '@/components/Toast';
 import {
   BUILT_IN,
@@ -234,23 +235,11 @@ function CreateCollectionModal({
   const [name, setName] = useState('');
   const [showError, setShowError] = useState(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const dialogRef = useDialog<HTMLDivElement>({ onClose, initialFocus: inputRef });
   const id = useId();
   const errorId = `${id}-error`;
 
   const error = validateCollectionName(name, existing);
-
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
-    document.addEventListener('keydown', onKey);
-    document.body.style.overflow = 'hidden';
-    inputRef.current?.focus();
-    return () => {
-      document.removeEventListener('keydown', onKey);
-      document.body.style.overflow = '';
-    };
-  }, [onClose]);
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -270,10 +259,12 @@ function CreateCollectionModal({
         className="absolute inset-0 bg-bg/80 backdrop-blur-sm"
       />
       <div
+        ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby={`${id}-title`}
-        className="card relative w-full max-w-md p-6 shadow-2xl"
+        tabIndex={-1}
+        className="card relative w-full max-w-md p-6 shadow-2xl focus:outline-none"
       >
         <div className="flex items-center justify-between">
           <h3 id={`${id}-title`} className="text-lg font-semibold text-ink">

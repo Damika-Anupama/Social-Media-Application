@@ -2,11 +2,19 @@
 
 import { useCompose } from './ComposeContext';
 import { PostComposer } from './PostComposer';
+import { useDialog } from '@/lib/useDialog';
 import { X } from 'lucide-react';
 
 export function ComposeModal() {
   const { open, setOpen } = useCompose();
   if (!open) return null;
+  return <ComposeModalContent onClose={() => setOpen(false)} />;
+}
+
+/** Split out so the dialog hook only mounts while the modal is actually open. */
+function ComposeModalContent({ onClose }: { onClose: () => void }) {
+  const setOpen = (v: boolean) => !v && onClose();
+  const dialogRef = useDialog<HTMLDivElement>({ onClose });
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto px-4 py-10 sm:py-16">
@@ -17,10 +25,12 @@ export function ComposeModal() {
         className="absolute inset-0 bg-bg/80 backdrop-blur-sm"
       />
       <div
+        ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby="compose-title"
-        className="relative w-full max-w-2xl animate-fade-up"
+        tabIndex={-1}
+        className="relative w-full max-w-2xl animate-fade-up focus:outline-none"
       >
         <div className="card relative overflow-hidden p-1.5 shadow-2xl shadow-brand-500/10">
           <div className="flex items-center justify-between px-4 pt-3">

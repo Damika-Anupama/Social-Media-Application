@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 'use client';
 
-import { useEffect, useId, useMemo, useRef, useState } from 'react';
+import { useId, useMemo, useRef, useState } from 'react';
 import Image from 'next/image';
 import clsx from 'clsx';
 import {
@@ -17,6 +17,7 @@ import {
 import { TopBar } from '@/components/dashboard/TopBar';
 import { PostCard } from '@/components/dashboard/PostCard';
 import { useProfile } from '@/lib/useProfile';
+import { useDialog } from '@/lib/useDialog';
 import { useToast } from '@/components/Toast';
 import { LIMITS, validateProfile, type ProfileEdits, type ProfileErrors } from '@/lib/profile';
 import { posts, formatCount, type User } from '@/lib/mock-data';
@@ -197,26 +198,13 @@ function EditProfileModal({
   /** Errors are only shown once the viewer has tried to save. */
   const [showErrors, setShowErrors] = useState(false);
   const nameRef = useRef<HTMLInputElement | null>(null);
+  const dialogRef = useDialog<HTMLDivElement>({ onClose, initialFocus: nameRef });
 
   const errors: ProfileErrors = validateProfile(edits);
   const visibleErrors = showErrors ? errors : {};
 
   const set = (key: keyof ProfileEdits) => (v: string) =>
     setEdits((current) => ({ ...current, [key]: v }));
-
-  // Escape to close, and lock the page behind the dialog.
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
-    document.addEventListener('keydown', onKey);
-    document.body.style.overflow = 'hidden';
-    nameRef.current?.focus();
-    return () => {
-      document.removeEventListener('keydown', onKey);
-      document.body.style.overflow = '';
-    };
-  }, [onClose]);
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -236,10 +224,12 @@ function EditProfileModal({
         className="absolute inset-0 bg-bg/80 backdrop-blur-sm"
       />
       <div
+        ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby="edit-profile-title"
-        className="card relative w-full max-w-lg p-6 shadow-2xl"
+        tabIndex={-1}
+        className="card relative w-full max-w-lg p-6 shadow-2xl focus:outline-none"
       >
         <div className="flex items-center justify-between">
           <h3 id="edit-profile-title" className="text-lg font-semibold text-ink">

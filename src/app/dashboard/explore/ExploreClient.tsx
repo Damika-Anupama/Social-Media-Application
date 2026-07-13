@@ -20,6 +20,7 @@ import { useFollowing } from '@/lib/useFollowing';
 import { useToast } from '@/components/Toast';
 import { buildSearchQuery, describeResults, isEmptySearch, normalizeQuery } from '@/lib/search';
 import { parseImageSize } from '@/lib/images';
+import { useDialog } from '@/lib/useDialog';
 import type { User } from '@/lib/mock-data';
 
 const chips = ['For you', 'Trending', 'News', 'Design', 'Climate', 'Tech', 'Sports', 'Film', 'Music', 'Books'];
@@ -309,25 +310,17 @@ export function ExploreClient() {
 
 /** Full-size view of a visual-feed image. Closes on Escape or backdrop click. */
 function Lightbox({ src, onClose }: { src: string; onClose: () => void }) {
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
-    document.addEventListener('keydown', onKey);
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.removeEventListener('keydown', onKey);
-      document.body.style.overflow = '';
-    };
-  }, [onClose]);
+  const dialogRef = useDialog<HTMLDivElement>({ onClose });
 
   return (
     <div
+      ref={dialogRef}
       role="dialog"
       aria-modal="true"
       aria-label="Image preview"
       data-testid="lightbox"
-      className="fixed inset-0 z-[75] flex items-center justify-center px-4 py-10"
+      tabIndex={-1}
+      className="fixed inset-0 z-[75] flex items-center justify-center px-4 py-10 focus:outline-none"
     >
       <button
         type="button"

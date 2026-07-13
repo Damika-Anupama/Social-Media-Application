@@ -25,6 +25,7 @@ import {
   CornerDownLeft,
 } from 'lucide-react';
 import { useComposeOpener } from './ComposeContext';
+import { useDialog } from '@/lib/useDialog';
 
 type CommandPaletteContextValue = {
   open: boolean;
@@ -51,6 +52,12 @@ export function CommandPaletteProvider({ children }: { children: React.ReactNode
   const inputRef = useRef<HTMLInputElement>(null);
 
   const close = useCallback(() => setOpen(false), []);
+  // Trap Tab and restore focus to whatever was focused before ⌘K.
+  const dialogRef = useDialog<HTMLDivElement>({
+    onClose: close,
+    initialFocus: inputRef,
+    enabled: open,
+  });
 
   const navItems: { label: string; href: string; icon: Command['icon'] }[] = useMemo(
     () => [
@@ -177,11 +184,13 @@ export function CommandPaletteProvider({ children }: { children: React.ReactNode
             className="absolute inset-0 bg-bg/80 backdrop-blur-sm"
           />
           <div
+            ref={dialogRef}
             role="dialog"
             aria-modal="true"
             aria-label="Command palette"
             onKeyDown={onKeyDown}
-            className="motion-safe:animate-fade-up relative w-full max-w-xl overflow-hidden rounded-2xl border border-line bg-bg-raised shadow-2xl shadow-black/40"
+            tabIndex={-1}
+            className="motion-safe:animate-fade-up relative w-full max-w-xl overflow-hidden rounded-2xl border border-line bg-bg-raised shadow-2xl shadow-black/40 focus:outline-none"
           >
             <div className="flex items-center gap-3 border-b border-line/60 px-4 py-3">
               <Search className="h-4 w-4 shrink-0 text-ink-dim" />

@@ -6,6 +6,7 @@ import { X } from 'lucide-react';
 import { SHORTCUTS, isTypingTarget, resolveShortcut, type ShortcutAction } from '@/lib/shortcuts';
 import { useComposeOpener } from './ComposeContext';
 import { useCommandPalette } from './CommandPalette';
+import { useDialog } from '@/lib/useDialog';
 
 /** How long a `g` prefix stays armed before it expires. */
 const CHORD_TIMEOUT_MS = 1200;
@@ -112,20 +113,28 @@ export function KeyboardShortcuts() {
   }, [paletteOpen, perform, clearChord]);
 
   if (!helpOpen) return null;
+  return <ShortcutsDialog onClose={() => setHelpOpen(false)} />;
+}
+
+/** Split out so the dialog hook only mounts while the overlay is open. */
+function ShortcutsDialog({ onClose }: { onClose: () => void }) {
+  const dialogRef = useDialog<HTMLDivElement>({ onClose });
 
   return (
     <div className="fixed inset-0 z-[80] flex items-center justify-center px-4">
       <button
         type="button"
         aria-label="Close keyboard shortcuts"
-        onClick={() => setHelpOpen(false)}
+        onClick={onClose}
         className="absolute inset-0 bg-bg/80 backdrop-blur-sm"
       />
       <div
+        ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby="shortcuts-title"
-        className="motion-safe:animate-fade-up relative w-full max-w-lg overflow-hidden rounded-2xl border border-line bg-bg-raised shadow-2xl shadow-black/40"
+        tabIndex={-1}
+        className="motion-safe:animate-fade-up relative w-full max-w-lg overflow-hidden rounded-2xl border border-line bg-bg-raised shadow-2xl shadow-black/40 focus:outline-none"
       >
         <div className="flex items-center justify-between border-b border-line/60 px-5 py-3.5">
           <h2 id="shortcuts-title" className="text-sm font-semibold text-ink">
@@ -133,7 +142,7 @@ export function KeyboardShortcuts() {
           </h2>
           <button
             type="button"
-            onClick={() => setHelpOpen(false)}
+            onClick={onClose}
             aria-label="Close"
             className="rounded-lg p-1 text-ink-dim transition-colors hover:bg-bg-elevated/60 hover:text-ink"
           >
