@@ -1,10 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import { TopBar } from '@/components/dashboard/TopBar';
 import { currentUser } from '@/lib/mock-data';
 import { Avatar } from '@/components/Avatar';
 import { usePreferences } from '@/lib/PreferencesContext';
+import { useSettings } from '@/lib/useSettings';
 import {
   User as UserIcon,
   Bell,
@@ -34,12 +35,20 @@ export default function SettingsPage() {
       <TopBar title="Settings" subtitle="Make Pulse yours. Every setting on this screen is reversible." />
 
       <div className="card grid overflow-hidden md:grid-cols-[240px_1fr]">
-        <nav className="border-b border-line/60 p-3 md:border-b-0 md:border-r">
+        <nav
+          role="tablist"
+          aria-orientation="vertical"
+          aria-label="Settings sections"
+          className="border-b border-line/60 p-3 md:border-b-0 md:border-r"
+        >
           {sections.map((s) => {
             const Icon = s.icon;
             return (
               <button
                 key={s.id}
+                type="button"
+                role="tab"
+                aria-selected={active === s.id}
                 onClick={() => setActive(s.id)}
                 className={clsx(
                   'flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-sm font-medium transition-colors',
@@ -93,26 +102,73 @@ function AccountSection() {
 }
 
 function NotificationsSection() {
+  const { settings, setSetting } = useSettings();
   return (
     <div className="space-y-6">
       <h2 className="text-lg font-semibold text-ink">Notifications</h2>
-      <Toggle label="Mentions" hint="Always notify when someone @-mentions me." defaultOn />
-      <Toggle label="Replies to my posts" hint="Group quiet activity into a daily digest." defaultOn />
-      <Toggle label="New followers" hint="One ping per follower, no batching." />
-      <Toggle label="Live rooms from people I follow" hint="Up to two pings per day." defaultOn />
-      <Toggle label="Trending in your network" hint="Off by default — opt in only." />
+      <Toggle
+        label="Mentions"
+        hint="Always notify when someone @-mentions me."
+        checked={settings.notifyMentions}
+        onChange={(v) => setSetting('notifyMentions', v)}
+      />
+      <Toggle
+        label="Replies to my posts"
+        hint="Group quiet activity into a daily digest."
+        checked={settings.notifyReplies}
+        onChange={(v) => setSetting('notifyReplies', v)}
+      />
+      <Toggle
+        label="New followers"
+        hint="One ping per follower, no batching."
+        checked={settings.notifyFollowers}
+        onChange={(v) => setSetting('notifyFollowers', v)}
+      />
+      <Toggle
+        label="Live rooms from people I follow"
+        hint="Up to two pings per day."
+        checked={settings.notifyLiveRooms}
+        onChange={(v) => setSetting('notifyLiveRooms', v)}
+      />
+      <Toggle
+        label="Trending in your network"
+        hint="Off by default — opt in only."
+        checked={settings.notifyTrending}
+        onChange={(v) => setSetting('notifyTrending', v)}
+      />
     </div>
   );
 }
 
 function PrivacySection() {
+  const { settings, setSetting } = useSettings();
   return (
     <div className="space-y-6">
       <h2 className="text-lg font-semibold text-ink">Privacy</h2>
-      <Toggle label="Private account" hint="Approve every follower manually." />
-      <Toggle label="Hide read receipts in DMs" hint="Only affects new conversations." />
-      <Toggle label="Discover by phone or email" hint="Off by default." />
-      <Toggle label="Personalised ads" hint="Pulse does not sell your data. Period." disabled />
+      <Toggle
+        label="Private account"
+        hint="Approve every follower manually."
+        checked={settings.privateAccount}
+        onChange={(v) => setSetting('privateAccount', v)}
+      />
+      <Toggle
+        label="Hide read receipts in DMs"
+        hint="Only affects new conversations."
+        checked={settings.hideReadReceipts}
+        onChange={(v) => setSetting('hideReadReceipts', v)}
+      />
+      <Toggle
+        label="Discover by phone or email"
+        hint="Off by default."
+        checked={settings.discoverByContact}
+        onChange={(v) => setSetting('discoverByContact', v)}
+      />
+      <Toggle
+        label="Personalised ads"
+        hint="Pulse does not sell your data. Period."
+        checked={false}
+        disabled
+      />
     </div>
   );
 }
@@ -206,55 +262,69 @@ function Row({ label, value, muted }: { label: string; value: string; muted?: bo
         <div className="text-sm font-medium text-ink">{label}</div>
         <div className={clsx('text-sm', muted ? 'text-ink-dim' : 'text-ink-muted')}>{value}</div>
       </div>
-      <button className="btn-ghost px-3 py-1.5 text-xs">Edit</button>
+      {/* Five identical "Edit" buttons read as five identical "Edit" buttons —
+          name each by the row it belongs to. */}
+      <button className="btn-ghost px-3 py-1.5 text-xs" aria-label={`Edit ${label.toLowerCase()}`}>
+        Edit
+      </button>
     </div>
   );
 }
 
+/**
+ * An accessible on/off switch.
+ *
+ * Previously a bare <button aria-pressed> whose only content was a decorative
+ * span — so it had no accessible name at all: a screen reader announced
+ * "button, pressed" and nothing else, fourteen times down the page. It is now
+ * a role="switch" named by its label and described by its hint.
+ */
 function Toggle({
   label,
   hint,
-  defaultOn,
-  disabled,
   checked,
+  disabled,
   onChange,
 }: {
   label: string;
   hint: string;
-  defaultOn?: boolean;
+  checked: boolean;
   disabled?: boolean;
-  checked?: boolean;
   onChange?: (next: boolean) => void;
 }) {
-  // Controlled when `checked` is provided; otherwise self-managed (cosmetic).
-  const isControlled = checked !== undefined;
-  const [internalOn, setInternalOn] = useState(!!defaultOn);
-  const on = isControlled ? checked : internalOn;
-  const toggle = () => {
-    if (isControlled) onChange?.(!on);
-    else setInternalOn((s) => !s);
-  };
+  const id = useId();
+  const labelId = `${id}-label`;
+  const hintId = `${id}-hint`;
+
   return (
     <div className="flex items-start justify-between gap-4 border-t border-line/40 pt-4">
       <div className="flex-1">
-        <div className="text-sm font-medium text-ink">{label}</div>
-        <div className="text-xs text-ink-dim">{hint}</div>
+        <div id={labelId} className="text-sm font-medium text-ink">
+          {label}
+        </div>
+        <div id={hintId} className="text-xs text-ink-dim">
+          {hint}
+        </div>
       </div>
       <button
         type="button"
+        role="switch"
+        aria-checked={checked}
+        aria-labelledby={labelId}
+        aria-describedby={hintId}
         disabled={disabled}
-        onClick={toggle}
+        onClick={() => onChange?.(!checked)}
         className={clsx(
-          'relative h-6 w-11 shrink-0 rounded-full transition-colors',
-          disabled && 'opacity-50',
-          on ? 'bg-brand-500' : 'bg-line',
+          'relative h-6 w-11 shrink-0 rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400/60 focus-visible:ring-offset-2 focus-visible:ring-offset-bg',
+          disabled && 'cursor-not-allowed opacity-50',
+          checked ? 'bg-brand-500' : 'bg-line',
         )}
-        aria-pressed={on}
       >
         <span
+          aria-hidden="true"
           className={clsx(
             'absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-all',
-            on ? 'left-[22px]' : 'left-0.5',
+            checked ? 'left-[22px]' : 'left-0.5',
           )}
         />
       </button>
