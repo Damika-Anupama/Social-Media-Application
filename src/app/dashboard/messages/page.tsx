@@ -1,10 +1,22 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import clsx from 'clsx';
-import { Send, Search, Plus, Phone, Video, Info, Smile, Paperclip, Image as ImageIcon } from 'lucide-react';
+import {
+  Send,
+  Search,
+  Plus,
+  Phone,
+  Video,
+  Info,
+  Smile,
+  Paperclip,
+  Image as ImageIcon,
+  ArrowLeft,
+} from 'lucide-react';
 import { TopBar } from '@/components/dashboard/TopBar';
 import { Avatar } from '@/components/Avatar';
+import { useConversations } from '@/lib/useConversations';
 import {
   conversations as seedConversations,
   threadsByConversation,
@@ -23,23 +35,49 @@ const cannedReplies = [
 
 export default function MessagesPage() {
   const [convos, setConvos] = useState<ConversationPreview[]>(seedConversations);
-  const [threads, setThreads] = useState<Record<string, ChatMessage[]>>(threadsByConversation);
   const [activeId, setActiveId] = useState(seedConversations[0].id);
   const [draft, setDraft] = useState('');
   const [search, setSearch] = useState('');
   const [typing, setTyping] = useState(false);
+  /**
+   * Below md the list and the thread are separate screens (there is not room
+   * for both), so we track which one the viewer is looking at. Desktop shows
+   * both and ignores this entirely.
+   */
+  const [showThreadOnMobile, setShowThreadOnMobile] = useState(false);
   const endRef = useRef<HTMLDivElement | null>(null);
+  const replyTimer = useRef<number | null>(null);
+
+  const { sent, append } = useConversations();
 
   const active = convos.find((c) => c.id === activeId) ?? convos[0];
-  const thread = threads[activeId] ?? [];
+  // Seeded history first, then everything said since (restored from storage).
+  const thread = useMemo<ChatMessage[]>(
+    () => [...(threadsByConversation[activeId] ?? []), ...(sent[activeId] ?? [])],
+    [activeId, sent],
+  );
+
+  // A pending canned reply must not outlive the page.
+  useEffect(
+    () => () => {
+      if (replyTimer.current !== null) window.clearTimeout(replyTimer.current);
+    },
+    [],
+  );
 
   useEffect(() => {
     setConvos((cs) => cs.map((c) => (c.id === activeId ? { ...c, unread: undefined } : c)));
   }, [activeId]);
 
+  // Keep the newest message in view without yanking the whole page around.
   useEffect(() => {
-    endRef.current?.scrollIntoView({ behavior: 'smooth' });
+    endRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }, [thread.length, typing, activeId]);
+
+  const openConversation = useCallback((id: string) => {
+    setActiveId(id);
+    setShowThreadOnMobile(true);
+  }, []);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -56,31 +94,40 @@ export default function MessagesPage() {
     e.preventDefault();
     const text = draft.trim();
     if (!text) return;
-    const myMsg: ChatMessage = { from: 'me', time: 'now', text };
-    setThreads((t) => ({ ...t, [activeId]: [...(t[activeId] ?? []), myMsg] }));
+
+    const conversationId = activeId;
+    append(conversationId, { from: 'me', time: 'now', text });
     setConvos((cs) =>
-      cs.map((c) => (c.id === activeId ? { ...c, lastMessage: text, time: 'now' } : c)),
+      cs.map((c) => (c.id === conversationId ? { ...c, lastMessage: text, time: 'now' } : c)),
     );
     setDraft('');
 
     setTyping(true);
-    setTimeout(() => {
-      const reply = cannedReplies[Math.floor(Math.random() * cannedReplies.length)];
-      const themMsg: ChatMessage = { from: 'them', time: 'now', text: reply };
-      setThreads((t) => ({ ...t, [activeId]: [...(t[activeId] ?? []), themMsg] }));
-      setConvos((cs) =>
-        cs.map((c) => (c.id === activeId ? { ...c, lastMessage: reply, time: 'now' } : c)),
-      );
-      setTyping(false);
-    }, 1400 + Math.random() * 1000);
+    replyTimer.current = window.setTimeout(
+      () => {
+        const reply = cannedReplies[Math.floor(Math.random() * cannedReplies.length)];
+        append(conversationId, { from: 'them', time: 'now', text: reply });
+        setConvos((cs) =>
+          cs.map((c) => (c.id === conversationId ? { ...c, lastMessage: reply, time: 'now' } : c)),
+        );
+        setTyping(false);
+        replyTimer.current = null;
+      },
+      1400 + Math.random() * 1000,
+    );
   };
 
   return (
     <div className="px-4 pt-1 sm:px-6">
       <TopBar title="Messages" subtitle="Direct conversations are end-to-end encrypted on Pulse." />
 
-      <div className="card grid h-[calc(100vh-200px)] grid-cols-1 overflow-hidden md:grid-cols-[320px_1fr]">
-        <div className="flex flex-col border-r border-line/60">
+      <div className="card grid h-[calc(100dvh-220px)] min-h-[420px] grid-cols-1 overflow-hidden md:h-[calc(100vh-200px)] md:grid-cols-[320px_1fr]">
+        <div
+          className={clsx(
+            'flex-col border-r border-line/60 md:flex',
+            showThreadOnMobile ? 'hidden' : 'flex',
+          )}
+        >
           <div className="flex items-center gap-2 border-b border-line/60 p-3">
             <div className="flex flex-1 items-center gap-2 rounded-full border border-line/60 bg-bg-subtle px-3 py-1.5">
               <Search className="h-3.5 w-3.5 text-ink-dim" />
@@ -104,7 +151,8 @@ export default function MessagesPage() {
                 <li key={c.id}>
                   <button
                     type="button"
-                    onClick={() => setActiveId(c.id)}
+                    onClick={() => openConversation(c.id)}
+                    aria-current={c.id === activeId ? 'true' : undefined}
                     className={clsx(
                       'flex w-full items-start gap-3 border-l-2 px-4 py-3 text-left transition-colors',
                       c.id === activeId
@@ -132,8 +180,21 @@ export default function MessagesPage() {
           </ul>
         </div>
 
-        <div className="flex h-full flex-col">
+        <div
+          className={clsx(
+            'h-full flex-col md:flex',
+            showThreadOnMobile ? 'flex' : 'hidden',
+          )}
+        >
           <div className="flex items-center gap-3 border-b border-line/60 p-4">
+            <button
+              type="button"
+              onClick={() => setShowThreadOnMobile(false)}
+              className="btn-icon h-9 w-9 shrink-0 md:hidden"
+              aria-label="Back to conversations"
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </button>
             <Avatar user={active.user} size={40} online={active.online} />
             <div className="min-w-0 flex-1">
               <div className="truncate text-sm font-semibold text-ink">{active.user.name}</div>
@@ -146,10 +207,19 @@ export default function MessagesPage() {
             <button className="btn-icon h-9 w-9" aria-label="Info"><Info className="h-4 w-4" /></button>
           </div>
 
-          <div className="flex-1 space-y-3 overflow-y-auto p-5">
+          <div
+            role="log"
+            aria-live="polite"
+            aria-label={`Conversation with ${active.user.name}`}
+            className="flex-1 space-y-3 overflow-y-auto p-5"
+          >
             <div className="mx-auto w-fit rounded-full bg-bg-subtle px-3 py-1 text-[11px] text-ink-dim">Today</div>
             {thread.map((m, i) => (
-              <div key={i} className={clsx('flex gap-2', m.from === 'me' ? 'justify-end' : 'justify-start')}>
+              <div
+                key={i}
+                data-testid="chat-message"
+                className={clsx('flex gap-2', m.from === 'me' ? 'justify-end' : 'justify-start')}
+              >
                 {m.from === 'them' && <Avatar user={active.user} size={28} />}
                 <div
                   className={clsx(
@@ -159,6 +229,9 @@ export default function MessagesPage() {
                       : 'rounded-bl-sm border border-line/60 bg-bg-subtle text-ink',
                   )}
                 >
+                  <span className="sr-only">
+                    {m.from === 'me' ? 'You' : active.user.name} said:{' '}
+                  </span>
                   <p>{m.text}</p>
                   <div className={clsx('mt-1 text-[10px]', m.from === 'me' ? 'text-brand-100/80' : 'text-ink-dim')}>
                     {m.time}
@@ -168,10 +241,11 @@ export default function MessagesPage() {
               </div>
             ))}
             {typing && (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2" data-testid="typing-indicator">
                 <Avatar user={active.user} size={28} />
                 <div className="rounded-2xl rounded-bl-sm border border-line/60 bg-bg-subtle px-4 py-3">
-                  <span className="inline-flex gap-1">
+                  <span className="sr-only">{active.user.name} is typing…</span>
+                  <span aria-hidden="true" className="inline-flex gap-1">
                     <Dot delay="0ms" />
                     <Dot delay="120ms" />
                     <Dot delay="240ms" />
