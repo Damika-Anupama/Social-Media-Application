@@ -80,19 +80,25 @@ export default function ProfilePage() {
         </div>
         <div className="px-6 pb-6 sm:px-8">
           <div className="-mt-12 flex flex-col items-start gap-5 sm:flex-row sm:items-end sm:justify-between">
-            <div className="flex items-end gap-4">
-              <span className="relative inline-flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-brand-400 via-brand-500 to-accent-mint p-1 shadow-xl">
+            {/* The avatar is fixed-width; the name beside it must be allowed to
+                shrink, or a long display name pushes the card off a 320px phone. */}
+            <div className="flex min-w-0 max-w-full items-end gap-4">
+              <span className="relative inline-flex h-24 w-24 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-brand-400 via-brand-500 to-accent-mint p-1 shadow-xl">
                 <img src={user.avatar} alt="" className="h-full w-full rounded-full bg-bg object-cover" />
               </span>
-              <div className="pb-2">
-                <div className="flex items-center gap-2">
-                  <h2 className="font-display text-2xl font-semibold tracking-tight">{user.name}</h2>
-                  {user.verified && <BadgeCheck className="h-5 w-5 text-brand-300" aria-label="Verified" />}
+              <div className="min-w-0 pb-2">
+                <div className="flex min-w-0 items-center gap-2">
+                  <h2 className="truncate font-display text-2xl font-semibold tracking-tight">
+                    {user.name}
+                  </h2>
+                  {user.verified && (
+                    <BadgeCheck className="h-5 w-5 shrink-0 text-brand-300" aria-label="Verified" />
+                  )}
                 </div>
-                <p className="text-sm text-ink-dim">@{user.handle}</p>
+                <p className="truncate text-sm text-ink-dim">@{user.handle}</p>
               </div>
             </div>
-            <div className="flex items-center gap-2 pb-2">
+            <div className="flex flex-wrap items-center gap-2 pb-2">
               <button
                 type="button"
                 onClick={() => setEditing(true)}
