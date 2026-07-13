@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState } from 'react';
 import clsx from 'clsx';
 import { X, ChevronLeft, ChevronRight, Heart, Send, Radio, Pause, Play } from 'lucide-react';
 import { Avatar } from '@/components/Avatar';
+import { useDialog } from '@/lib/useDialog';
 import type { Story } from '@/lib/mock-data';
 
 const STORY_DURATION_MS = 5000;
@@ -54,9 +55,13 @@ export function StoryViewer({
     return () => clearInterval(id);
   }, [paused, next, progress, index]);
 
+  // Escape, scroll lock, focus trap and focus restore come from useDialog —
+  // this overlay covered the whole screen and had none of them, so Tab walked
+  // straight out into the page behind it. Story navigation stays here.
+  const dialogRef = useDialog<HTMLDivElement>({ onClose });
+
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
       if (e.key === 'ArrowRight') next();
       if (e.key === 'ArrowLeft') prev();
       if (e.key === ' ') {
@@ -64,16 +69,19 @@ export function StoryViewer({
         setPaused((p) => !p);
       }
     };
-    document.body.style.overflow = 'hidden';
     document.addEventListener('keydown', onKey);
-    return () => {
-      document.body.style.overflow = '';
-      document.removeEventListener('keydown', onKey);
-    };
-  }, [next, prev, onClose]);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [next, prev]);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-bg/95 backdrop-blur-xl">
+    <div
+      ref={dialogRef}
+      role="dialog"
+      aria-modal="true"
+      aria-label={`${current.user.name}'s story`}
+      tabIndex={-1}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-bg/95 backdrop-blur-xl focus:outline-none"
+    >
       {/* Stories advance on their own. WCAG 2.2.2 wants a way to stop that, and
           "hold the mouse down" is not a way anyone can find. */}
       <button

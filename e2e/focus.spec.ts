@@ -89,6 +89,30 @@ test.describe("Pulse — dialog focus management", () => {
     await expect(tile).toBeFocused();
   });
 
+  test("the story viewer traps focus and restores it to its tile", async ({
+    page,
+  }) => {
+    await signIn(page);
+    await page.goto("/dashboard/stories");
+
+    const tile = page.getByRole("button", { name: /view .+'s story/i }).first();
+    await tile.click();
+
+    const story = page.getByRole("dialog", { name: /'s story/i });
+    await expect(story).toBeVisible();
+
+    // It covers the entire screen; Tab used to walk out into the page beneath.
+    for (let i = 0; i < 10; i++) {
+      await page.keyboard.press("Tab");
+      const inside = await story.evaluate((el) => el.contains(document.activeElement));
+      expect(inside).toBe(true);
+    }
+
+    await page.keyboard.press("Escape");
+    await expect(story).toBeHidden();
+    await expect(tile).toBeFocused();
+  });
+
   test("the shortcuts overlay traps focus", async ({ page }) => {
     await signIn(page);
     await page.keyboard.press("?");

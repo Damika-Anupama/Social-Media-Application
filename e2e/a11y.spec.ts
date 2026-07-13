@@ -123,6 +123,63 @@ test.describe("Pulse — accessibility audit", () => {
     const { violations } = await (await audit(page)).analyze();
     expect(describeViolations(violations)).toBe("");
   });
+
+  // The four dialogs the first sweep never opened.
+  test("the edit-profile dialog has no violations", async ({ page }) => {
+    await signIn(page);
+    await page.goto("/dashboard/profile");
+    await page.getByRole("button", { name: /edit profile/i }).click();
+    await expect(page.getByRole("dialog", { name: /edit profile/i })).toBeVisible();
+
+    const { violations } = await (await audit(page)).analyze();
+    expect(describeViolations(violations)).toBe("");
+  });
+
+  test("the create-community dialog has no violations", async ({ page }) => {
+    await signIn(page);
+    await page.goto("/dashboard/communities");
+    await page.getByRole("button", { name: /create community/i }).click();
+    await expect(page.getByRole("dialog", { name: /create community/i })).toBeVisible();
+
+    const { violations } = await (await audit(page)).analyze();
+    expect(describeViolations(violations)).toBe("");
+  });
+
+  test("the new-collection dialog has no violations", async ({ page }) => {
+    await signIn(page);
+    await page.goto("/dashboard/bookmarks");
+    await page.getByRole("button", { name: /new collection/i }).click();
+    await expect(page.getByRole("dialog", { name: /new collection/i })).toBeVisible();
+
+    const { violations } = await (await audit(page)).analyze();
+    expect(describeViolations(violations)).toBe("");
+  });
+
+  test("the explore lightbox has no violations", async ({ page }) => {
+    await signIn(page);
+    await page.goto("/dashboard/explore");
+    const tile = page.getByRole("button", { name: /open image 1 full size/i });
+    await expect(tile).toBeVisible();
+    await tile.click();
+    await expect(page.getByTestId("lightbox")).toBeVisible();
+
+    const { violations } = await (await audit(page)).analyze();
+    expect(describeViolations(violations)).toBe("");
+  });
+
+  test("the story viewer has no violations", async ({ page }) => {
+    await signIn(page);
+    await page.goto("/dashboard/stories");
+    await page.getByRole("button", { name: /view .+'s story/i }).first().click();
+
+    // Regression: this covered the whole screen and was not a dialog at all —
+    // no role, no aria-modal, no name, and Tab escaped it.
+    const story = page.getByRole("dialog", { name: /'s story/i });
+    await expect(story).toBeVisible();
+
+    const { violations } = await (await audit(page)).analyze();
+    expect(describeViolations(violations)).toBe("");
+  });
 });
 
 /**

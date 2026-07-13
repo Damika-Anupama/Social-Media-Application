@@ -46,8 +46,21 @@ export function useDialog<T extends HTMLElement = HTMLDivElement>({
     // Whatever had focus when we opened — we owe it back on close.
     const previouslyFocused = document.activeElement as HTMLElement | null;
 
+    /**
+     * Matching the selector is not enough: a `display: none` control still
+     * matches it, but the browser will not tab to it. The trap then believed
+     * there were more elements to reach, never recognised the real last one,
+     * and let Tab walk straight out of the dialog. It only showed up in the
+     * story viewer, which is the one dialog with responsive (md:hidden)
+     * buttons — the others have nothing hidden to get this wrong about.
+     */
+    const isFocusable = (el: HTMLElement) =>
+      el.getClientRects().length > 0 && getComputedStyle(el).visibility !== 'hidden';
+
     const focusable = () =>
-      dialog ? Array.from(dialog.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)) : [];
+      dialog
+        ? Array.from(dialog.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)).filter(isFocusable)
+        : [];
 
     // Move focus in: the caller's choice, else the first thing we can focus,
     // else the dialog itself (so Escape still reaches us).
