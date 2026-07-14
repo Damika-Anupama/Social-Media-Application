@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Image as ImageIcon, Smile, MapPin, Calendar, Hash, Globe2, ChevronDown, Check } from 'lucide-react';
 import { Avatar } from '@/components/Avatar';
+import { DemoButton } from '@/components/DemoButton';
 import { currentUser } from '@/lib/mock-data';
 import { useUserPostsContext } from '@/lib/UserPostsContext';
 import clsx from 'clsx';
@@ -89,12 +90,13 @@ export function PostComposer({
             </div>
 
             <div className="flex min-w-0 flex-wrap items-center justify-end gap-2 sm:gap-3">
-              <button
-                type="button"
+              <DemoButton
+                notice="Audience controls aren't part of this demo — every post here is public."
                 className="inline-flex items-center gap-1.5 rounded-full border border-line bg-bg-subtle px-3 py-1.5 text-xs text-ink-muted hover:text-ink"
               >
-                <Globe2 className="h-3.5 w-3.5" /> Everyone <ChevronDown className="h-3 w-3" />
-              </button>
+                <Globe2 aria-hidden="true" className="h-3.5 w-3.5" /> Everyone{' '}
+                <ChevronDown aria-hidden="true" className="h-3 w-3" />
+              </DemoButton>
               <span className={clsx('text-xs tabular-nums', remainingTone)}>{remaining}</span>
               {posted ? (
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-accent-mint/10 px-5 py-2 text-sm font-medium text-accent-mint-fg animate-fade-up">
@@ -119,13 +121,13 @@ export function PostComposer({
 
 function ToolbarButton({ icon, label }: { icon: React.ReactNode; label: string }) {
   return (
-    <button
-      type="button"
+    <DemoButton
+      notice={`${label} isn't part of this demo — the text composer is.`}
       className="inline-flex items-center justify-center rounded-full p-2 transition-colors hover:bg-bg-subtle hover:text-ink"
       aria-label={label}
       title={label}
     >
       {icon}
-    </button>
+    </DemoButton>
   );
 }

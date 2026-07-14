@@ -16,8 +16,10 @@ import {
 } from 'lucide-react';
 import { TopBar } from '@/components/dashboard/TopBar';
 import { useTabs } from '@/components/Tabs';
+import { DemoButton } from '@/components/DemoButton';
 import { PostCard } from '@/components/dashboard/PostCard';
 import { useProfile } from '@/lib/useProfile';
+import { buildShareUrl, shareLink } from '@/lib/share';
 import { useDialog } from '@/lib/useDialog';
 import { Portal } from '@/components/Portal';
 import { useToast } from '@/components/Toast';
@@ -40,6 +42,19 @@ export default function ProfilePage() {
   const { toast } = useToast();
   const [tab, setTab] = useState<Tab>('Posts');
   const [editing, setEditing] = useState(false);
+
+  // The Share button had no onClick — sharing your own profile is the one thing
+  // a profile page is for, and it was the one thing it did not do.
+  const onShare = async () => {
+    const result = await shareLink({
+      url: buildShareUrl(`/dashboard/u/${user.handle}`),
+      title: `${user.name} (@${user.handle}) on Pulse`,
+      text: user.bio,
+    });
+    if (result === 'copied') toast('Profile link copied to clipboard');
+    else if (result === 'failed') toast('Could not share this profile', { tone: 'info' });
+  };
+
   const { tabListProps, getTabProps } = useTabs({
     items: tabs,
     selected: tabs.indexOf(tab),
@@ -107,7 +122,7 @@ export default function ProfilePage() {
               >
                 <Settings2 className="h-4 w-4" /> Edit profile
               </button>
-              <button className="btn-primary px-4 py-2 text-sm">
+              <button type="button" onClick={onShare} className="btn-primary px-4 py-2 text-sm">
                 <MessageCircle className="h-4 w-4" /> Share
               </button>
             </div>
@@ -252,9 +267,12 @@ function EditProfileModal({
         </div>
         <div className="mt-5 flex items-center gap-3 rounded-xl border border-line/60 bg-bg-subtle/60 p-3">
           <img src={user.avatar} alt="" className="h-12 w-12 rounded-full" />
-          <button type="button" className="btn-ghost px-3 py-1.5 text-xs">
-            <ImageIcon className="h-3.5 w-3.5" /> Change avatar
-          </button>
+          <DemoButton
+            notice="Uploading an avatar isn't part of this demo — name, bio, location and link all save."
+            className="btn-ghost px-3 py-1.5 text-xs"
+          >
+            <ImageIcon aria-hidden="true" className="h-3.5 w-3.5" /> Change avatar
+          </DemoButton>
         </div>
         <form className="mt-5 space-y-4" onSubmit={submit} noValidate>
           <FieldInput

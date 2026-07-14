@@ -17,6 +17,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { Avatar } from '@/components/Avatar';
+import { DemoButton } from '@/components/DemoButton';
 import { currentUser, notifications } from '@/lib/mock-data';
 import { useComposeOpener } from '@/components/dashboard/ComposeContext';
 import { useReadNotifications, countUnread } from '@/lib/useReadNotifications';
@@ -101,7 +102,12 @@ export function Sidebar() {
           <p className="mt-2 text-sm leading-snug text-ink">
             Long-form essays, scheduled posts, and analytics. Try free for 30 days.
           </p>
-          <button className="btn-ghost mt-3 w-full justify-center py-2 text-xs">Start trial</button>
+          <DemoButton
+            notice="There's nothing to bill — Pulse is a demo, and everything in it is free."
+            className="btn-ghost mt-3 w-full justify-center py-2 text-xs"
+          >
+            Start trial
+          </DemoButton>
         </div>
 
         <div className="mt-auto flex items-center gap-3 rounded-xl border border-line/60 bg-bg-raised/70 p-2.5">

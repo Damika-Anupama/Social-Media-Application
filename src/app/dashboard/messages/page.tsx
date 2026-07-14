@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { TopBar } from '@/components/dashboard/TopBar';
 import { Avatar } from '@/components/Avatar';
+import { DemoButton } from '@/components/DemoButton';
 import { useConversations } from '@/lib/useConversations';
 import { scrollBehavior, useReducedMotion } from '@/lib/useReducedMotion';
 import {
@@ -143,9 +144,9 @@ export default function MessagesPage() {
                 className="w-full bg-transparent py-1 text-xs text-ink placeholder:text-ink-dim focus:outline-none"
               />
             </div>
-            <button className="btn-icon h-8 w-8" aria-label="New message" title="New message">
-              <Plus className="h-4 w-4" />
-            </button>
+            <DemoButton notice="Starting a new conversation isn't part of this demo — the existing threads are real." className="btn-icon h-8 w-8" aria-label="New message">
+              <Plus aria-hidden="true" className="h-4 w-4" />
+            </DemoButton>
           </div>
           <ul className="flex-1 overflow-y-auto">
             {filtered.length === 0 ? (
@@ -206,9 +207,9 @@ export default function MessagesPage() {
                 @{active.user.handle} · {active.online ? 'Active now' : 'Active recently'}
               </div>
             </div>
-            <button className="btn-icon h-9 w-9" aria-label="Call"><Phone className="h-4 w-4" /></button>
-            <button className="btn-icon h-9 w-9" aria-label="Video"><Video className="h-4 w-4" /></button>
-            <button className="btn-icon h-9 w-9" aria-label="Info"><Info className="h-4 w-4" /></button>
+            <DemoButton notice="Voice calls aren't part of this demo." className="btn-icon h-9 w-9" aria-label="Call"><Phone aria-hidden="true" className="h-4 w-4" /></DemoButton>
+            <DemoButton notice="Video calls aren't part of this demo." className="btn-icon h-9 w-9" aria-label="Video"><Video aria-hidden="true" className="h-4 w-4" /></DemoButton>
+            <DemoButton notice="Conversation details aren't part of this demo." className="btn-icon h-9 w-9" aria-label="Info"><Info aria-hidden="true" className="h-4 w-4" /></DemoButton>
           </div>
 
           <div
@@ -261,15 +262,15 @@ export default function MessagesPage() {
           </div>
 
           <form onSubmit={send} className="flex items-center gap-2 border-t border-line/60 p-3">
-            <button type="button" className="btn-icon h-9 w-9" aria-label="Attach"><Paperclip className="h-4 w-4" /></button>
-            <button type="button" className="btn-icon h-9 w-9" aria-label="Photo"><ImageIcon className="h-4 w-4" /></button>
+            <DemoButton notice="Attachments aren't part of this demo — messages are." className="btn-icon h-9 w-9" aria-label="Attach"><Paperclip aria-hidden="true" className="h-4 w-4" /></DemoButton>
+            <DemoButton notice="Sending photos isn't part of this demo." className="btn-icon h-9 w-9" aria-label="Photo"><ImageIcon aria-hidden="true" className="h-4 w-4" /></DemoButton>
             <input
               value={draft}
               onChange={(e) => setDraft(e.target.value)}
               placeholder={`Message ${active.user.name.split(' ')[0]}…`}
               className="flex-1 rounded-full border border-line/60 bg-bg-subtle px-4 py-2.5 text-sm text-ink placeholder:text-ink-dim focus:border-brand-400/40 focus:outline-none"
             />
-            <button type="button" className="btn-icon h-9 w-9" aria-label="Emoji"><Smile className="h-4 w-4" /></button>
+            <DemoButton notice="The emoji picker isn't part of this demo." className="btn-icon h-9 w-9" aria-label="Emoji"><Smile aria-hidden="true" className="h-4 w-4" /></DemoButton>
             <button type="submit" disabled={!draft.trim()} className="btn-primary px-4 py-2.5 disabled:opacity-40" aria-label="Send">
               <Send className="h-4 w-4" />
             </button>

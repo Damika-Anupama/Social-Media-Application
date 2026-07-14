@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { Search, Bell, MessageCircle, Sparkles } from 'lucide-react';
 import { Avatar } from '@/components/Avatar';
+import { DemoButton } from '@/components/DemoButton';
 import { currentUser } from '@/lib/mock-data';
 import { useCommandPalette } from '@/components/dashboard/CommandPalette';
 
@@ -60,9 +61,13 @@ export function TopBar({ title, subtitle }: { title: string; subtitle?: string }
           <Link href="/dashboard/messages" className="btn-icon" aria-label="Messages">
             <MessageCircle className="h-4 w-4" />
           </Link>
-          <button className="btn-icon hidden sm:inline-flex" aria-label="What's new">
-            <Sparkles className="h-4 w-4 text-accent-sun-fg" />
-          </button>
+          <DemoButton
+            notice="The changelog isn't part of this demo."
+            className="btn-icon hidden sm:inline-flex"
+            aria-label="What's new"
+          >
+            <Sparkles aria-hidden="true" className="h-4 w-4 text-accent-sun-fg" />
+          </DemoButton>
           <Link href="/dashboard/profile" aria-label="Profile" className="ml-1">
             <Avatar user={currentUser} size={36} />
           </Link>

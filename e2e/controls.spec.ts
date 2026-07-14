@@ -1,0 +1,78 @@
+import { test, expect } from "@playwright/test";
+
+/**
+ * Every control does something.
+ *
+ * Twenty buttons in this app had no handler at all. These cover the ones that
+ * should genuinely work — and the ones that are deliberately out of scope,
+ * which now say so instead of silently doing nothing.
+ */
+
+async function signIn(page: import("@playwright/test").Page) {
+  await page.goto("/login");
+  await page.locator('input[type="email"]').fill("ada@studio.com");
+  await page.locator('input[type="password"]').fill("Lovelace1");
+  await page.getByRole("button", { name: /continue to pulse/i }).click();
+  await expect(page).toHaveURL(/\/dashboard/);
+}
+
+test.describe("Pulse — controls that do something", () => {
+  test("Follow on a post page follows, and it persists", async ({ page }) => {
+    await signIn(page);
+    await page.goto("/dashboard/p/p1");
+
+    // Regression: this button had no onClick whatsoever.
+    const follow = page.getByRole("button", { name: /^follow @/i });
+    const who = (await follow.getAttribute("aria-label"))!.replace(/^Follow /, "");
+    await follow.click();
+
+    await expect(page.getByRole("button", { name: `Unfollow ${who}` })).toBeVisible();
+
+    await page.reload();
+    await expect(page.getByRole("button", { name: `Unfollow ${who}` })).toBeVisible();
+  });
+
+  test("Join on a community page joins, and it persists", async ({ page }) => {
+    await signIn(page);
+    await page.goto("/dashboard/c/slow-web");
+
+    // Regression: the button said "Following" whether you were or not, and
+    // clicking it did nothing.
+    const join = page.getByRole("button", { name: /^(join|leave) /i }).first();
+    const before = (await join.getAttribute("aria-pressed")) === "true";
+    await join.click();
+
+    const after = page.getByRole("button", { name: /^(join|leave) /i }).first();
+    await expect(after).toHaveAttribute("aria-pressed", String(!before));
+
+    await page.reload();
+    await expect(
+      page.getByRole("button", { name: /^(join|leave) /i }).first(),
+    ).toHaveAttribute("aria-pressed", String(!before));
+  });
+
+  test("out-of-scope controls say so instead of doing nothing", async ({ page }) => {
+    await signIn(page);
+    await page.goto("/dashboard/messages");
+
+    // On a phone the thread (and its call buttons) is a separate screen.
+    const call = page.getByLabel("Call", { exact: true });
+    if (!(await call.isVisible())) {
+      await page.getByRole("button", { name: /nadia/i }).first().click();
+    }
+
+    await page.getByLabel("Call", { exact: true }).click();
+    await expect(page.getByText(/voice calls aren't part of this demo/i)).toBeVisible();
+  });
+
+  test("the post menu explains itself rather than staying silent", async ({ page }) => {
+    await signIn(page);
+
+    await page
+      .getByRole("button", { name: /more options for this post/i })
+      .first()
+      .click();
+
+    await expect(page.getByText(/post menu isn't part of this demo/i)).toBeVisible();
+  });
+});

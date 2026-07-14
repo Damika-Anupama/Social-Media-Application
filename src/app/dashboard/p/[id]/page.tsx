@@ -6,6 +6,7 @@ import { parseImageSize } from '@/lib/images';
 import { TopBar } from '@/components/dashboard/TopBar';
 import { PostCard } from '@/components/dashboard/PostCard';
 import { CommentThread } from '@/components/dashboard/CommentThread';
+import { FollowButton } from '@/components/dashboard/FollowButton';
 import { Avatar } from '@/components/Avatar';
 import { ArrowLeft, BadgeCheck, MapPin } from 'lucide-react';
 import type { Metadata } from 'next';
@@ -75,7 +76,7 @@ export default async function PostDetailPage({ params }: Params) {
               <span className="badge text-[10px]">Pulse · public</span>
             </div>
           </div>
-          <button className="btn-ghost px-4 py-2 text-sm">Follow</button>
+          <FollowButton user={post.author} />
         </header>
 
         <div className="mt-5 whitespace-pre-line text-base leading-relaxed text-ink">{post.body}</div>

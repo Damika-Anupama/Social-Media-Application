@@ -3,6 +3,7 @@
 import { useId, useState } from 'react';
 import { TopBar } from '@/components/dashboard/TopBar';
 import { useTabs } from '@/components/Tabs';
+import { DemoButton } from '@/components/DemoButton';
 import { currentUser } from '@/lib/mock-data';
 import { Avatar } from '@/components/Avatar';
 import { usePreferences } from '@/lib/PreferencesContext';
@@ -96,7 +97,12 @@ function AccountSection() {
           <div className="truncate text-sm font-semibold text-ink">{currentUser.name}</div>
           <div className="truncate text-xs text-ink-dim">@{currentUser.handle}</div>
         </div>
-        <button className="btn-ghost shrink-0 px-4 py-2 text-sm">Change photo</button>
+        <DemoButton
+          notice="Uploading an avatar isn't part of this demo — your name, bio and links are editable on your profile."
+          className="btn-ghost shrink-0 px-4 py-2 text-sm"
+        >
+          Change photo
+        </DemoButton>
       </div>
       <Row label="Display name" value="Damika Anupama" />
       <Row label="Username" value={`@${currentUser.handle}`} />
@@ -275,12 +281,13 @@ function Row({ label, value, muted }: { label: string; value: string; muted?: bo
       </div>
       {/* Five identical "Edit" buttons read as five identical "Edit" buttons —
           name each by the row it belongs to. */}
-      <button
+      <DemoButton
+        notice={`Editing your ${label.toLowerCase()} isn't part of this demo — display name, bio, location and link are, on your profile.`}
         className="btn-ghost shrink-0 px-3 py-1.5 text-xs"
         aria-label={`Edit ${label.toLowerCase()}`}
       >
         Edit
-      </button>
+      </DemoButton>
     </div>
   );
 }

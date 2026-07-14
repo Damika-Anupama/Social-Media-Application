@@ -17,6 +17,7 @@ import {
 import type { Post } from '@/lib/mock-data';
 import { formatCount } from '@/lib/mock-data';
 import { Avatar } from '@/components/Avatar';
+import { DemoButton } from '@/components/DemoButton';
 import { useReactions } from '@/lib/useReactions';
 import { useToast } from '@/components/Toast';
 import { buildShareUrl, shareLink } from '@/lib/share';
@@ -98,9 +99,9 @@ export function PostCard({ post }: { post: Post }) {
           </div>
           <p className="mt-0.5 text-xs text-ink-dim line-clamp-1">{post.author.bio}</p>
         </div>
-        <button className="btn-icon h-8 w-8" aria-label="More">
-          <MoreHorizontal className="h-4 w-4" />
-        </button>
+        <DemoButton notice="The post menu isn't part of this demo — sharing and bookmarking are." className="btn-icon h-8 w-8" aria-label="More options for this post">
+          <MoreHorizontal aria-hidden="true" className="h-4 w-4" />
+        </DemoButton>
       </header>
 
       <Link

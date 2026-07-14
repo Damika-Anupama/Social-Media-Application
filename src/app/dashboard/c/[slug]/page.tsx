@@ -1,9 +1,10 @@
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
-import { ArrowLeft, Pin, Users2, Sparkles, MessageCircle } from 'lucide-react';
+import { ArrowLeft, Pin, Users2 } from 'lucide-react';
 import Link from 'next/link';
 import { TopBar } from '@/components/dashboard/TopBar';
 import { PostCard } from '@/components/dashboard/PostCard';
+import { CommunityActions } from '@/components/dashboard/CommunityActions';
 import { communities, findCommunity, posts, formatCount } from '@/lib/mock-data';
 import type { Metadata } from 'next';
 
@@ -65,12 +66,7 @@ export default async function CommunityPage({ params }: Params) {
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <button className="btn-ghost px-4 py-2 text-sm">
-                <MessageCircle className="h-4 w-4" /> Post in community
-              </button>
-              <button className="btn-primary px-4 py-2 text-sm">
-                <Sparkles className="h-4 w-4" /> Following
-              </button>
+              <CommunityActions community={community} />
             </div>
           </div>
           <p className="mt-5 max-w-2xl text-sm leading-relaxed text-ink-muted">{community.description}</p>
