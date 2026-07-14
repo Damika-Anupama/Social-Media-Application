@@ -6,7 +6,9 @@ import clsx from 'clsx';
 import { X, ChevronLeft, ChevronRight, Heart, Send, Radio, Pause, Play } from 'lucide-react';
 import { Avatar } from '@/components/Avatar';
 import { useDialog } from '@/lib/useDialog';
-import type { Story } from '@/lib/mock-data';
+import { conversations, type Story } from '@/lib/mock-data';
+import { useConversations } from '@/lib/useConversations';
+import { useToast } from '@/components/Toast';
 
 const STORY_DURATION_MS = 5000;
 
@@ -23,8 +25,33 @@ export function StoryViewer({
   const [progress, setProgress] = useState(0);
   const [paused, setPaused] = useState(false);
   const [liked, setLiked] = useState(false);
+  const [reply, setReply] = useState('');
+
+  const { append } = useConversations();
+  const { toast } = useToast();
 
   const current = stories[index];
+
+  /**
+   * Send the reply as a direct message to whoever posted the story. If there is
+   * no thread with them in the seeded inbox, say so rather than pretending it
+   * landed somewhere.
+   */
+  const sendReply = (e: React.FormEvent) => {
+    e.preventDefault();
+    const text = reply.trim();
+    if (!text) return;
+
+    const conversation = conversations.find((c) => c.user.handle === current.user.handle);
+    if (!conversation) {
+      toast(`You don't have a conversation with @${current.user.handle} yet.`, { tone: 'info' });
+      return;
+    }
+
+    append(conversation.id, { from: 'me', time: 'now', text });
+    setReply('');
+    toast(`Reply sent to ${current.user.name.split(' ')[0]} — find it in Messages`);
+  };
 
   const next = useCallback(() => {
     setLiked(false);
@@ -165,18 +192,23 @@ export function StoryViewer({
           </div>
         </div>
 
-        <div className="absolute inset-x-0 bottom-0 p-5">
+        <div className="absolute inset-x-0 bottom-0 z-10 p-5">
           {current.caption && (
             <p className="mb-4 text-sm leading-snug text-white drop-shadow-md">{current.caption}</p>
           )}
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-            }}
-            className="flex items-center gap-2"
-          >
+          {/* This form used to swallow whatever you typed: submit called
+              preventDefault and stopped. Replying to a story is a direct
+              message, and messages are a real, persisted feature — so send it
+              there, and say where it went. */}
+          <form onSubmit={sendReply} className="flex items-center gap-2">
+            <label htmlFor="story-reply" className="sr-only">
+              Reply to {current.user.name}
+            </label>
             <input
+              id="story-reply"
               type="text"
+              value={reply}
+              onChange={(e) => setReply(e.target.value)}
               placeholder={`Reply to ${current.user.name.split(' ')[0]}…`}
               className="flex-1 rounded-full border border-white/20 bg-bg/40 px-4 py-2.5 text-sm text-white placeholder:text-white/60 focus:border-white/50 focus:outline-none"
             />
@@ -189,23 +221,31 @@ export function StoryViewer({
             >
               <Heart className={clsx('h-4 w-4', liked && 'fill-accent-coral text-accent-coral-fg')} />
             </button>
-            <button type="submit" className="btn-icon h-10 w-10" aria-label="Send reply">
+            <button
+              type="submit"
+              disabled={!reply.trim()}
+              className="btn-icon h-10 w-10 disabled:opacity-40"
+              aria-label="Send reply"
+            >
               <Send className="h-4 w-4" />
             </button>
           </form>
         </div>
 
+        {/* These invisible tap zones used to span the full height, so on a
+            phone they sat on top of the reply bar: tapping Send advanced the
+            story instead of sending the reply. They now stop above it. */}
         <button
           type="button"
           onClick={prev}
           aria-label="Tap previous"
-          className="absolute inset-y-0 left-0 w-1/3 md:hidden"
+          className="absolute bottom-24 left-0 top-0 w-1/3 md:hidden"
         />
         <button
           type="button"
           onClick={next}
           aria-label="Tap next"
-          className="absolute inset-y-0 right-0 w-1/3 md:hidden"
+          className="absolute bottom-24 right-0 top-0 w-1/3 md:hidden"
         />
       </div>
     </div>

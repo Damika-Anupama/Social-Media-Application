@@ -18,13 +18,20 @@ import {
 import { useInfiniteList } from '@/lib/useInfiniteList';
 import { useFollowing } from '@/lib/useFollowing';
 import { useToast } from '@/components/Toast';
-import { buildSearchQuery, describeResults, isEmptySearch, normalizeQuery } from '@/lib/search';
+import {
+  EXPLORE_CHIPS,
+  buildSearchQuery,
+  describeResults,
+  isEmptySearch,
+  matchesChip,
+  normalizeQuery,
+  type ExploreChip,
+} from '@/lib/search';
 import { parseImageSize } from '@/lib/images';
 import { useDialog } from '@/lib/useDialog';
 import { Portal } from '@/components/Portal';
 import type { User } from '@/lib/mock-data';
 
-const chips = ['For you', 'Trending', 'News', 'Design', 'Climate', 'Tech', 'Sports', 'Film', 'Music', 'Books'];
 
 /** Debounce before rewriting the URL, so typing does not spam history. */
 const URL_SYNC_MS = 250;
@@ -35,7 +42,7 @@ export function ExploreClient() {
   const urlQuery = normalizeQuery(searchParams.get('q'));
 
   const [query, setQuery] = useState(urlQuery);
-  const [activeChip, setActiveChip] = useState('For you');
+  const [activeChip, setActiveChip] = useState<ExploreChip>('For you');
   const [lightbox, setLightbox] = useState<string | null>(null);
   const { isFollowing, toggleFollow } = useFollowing();
   const { toast } = useToast();
@@ -79,10 +86,17 @@ export function ExploreClient() {
 
   const q = query.trim().toLowerCase();
 
-  const filteredTrending = useMemo(() => {
-    if (!q) return trending;
-    return trending.filter((t) => t.title.toLowerCase().includes(q) || t.category.toLowerCase().includes(q));
-  }, [q]);
+  // The chip used to be decoration: it moved the highlight and filtered nothing.
+  const filteredTrending = useMemo(
+    () =>
+      trending
+        .filter((t) => matchesChip(t.category, activeChip))
+        .filter(
+          (t) =>
+            !q || t.title.toLowerCase().includes(q) || t.category.toLowerCase().includes(q),
+        ),
+    [q, activeChip],
+  );
 
   const filteredUsers = useMemo(() => {
     if (!q) return users.slice(0, 8);
@@ -136,11 +150,12 @@ export function ExploreClient() {
       </p>
 
       <div className="mb-5 -mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
-        {chips.map((c) => (
+        {EXPLORE_CHIPS.map((c) => (
           <button
             key={c}
             type="button"
             onClick={() => setActiveChip(c)}
+            aria-pressed={activeChip === c}
             className={clsx(
               'shrink-0 rounded-full px-4 py-1.5 text-xs transition-colors',
               activeChip === c
@@ -189,7 +204,12 @@ export function ExploreClient() {
           <h2 className="text-sm font-semibold text-ink">Headline trends</h2>
         </div>
         {filteredTrending.length === 0 ? (
-          <p className="mt-4 text-sm text-ink-muted">Nothing trending matches &ldquo;{query}&rdquo;.</p>
+          // With a chip selected and no search, "matches ''" reads like a bug.
+          <p className="mt-4 text-sm text-ink-muted">
+            {query.trim()
+              ? `Nothing trending in ${activeChip} matches “${query.trim()}”.`
+              : `Nothing trending in ${activeChip} right now.`}
+          </p>
         ) : (
           <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {filteredTrending.map((t) => (

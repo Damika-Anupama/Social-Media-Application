@@ -76,3 +76,57 @@ test.describe("Pulse — controls that do something", () => {
     await expect(page.getByText(/post menu isn't part of this demo/i)).toBeVisible();
   });
 });
+
+test.describe("Pulse — controls that only looked like they worked", () => {
+  test("Explore chips actually filter, not just highlight", async ({ page }) => {
+    await signIn(page);
+    await page.goto("/dashboard/explore");
+
+    // Wait for hydration before counting: the chips are server-rendered, so a
+    // count taken too early is a count of the pre-interactive page.
+    await expect(
+      page.getByRole("button", { name: "For you", exact: true }),
+    ).toHaveAttribute("aria-pressed", "true");
+
+    const trends = page.locator('a[href*="/dashboard/explore?q="]');
+    const before = await trends.count();
+    expect(before).toBeGreaterThan(1);
+
+    // Regression: clicking a chip moved the highlight and filtered nothing.
+    await page.getByRole("button", { name: "Design", exact: true }).click();
+    await expect(
+      page.getByRole("button", { name: "Design", exact: true }),
+    ).toHaveAttribute("aria-pressed", "true");
+
+    await expect.poll(() => trends.count()).toBeLessThan(before);
+
+    // "For you" restores everything.
+    await page.getByRole("button", { name: "For you", exact: true }).click();
+    await expect.poll(() => trends.count()).toBe(before);
+  });
+
+  test("a story reply is sent as a message, not swallowed", async ({ page }) => {
+    await signIn(page);
+    await page.goto("/dashboard/stories");
+    await page.getByRole("button", { name: /view .+'s story/i }).first().click();
+
+    const unique = `Loved this ${Date.now()}`;
+    const reply = page.getByLabel(/^reply to /i);
+    await reply.fill(unique);
+
+    // Regression: submit called preventDefault and stopped. Whatever you typed
+    // went nowhere at all.
+    await page.getByRole("button", { name: "Send reply" }).click();
+    await expect(page.getByText(/find it in messages/i)).toBeVisible();
+
+    // And it really is in Messages.
+    await page.goto("/dashboard/messages");
+    const composer = page.getByPlaceholder(/^Message /).first();
+    if (!(await composer.isVisible())) {
+      await page.getByRole("button", { name: /nadia/i }).first().click();
+    }
+    await expect(
+      page.getByTestId("chat-message").filter({ hasText: unique }),
+    ).toBeVisible();
+  });
+});

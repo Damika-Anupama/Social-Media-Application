@@ -1,5 +1,45 @@
 import { describe, expect, it } from 'vitest';
-import { buildSearchQuery, describeResults, isEmptySearch, normalizeQuery } from './search';
+import {
+  EXPLORE_CHIPS,
+  buildSearchQuery,
+  describeResults,
+  isEmptySearch,
+  matchesChip,
+  normalizeQuery,
+} from './search';
+import { trending } from './mock-data';
+
+describe('matchesChip', () => {
+  it('"For you" keeps everything', () => {
+    for (const t of trending) expect(matchesChip(t.category, 'For you')).toBe(true);
+  });
+
+  it('matches the categories the data actually uses', () => {
+    // The real strings, not invented ones: "Technology · Trending", "Music · Now".
+    expect(matchesChip('Technology · Trending', 'Tech')).toBe(true);
+    expect(matchesChip('Technology · Trending', 'Trending')).toBe(true);
+    expect(matchesChip('Music · Now', 'Music')).toBe(true);
+    expect(matchesChip('Politics', 'News')).toBe(true);
+    expect(matchesChip('Climate', 'Climate')).toBe(true);
+  });
+
+  it('excludes what does not belong', () => {
+    expect(matchesChip('Sports', 'Design')).toBe(false);
+    expect(matchesChip('Books', 'Climate')).toBe(false);
+  });
+
+  it('is case-insensitive', () => {
+    expect(matchesChip('DESIGN', 'Design')).toBe(true);
+  });
+
+  it('every chip except "For you" narrows the list', () => {
+    // The bug: the chips changed the highlight and filtered nothing at all.
+    for (const chip of EXPLORE_CHIPS.filter((c) => c !== 'For you')) {
+      const kept = trending.filter((t) => matchesChip(t.category, chip));
+      expect(kept.length, `${chip} kept everything`).toBeLessThan(trending.length);
+    }
+  });
+});
 
 describe('buildSearchQuery', () => {
   it('encodes the term', () => {
