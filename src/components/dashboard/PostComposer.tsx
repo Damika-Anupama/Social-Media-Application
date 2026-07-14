@@ -76,7 +76,7 @@ export function PostComposer({
             onChange={(e) => setText(e.target.value)}
             placeholder="What are you noticing today?"
             rows={3}
-            className="w-full resize-none rounded-xl bg-transparent text-[15px] leading-relaxed text-ink placeholder:text-ink-dim focus:outline-none"
+            className="w-full resize-none rounded-xl bg-transparent p-2 text-[15px] leading-relaxed text-ink placeholder:text-ink-dim focus:outline-none focus:ring-2 focus:ring-brand-500/30"
           />
 
           <div className="mt-3 flex flex-wrap items-center justify-between gap-y-3 border-t border-line/60 pt-3">

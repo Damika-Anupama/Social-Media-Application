@@ -132,7 +132,7 @@ export default function MessagesPage() {
           )}
         >
           <div className="flex items-center gap-2 border-b border-line/60 p-3">
-            <div className="flex flex-1 items-center gap-2 rounded-full border border-line/60 bg-bg-subtle px-3 py-1.5">
+            <div className="flex flex-1 items-center gap-2 rounded-full border border-line/60 bg-bg-subtle px-3 py-1.5 focus-within:border-brand-400/50 focus-within:ring-2 focus-within:ring-brand-500/20">
               <Search className="h-3.5 w-3.5 text-ink-dim" />
               <input
                 type="search"

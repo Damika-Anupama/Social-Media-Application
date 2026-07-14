@@ -49,7 +49,7 @@ export default function CommunitiesPage() {
       <TopBar title="Communities" subtitle="Small, opinionated rooms where the conversation goes deeper." />
 
       <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex flex-1 items-center gap-2 rounded-full border border-line/60 bg-bg-subtle px-4 py-2">
+        <div className="flex flex-1 items-center gap-2 rounded-full border border-line/60 bg-bg-subtle px-4 py-2 focus-within:border-brand-400/50 focus-within:ring-2 focus-within:ring-brand-500/20">
           <Search className="h-4 w-4 text-ink-dim" />
           <input
             type="search"

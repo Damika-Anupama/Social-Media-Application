@@ -108,7 +108,7 @@ export function ExploreClient() {
     <div className="px-4 pt-1 sm:px-6">
       <TopBar title="Explore" subtitle="What the rest of Pulse is paying attention to right now." />
 
-      <div className="card mb-5 flex items-center gap-3 px-5 py-3">
+      <div className="card mb-5 flex items-center gap-3 px-5 py-3 focus-within:border-brand-400/50 focus-within:ring-2 focus-within:ring-brand-500/20">
         <Search aria-hidden="true" className="h-4 w-4 text-ink-dim" />
         <input
           type="search"
