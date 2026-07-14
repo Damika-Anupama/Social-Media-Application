@@ -11,6 +11,11 @@ export default defineConfig({
   testDir: "./e2e",
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
+  // A CI runner is slower than a laptop, and a starved browser dropping a
+  // keystroke looks exactly like a bug. Give it room rather than letting the
+  // environment write the test results.
+  timeout: process.env.CI ? 60_000 : 30_000,
+  expect: { timeout: process.env.CI ? 10_000 : 5_000 },
   retries: process.env.CI ? 2 : 1,
   // Three engines over ~130 tests will saturate a laptop, and a starved browser
   // misses a keystroke and looks exactly like a bug. Cap it so a red result

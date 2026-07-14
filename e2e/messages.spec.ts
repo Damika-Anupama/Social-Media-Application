@@ -89,7 +89,7 @@ test.describe("Pulse — messages", () => {
     await page.goto("/dashboard/messages");
 
     // No back button, and the composer is available without selecting anything.
-    await expect(page.getByPlaceholder(/^Message /)).toBeVisible();
+    await expect(page.getByPlaceholder(/^Message /).first()).toBeVisible();
     await expect(
       page.getByRole("button", { name: /back to conversations/i })
     ).toBeHidden();
