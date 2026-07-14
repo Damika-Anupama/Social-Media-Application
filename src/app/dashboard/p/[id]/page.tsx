@@ -131,7 +131,7 @@ export default async function PostDetailPage({ params }: Params) {
         <h2 className="mb-5 text-base font-semibold text-ink">
           {comments.length} {comments.length === 1 ? 'reply' : 'replies'}
         </h2>
-        <CommentThread comments={comments} />
+        <CommentThread postId={post.id} comments={comments} />
       </section>
 
       <section className="mt-6">
