@@ -1,7 +1,10 @@
 import type { Metadata, Viewport } from 'next';
+import { resolveSiteUrl } from '@/lib/site';
 import './globals.css';
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://pulse-demo.vercel.app';
+// Was hardcoded to a vercel.app domain we do not own — it resolves to a
+// stranger's "Create Next App". Every canonical and OG URL pointed at them.
+const siteUrl = resolveSiteUrl();
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),

@@ -2,6 +2,40 @@
 
 This document captures how the `frontend-demo` branch is deployed to Vercel.
 
+## ⚠️ The live demo is currently private
+
+**URL:** https://social-media-application-damika-anupamas-projects.vercel.app
+
+Vercel **Deployment Protection** is switched on, so every visitor is redirected
+to a Vercel login page instead of the app. The deploys themselves are healthy —
+the site is simply not reachable by anyone but the account owner, which for a
+portfolio demo is the same as being down.
+
+**Fix (dashboard only — it cannot be changed from the repo):**
+
+> Vercel → Project → Settings → **Deployment Protection** →
+> **Vercel Authentication: Disabled** → Save
+
+Then confirm it is genuinely public:
+
+```bash
+E2E_BASE_URL=https://social-media-application-damika-anupamas-projects.vercel.app npm run test:smoke
+```
+
+The smoke suite fails with an explicit message while the auth wall is up. Note
+that nothing else can catch this: the build, the unit tests, the 548 e2e tests
+and CI all run against a *local* build, and were green the entire time the live
+site was serving a login screen.
+
+## Metadata / canonical URLs
+
+`metadataBase` is derived from the deployment environment
+(`NEXT_PUBLIC_SITE_URL` → `VERCEL_PROJECT_PRODUCTION_URL` → `VERCEL_URL` →
+localhost). It used to be hardcoded to `pulse-demo.vercel.app`, a domain owned
+by somebody else — so every canonical link, OpenGraph tag and share preview
+advertised a stranger's site. Set `NEXT_PUBLIC_SITE_URL` if a custom domain is
+ever added; otherwise it resolves correctly on its own.
+
 ## Production branch
 
 **`frontend-demo`** is the production branch. After importing into Vercel, set

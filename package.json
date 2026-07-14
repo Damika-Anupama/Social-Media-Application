@@ -11,7 +11,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
-    "check:images": "node --experimental-strip-types scripts/check-images.mjs"
+    "check:images": "node --experimental-strip-types scripts/check-images.mjs",
+    "test:smoke": "playwright test e2e/smoke.spec.ts --project=chromium"
   },
   "dependencies": {
     "clsx": "2.1.1",
