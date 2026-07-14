@@ -73,10 +73,11 @@ export default function LoginPage() {
 
         <div className="flex items-center justify-between text-xs">
           <label className="inline-flex cursor-pointer items-center gap-2 text-ink-muted">
-            <input type="checkbox" defaultChecked className="h-3.5 w-3.5 rounded border-line bg-bg-subtle accent-brand-500" />
+            <input type="checkbox" defaultChecked // 14px was a third of the 24px minimum — a genuinely hard thing to hit.
+              className="h-6 w-6 shrink-0 rounded border-line bg-bg-subtle accent-brand-500" />
             Stay signed in on this device
           </label>
-          <Link href="/login" className="text-ink-muted hover:text-ink">
+          <Link href="/login" className="inline-flex min-h-[24px] items-center text-ink-muted hover:text-ink">
             Forgot password?
           </Link>
         </div>

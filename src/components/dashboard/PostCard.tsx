@@ -70,19 +70,24 @@ export function PostCard({ post }: { post: Post }) {
           <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
             <Link
               href={`/dashboard/u/${post.author.handle}`}
-              className="font-semibold text-ink hover:underline"
+              className="inline-flex min-h-[24px] items-center font-semibold text-ink hover:underline"
             >
               {post.author.name}
             </Link>
             {post.author.verified && <BadgeCheck className="h-4 w-4 text-brand-300" aria-label="Verified" />}
             <Link
               href={`/dashboard/u/${post.author.handle}`}
-              className="text-sm text-ink-dim hover:text-ink"
+              className="inline-flex min-h-[24px] items-center text-sm text-ink-dim hover:text-ink"
             >
               @{post.author.handle}
             </Link>
             <span className="text-sm text-ink-dim">·</span>
-            <Link href={`/dashboard/p/${post.id}`} className="text-sm text-ink-dim hover:text-ink">
+            {/* "12m" is a 27x20 target — under the 24px minimum, and the one
+                thing in the header people actually tap to open the post. */}
+            <Link
+              href={`/dashboard/p/${post.id}`}
+              className="inline-flex min-h-[24px] min-w-[24px] items-center justify-center text-sm text-ink-dim hover:text-ink"
+            >
               {post.postedAt}
             </Link>
             {post.location && (

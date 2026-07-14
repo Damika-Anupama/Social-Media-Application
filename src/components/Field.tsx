@@ -47,7 +47,9 @@ export function Field({
       </div>
       <div
         className={clsx(
-          'mt-2 flex items-center gap-2 rounded-xl border bg-bg-subtle px-4 py-3 transition-all',
+          // Padding belongs on the input, not on this box: a tap on the box's
+          // padding does nothing, so the real target was only 20px tall.
+          'mt-2 flex items-center gap-2 rounded-xl border bg-bg-subtle px-4 transition-all',
           'focus-within:ring-2 focus-within:ring-brand-500/20',
           showError
             ? 'border-accent-coral/60 focus-within:border-accent-coral'
@@ -63,7 +65,7 @@ export function Field({
           onBlur={onBlur}
           placeholder={placeholder}
           autoComplete={autoComplete}
-          className="w-full bg-transparent text-sm text-ink placeholder:text-ink-dim focus:outline-none"
+          className="w-full bg-transparent py-3 text-sm text-ink placeholder:text-ink-dim focus:outline-none"
         />
         {isPassword && (
           <button

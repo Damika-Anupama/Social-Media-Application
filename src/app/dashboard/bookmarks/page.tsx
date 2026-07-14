@@ -146,7 +146,7 @@ export default function BookmarksPage() {
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Filter saved"
               aria-label="Filter saved posts"
-              className="w-40 bg-transparent text-xs text-ink placeholder:text-ink-dim focus:outline-none"
+              className="w-40 bg-transparent py-1 text-xs text-ink placeholder:text-ink-dim focus:outline-none"
             />
           </div>
         </div>

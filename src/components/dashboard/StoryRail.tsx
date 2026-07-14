@@ -18,7 +18,10 @@ export function StoryRail() {
     <div className="card relative overflow-hidden p-4">
       <div className="flex items-center justify-between">
         <h2 className="text-sm font-semibold text-ink">Stories</h2>
-        <Link href="/dashboard/stories" className="text-xs text-ink-muted hover:text-ink">
+        <Link
+          href="/dashboard/stories"
+          className="inline-flex min-h-[24px] items-center text-xs text-ink-muted hover:text-ink"
+        >
           See all
         </Link>
       </div>

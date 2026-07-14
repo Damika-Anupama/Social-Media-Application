@@ -139,7 +139,8 @@ export default function MessagesPage() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search chats"
-                className="w-full bg-transparent text-xs text-ink placeholder:text-ink-dim focus:outline-none"
+                aria-label="Search chats"
+                className="w-full bg-transparent py-1 text-xs text-ink placeholder:text-ink-dim focus:outline-none"
               />
             </div>
             <button className="btn-icon h-8 w-8" aria-label="New message" title="New message">

@@ -116,7 +116,7 @@ export function ExploreClient() {
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search topics, people, communities…"
           aria-label="Search Pulse"
-          className="w-full bg-transparent text-sm text-ink placeholder:text-ink-dim focus:outline-none"
+          className="w-full bg-transparent py-1 text-sm text-ink placeholder:text-ink-dim focus:outline-none"
         />
         {query && (
           <button
@@ -227,7 +227,7 @@ export function ExploreClient() {
                   <div className="min-w-0 flex-1">
                     <Link
                       href={`/dashboard/u/${u.handle}`}
-                      className="block truncate text-sm font-semibold text-ink hover:underline"
+                      className="inline-flex min-h-[24px] w-full items-center truncate text-sm font-semibold text-ink hover:underline"
                     >
                       {u.name}
                     </Link>

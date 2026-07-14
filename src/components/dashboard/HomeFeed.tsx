@@ -72,7 +72,7 @@ export function HomeFeed() {
         })}
         <Link
           href="/dashboard/explore"
-          className="ml-auto mr-2 inline-flex items-center gap-1.5 text-xs text-ink-dim hover:text-ink"
+          className="ml-auto mr-2 inline-flex min-h-[24px] items-center gap-1.5 text-xs text-ink-dim hover:text-ink"
         >
           <Sparkles className="h-3.5 w-3.5 text-accent-sun-fg" />
           Ranking is transparent — view signals

@@ -14,7 +14,7 @@ export default function LandingPage() {
         </Link>
         <Link
           href="/login"
-          className="text-sm text-ink-muted transition-colors hover:text-ink"
+          className="inline-flex min-h-[24px] items-center text-sm text-ink-muted transition-colors hover:text-ink"
         >
           Sign in
         </Link>
@@ -68,9 +68,9 @@ export default function LandingPage() {
             <span>© {new Date().getFullYear()} Pulse</span>
           </div>
           <div className="flex items-center gap-5">
-            <a className="hover:text-ink" href="#">Privacy</a>
-            <a className="hover:text-ink" href="#">Terms</a>
-            <a className="hover:text-ink" href="#">Help</a>
+            <a className="inline-flex min-h-[24px] items-center hover:text-ink" href="#">Privacy</a>
+            <a className="inline-flex min-h-[24px] items-center hover:text-ink" href="#">Terms</a>
+            <a className="inline-flex min-h-[24px] items-center hover:text-ink" href="#">Help</a>
           </div>
         </div>
       </footer>

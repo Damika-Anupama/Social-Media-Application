@@ -142,7 +142,8 @@ export default function RegisterPage() {
               setAgreed(e.target.checked);
               setTouched((t) => ({ ...t, agreed: true }));
             }}
-            className="mt-0.5 h-4 w-4 rounded border-line bg-bg-subtle accent-brand-500"
+            // 13px rendered was half the 24px minimum.
+            className="mt-0.5 h-6 w-6 shrink-0 rounded border-line bg-bg-subtle accent-brand-500"
           />
           <span>
             I&apos;ve read and agree to the{' '}

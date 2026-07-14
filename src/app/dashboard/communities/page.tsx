@@ -56,7 +56,7 @@ export default function CommunitiesPage() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search communities by name or topic"
-            className="w-full bg-transparent text-sm text-ink placeholder:text-ink-dim focus:outline-none"
+            className="w-full bg-transparent py-1 text-sm text-ink placeholder:text-ink-dim focus:outline-none"
           />
         </div>
         <button
@@ -99,7 +99,7 @@ export default function CommunitiesPage() {
                     <Users2 className="h-4 w-4" />
                   </Link>
                   <div className="min-w-0 flex-1">
-                    <Link href={`/dashboard/c/${c.slug}`} className="block text-sm font-semibold text-ink hover:underline">
+                    <Link href={`/dashboard/c/${c.slug}`} className="inline-flex min-h-[24px] items-center text-sm font-semibold text-ink hover:underline">
                       {c.name}
                     </Link>
                     <div className="truncate text-xs text-ink-dim">
