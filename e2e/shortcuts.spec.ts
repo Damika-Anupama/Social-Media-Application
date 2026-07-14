@@ -15,9 +15,21 @@ async function signIn(page: import("@playwright/test").Page) {
   await expect(page).toHaveURL(/\/dashboard/);
 }
 
+
+/**
+ * WebKit on Linux drops global key events unless something in the document has
+ * focus. #main-content carries tabIndex={-1} for the skip link, so focusing it
+ * is a no-op visually and gives the keyboard somewhere to land. Locally (macOS
+ * WebKit) it was never needed; CI is where this showed up.
+ */
+async function focusDocument(page: import("@playwright/test").Page) {
+  await page.locator("#main-content").focus();
+}
+
 test.describe("Pulse — keyboard shortcuts", () => {
   test("? opens the shortcuts overlay and Escape closes it", async ({ page }) => {
     await signIn(page);
+    await focusDocument(page);
 
     const dialog = page.getByRole("dialog", { name: /keyboard shortcuts/i });
     await expect(dialog).toBeHidden();
@@ -32,6 +44,7 @@ test.describe("Pulse — keyboard shortcuts", () => {
 
   test("g-chords navigate", async ({ page }) => {
     await signIn(page);
+    await focusDocument(page);
 
     await page.keyboard.press("g");
     await page.keyboard.press("e");
@@ -50,6 +63,7 @@ test.describe("Pulse — keyboard shortcuts", () => {
     page,
   }) => {
     await signIn(page);
+    await focusDocument(page);
 
     // Typing into the inline composer must not trigger navigation or the overlay.
     const composer = page.getByPlaceholder(/what are you noticing today/i);

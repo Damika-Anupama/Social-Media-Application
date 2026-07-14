@@ -28,9 +28,21 @@ async function waitForFocusInside(
     .toBe(true);
 }
 
+
+/**
+ * WebKit on Linux drops global key events unless something in the document has
+ * focus. #main-content carries tabIndex={-1} for the skip link, so focusing it
+ * is a no-op visually and gives the keyboard somewhere to land. Locally (macOS
+ * WebKit) it was never needed; CI is where this showed up.
+ */
+async function focusDocument(page: import("@playwright/test").Page) {
+  await page.locator("#main-content").focus();
+}
+
 test.describe("Pulse — dialog focus management", () => {
   test("Tab cannot escape the compose dialog", async ({ page }) => {
     await signIn(page);
+    await focusDocument(page);
     await page.keyboard.press("n");
 
     const dialog = page.getByRole("dialog", { name: /new post/i });
@@ -49,6 +61,7 @@ test.describe("Pulse — dialog focus management", () => {
 
   test("Shift+Tab cannot escape backwards either", async ({ page }) => {
     await signIn(page);
+    await focusDocument(page);
     await page.keyboard.press("n");
 
     const dialog = page.getByRole("dialog", { name: /new post/i });
@@ -67,6 +80,7 @@ test.describe("Pulse — dialog focus management", () => {
     page,
   }) => {
     await signIn(page);
+    await focusDocument(page);
     await page.goto("/dashboard/profile");
 
     const trigger = page.getByRole("button", { name: /edit profile/i });
@@ -92,6 +106,7 @@ test.describe("Pulse — dialog focus management", () => {
 
   test("the lightbox traps focus and restores it to its tile", async ({ page }) => {
     await signIn(page);
+    await focusDocument(page);
     await page.goto("/dashboard/explore");
 
     const tile = page.getByRole("button", { name: /open image 1 full size/i });
@@ -121,6 +136,7 @@ test.describe("Pulse — dialog focus management", () => {
     page,
   }) => {
     await signIn(page);
+    await focusDocument(page);
     await page.goto("/dashboard/stories");
 
     const tile = page.getByRole("button", { name: /view .+'s story/i }).first();
@@ -146,6 +162,7 @@ test.describe("Pulse — dialog focus management", () => {
 
   test("the shortcuts overlay traps focus", async ({ page }) => {
     await signIn(page);
+    await focusDocument(page);
     await page.keyboard.press("?");
 
     const dialog = page.getByRole("dialog", { name: /keyboard shortcuts/i });
