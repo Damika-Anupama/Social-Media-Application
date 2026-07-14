@@ -40,9 +40,17 @@ jobs:
   # The e2e suite — including the axe accessibility audit — existed only on a
   # laptop. Every guarantee in it was unenforced: nothing stopped a regression
   # reaching production. It runs on the built app, so it needs its own job.
+  # One job per browser, in parallel. The suite is 548 tests across four
+  # projects; running them serially in one job took 25+ minutes and starved the
+  # runner badly enough that healthy tests timed out — CI was manufacturing its
+  # own failures.
   e2e:
-    name: E2E · Accessibility audit
+    name: E2E · ${{ matrix.project }}
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        project: [chromium, webkit, firefox, mobile-safari]
     steps:
       - uses: actions/checkout@v4
 
@@ -54,22 +62,21 @@ jobs:
       - name: Install dependencies
         run: npm ci --legacy-peer-deps
 
-      - name: Install Playwright browsers
-        # Three engines: Chromium, WebKit (Safari — every iPhone), Firefox.
-        run: npx playwright install --with-deps chromium webkit firefox
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps ${{ matrix.project == 'firefox' && 'firefox' || matrix.project == 'chromium' && 'chromium' || 'webkit' }}
 
       - name: Build
         run: npm run build
 
       # playwright.config.ts starts `npm run start` itself, so the suite runs
       # against the production bundle, not a dev server.
-      - name: Run E2E + a11y suite
-        run: npm run test:e2e
+      - name: Run suite
+        run: npx playwright test --project=${{ matrix.project }}
 
       - name: Upload report on failure
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-report
+          name: playwright-report-${{ matrix.project }}
           path: playwright-report/
           retention-days: 7

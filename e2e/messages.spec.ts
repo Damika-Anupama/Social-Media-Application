@@ -24,7 +24,10 @@ async function signIn(page: import("@playwright/test").Page) {
  * composer does not exist until a conversation is open. Desktop shows both.
  */
 async function openThread(page: import("@playwright/test").Page) {
-  const composer = page.getByPlaceholder(/^Message /);
+  // .first(): during hydration the server tree and the client tree can both be
+  // in the DOM for a moment, so this briefly matches two identical composers on
+  // a slow machine. Only CI was slow enough to land inside that window.
+  const composer = page.getByPlaceholder(/^Message /).first();
   if (!(await composer.isVisible())) {
     await page.getByRole("button", { name: /nadia/i }).first().click();
     await expect(composer).toBeVisible();
