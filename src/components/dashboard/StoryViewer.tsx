@@ -26,6 +26,10 @@ export function StoryViewer({
   const [paused, setPaused] = useState(false);
   const [liked, setLiked] = useState(false);
   const [reply, setReply] = useState('');
+  // Typing is its own pause: the timer kept running under the reply box, so a
+  // slow reply was sent to whichever story had flipped in underneath it.
+  const [replyFocused, setReplyFocused] = useState(false);
+  const frozen = paused || replyFocused;
 
   const { append } = useConversations();
   const { toast } = useToast();
@@ -72,7 +76,7 @@ export function StoryViewer({
   }, []);
 
   useEffect(() => {
-    if (paused) return;
+    if (frozen) return;
     const start = Date.now() - progress * STORY_DURATION_MS;
     const id = setInterval(() => {
       const p = Math.min(1, (Date.now() - start) / STORY_DURATION_MS);
@@ -80,7 +84,7 @@ export function StoryViewer({
       if (p >= 1) next();
     }, 50);
     return () => clearInterval(id);
-  }, [paused, next, progress, index]);
+  }, [frozen, next, progress, index]);
 
   // Escape, scroll lock, focus trap and focus restore come from useDialog —
   // this overlay covered the whole screen and had none of them, so Tab walked
@@ -89,6 +93,17 @@ export function StoryViewer({
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      // Keys typed into the reply box are text, not navigation: Space was
+      // pausing instead of typing a space, and arrows switched stories out
+      // from under the caret.
+      const target = e.target as HTMLElement | null;
+      if (
+        target instanceof HTMLInputElement ||
+        target instanceof HTMLTextAreaElement ||
+        target?.isContentEditable
+      ) {
+        return;
+      }
       if (e.key === 'ArrowRight') next();
       if (e.key === 'ArrowLeft') prev();
       if (e.key === ' ') {
@@ -209,6 +224,8 @@ export function StoryViewer({
               type="text"
               value={reply}
               onChange={(e) => setReply(e.target.value)}
+              onFocus={() => setReplyFocused(true)}
+              onBlur={() => setReplyFocused(false)}
               placeholder={`Reply to ${current.user.name.split(' ')[0]}…`}
               className="flex-1 rounded-full border border-white/20 bg-bg/40 px-4 py-2.5 text-sm text-white placeholder:text-white/60 focus:border-white/50 focus:outline-none"
             />

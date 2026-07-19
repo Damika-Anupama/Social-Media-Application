@@ -117,6 +117,28 @@ test.describe("Pulse — controls that only looked like they worked", () => {
     await expect(page.getByRole("heading", { name: /replies|reply/i })).toBeVisible();
   });
 
+  test("typing a story reply types spaces — and holds the story still", async ({ page }) => {
+    await signIn(page);
+    await page.goto("/dashboard/stories");
+    await page.getByRole("button", { name: /view .+'s story/i }).first().click();
+
+    const reply = page.getByLabel(/^reply to /i);
+    const placeholder = await reply.getAttribute("placeholder");
+
+    // Regression: the viewer's global key handler ate keys typed into the
+    // reply box — Space toggled pause instead of typing a space, and arrows
+    // switched stories out from under the caret.
+    await reply.click();
+    await reply.pressSequentially("Loved it a lot");
+    await expect(reply).toHaveValue("Loved it a lot");
+
+    // And the story must not advance underneath a half-typed reply: past the
+    // 5s auto-advance window, it is still the same story.
+    await page.waitForTimeout(5600);
+    await expect(reply).toHaveAttribute("placeholder", placeholder!);
+    await expect(reply).toHaveValue("Loved it a lot");
+  });
+
   test("a story reply is sent as a message, not swallowed", async ({ page }) => {
     await signIn(page);
     await page.goto("/dashboard/stories");
