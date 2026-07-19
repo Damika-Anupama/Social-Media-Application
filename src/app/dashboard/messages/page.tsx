@@ -18,6 +18,7 @@ import { TopBar } from '@/components/dashboard/TopBar';
 import { Avatar } from '@/components/Avatar';
 import { DemoButton } from '@/components/DemoButton';
 import { useConversations } from '@/lib/useConversations';
+import { useReadConversations } from '@/lib/useReadConversations';
 import { scrollBehavior, useReducedMotion } from '@/lib/useReducedMotion';
 import {
   conversations as seedConversations,
@@ -51,6 +52,7 @@ export default function MessagesPage() {
   const replyTimer = useRef<number | null>(null);
 
   const { sent, append } = useConversations();
+  const { readIds, markRead } = useReadConversations();
   const reducedMotion = useReducedMotion();
 
   const active = convos.find((c) => c.id === activeId) ?? convos[0];
@@ -68,9 +70,11 @@ export default function MessagesPage() {
     [],
   );
 
+  // Opening a conversation reads it — persisted, so the sidebar badge drops
+  // in the same breath and a reload doesn't resurrect the unread chip.
   useEffect(() => {
-    setConvos((cs) => cs.map((c) => (c.id === activeId ? { ...c, unread: undefined } : c)));
-  }, [activeId]);
+    markRead(activeId);
+  }, [activeId, markRead]);
 
   // Keep the newest message in view without yanking the whole page around —
   // and jump instantly rather than gliding if motion is unwelcome.
@@ -173,11 +177,14 @@ export default function MessagesPage() {
                       </div>
                       <p className="mt-0.5 truncate text-xs text-ink-muted">{c.lastMessage}</p>
                     </div>
-                    {c.unread && (
-                      <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-brand-500 px-1.5 text-[10px] font-bold text-white">
+                    {c.unread && !readIds.has(c.id) ? (
+                      <span
+                        className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-brand-500 px-1.5 text-[10px] font-bold text-white"
+                        aria-label={`${c.unread} unread`}
+                      >
                         {c.unread}
                       </span>
-                    )}
+                    ) : null}
                   </button>
                 </li>
               ))

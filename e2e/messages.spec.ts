@@ -82,6 +82,34 @@ test.describe("Pulse — messages", () => {
     await expect(composer).toBeHidden();
   });
 
+  test("reading a conversation clears its unread everywhere, durably", async ({ page }, testInfo) => {
+    // The sidebar badge is lg-only; the point here is the shared store, so
+    // assert where the badge exists.
+    test.skip(testInfo.project.name === "mobile-safari", "the sidebar does not exist on a phone");
+    await signIn(page);
+
+    // Regression: unread chips were cleared in component state — the sidebar
+    // badge never moved, and a reload resurrected every chip.
+    const badge = page
+      .getByRole("navigation")
+      .getByRole("link", { name: /messages/i })
+      .getByLabel(/\d+ unread/);
+    await expect(badge).toHaveText("3");
+
+    // Landing on Messages opens the first thread (nadia, 2 unread) → 1 left.
+    await page.goto("/dashboard/messages");
+    await expect(badge).toHaveText("1");
+
+    // Opening sasha's thread reads the last one → badge gone.
+    await page.getByRole("button", { name: /sasha/i }).first().click();
+    await expect(badge).toHaveCount(0);
+
+    // And it stays read across a reload.
+    await page.reload();
+    await expect(badge).toHaveCount(0);
+    await expect(page.getByRole("button", { name: /nadia/i }).first().getByLabel(/unread/)).toHaveCount(0);
+  });
+
   test("desktop shows both panes at once", async ({ page }, testInfo) => {
     // A phone deliberately does not: that is the master/detail split.
     test.skip(testInfo.project.name === "mobile-safari", "phones show one pane");

@@ -21,6 +21,7 @@ import { DemoButton } from '@/components/DemoButton';
 import { conversations, currentUser, notifications } from '@/lib/mock-data';
 import { useComposeOpener } from '@/components/dashboard/ComposeContext';
 import { useReadNotifications, countUnread } from '@/lib/useReadNotifications';
+import { useReadConversations, countUnreadMessages } from '@/lib/useReadConversations';
 
 const navItems = [
   { href: '/dashboard', label: 'Home', icon: Home, badge: null as number | null },
@@ -38,9 +39,11 @@ export function Sidebar() {
   const openCompose = useComposeOpener();
   const { readIds } = useReadNotifications();
   const unreadNotifications = countUnread(notifications, readIds);
-  // Derived from the seeded threads, not invented: the badge said 5 while the
-  // inbox contained 3.
-  const unreadMessages = conversations.reduce((n, c) => n + (c.unread ?? 0), 0);
+  // Derived from the seeded threads minus what the viewer has opened — the
+  // badge said 5, hardcoded, while the inbox contained 3, and reading them
+  // changed nothing.
+  const { readIds: readConversationIds } = useReadConversations();
+  const unreadMessages = countUnreadMessages(conversations, readConversationIds);
 
   return (
     <aside className="sticky top-0 hidden h-screen w-[260px] shrink-0 flex-col border-r border-line/70 bg-bg/80 backdrop-blur-sm lg:flex">
