@@ -6,13 +6,18 @@ import { useState } from 'react';
 import { Search, Bell, MessageCircle, Sparkles } from 'lucide-react';
 import { Avatar } from '@/components/Avatar';
 import { DemoButton } from '@/components/DemoButton';
-import { currentUser } from '@/lib/mock-data';
+import { currentUser, notifications } from '@/lib/mock-data';
 import { useCommandPalette } from '@/components/dashboard/CommandPalette';
+import { useReadNotifications, countUnread } from '@/lib/useReadNotifications';
 
 export function TopBar({ title, subtitle }: { title: string; subtitle?: string }) {
   const router = useRouter();
   const { setOpen } = useCommandPalette();
   const [search, setSearch] = useState('');
+  // Same store as the sidebar badge and the notifications page, so all three
+  // agree — and the bell clears the moment "mark all read" lands.
+  const { readIds } = useReadNotifications();
+  const unread = countUnread(notifications, readIds);
 
   const submitSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -55,8 +60,20 @@ export function TopBar({ title, subtitle }: { title: string; subtitle?: string }
           <Link href="/dashboard/explore" className="btn-icon md:hidden" aria-label="Search">
             <Search className="h-4 w-4" />
           </Link>
-          <Link href="/dashboard/notifications" className="btn-icon" aria-label="Notifications">
+          <Link
+            href="/dashboard/notifications"
+            className="btn-icon relative"
+            aria-label={unread > 0 ? `Notifications, ${unread} unread` : 'Notifications'}
+          >
             <Bell className="h-4 w-4" />
+            {unread > 0 && (
+              <span
+                aria-hidden="true"
+                className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-brand-500 px-1 text-[9px] font-semibold leading-none text-white"
+              >
+                {unread > 9 ? '9+' : unread}
+              </span>
+            )}
           </Link>
           <Link href="/dashboard/messages" className="btn-icon" aria-label="Messages">
             <MessageCircle className="h-4 w-4" />

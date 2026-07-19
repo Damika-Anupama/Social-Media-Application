@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 import { Avatar } from '@/components/Avatar';
 import { DemoButton } from '@/components/DemoButton';
-import { currentUser, notifications } from '@/lib/mock-data';
+import { conversations, currentUser, notifications } from '@/lib/mock-data';
 import { useComposeOpener } from '@/components/dashboard/ComposeContext';
 import { useReadNotifications, countUnread } from '@/lib/useReadNotifications';
 
@@ -26,7 +26,7 @@ const navItems = [
   { href: '/dashboard', label: 'Home', icon: Home, badge: null as number | null },
   { href: '/dashboard/explore', label: 'Explore', icon: Compass, badge: null as number | null },
   { href: '/dashboard/notifications', label: 'Notifications', icon: Bell, badge: null as number | null },
-  { href: '/dashboard/messages', label: 'Messages', icon: MessageCircle, badge: 5 as number | null },
+  { href: '/dashboard/messages', label: 'Messages', icon: MessageCircle, badge: null as number | null },
   { href: '/dashboard/bookmarks', label: 'Bookmarks', icon: Bookmark, badge: null },
   { href: '/dashboard/communities', label: 'Communities', icon: Users2, badge: null },
   { href: '/dashboard/profile', label: 'Profile', icon: User, badge: null },
@@ -38,6 +38,9 @@ export function Sidebar() {
   const openCompose = useComposeOpener();
   const { readIds } = useReadNotifications();
   const unreadNotifications = countUnread(notifications, readIds);
+  // Derived from the seeded threads, not invented: the badge said 5 while the
+  // inbox contained 3.
+  const unreadMessages = conversations.reduce((n, c) => n + (c.unread ?? 0), 0);
 
   return (
     <aside className="sticky top-0 hidden h-screen w-[260px] shrink-0 flex-col border-r border-line/70 bg-bg/80 backdrop-blur-sm lg:flex">
@@ -57,7 +60,9 @@ export function Sidebar() {
             const badge =
               item.href === '/dashboard/notifications'
                 ? unreadNotifications || null
-                : item.badge;
+                : item.href === '/dashboard/messages'
+                  ? unreadMessages || null
+                  : item.badge;
             return (
               <Link
                 key={item.href}

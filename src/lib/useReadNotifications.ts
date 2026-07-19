@@ -38,8 +38,17 @@ function read(): Set<string> {
   return new Set(parseReadIds(window.localStorage.getItem(STORAGE_KEY)));
 }
 
+/**
+ * The `storage` event only fires in *other* tabs. The bell in the top bar,
+ * the sidebar badge, and the notifications page each hold their own copy of
+ * this store, so without a same-tab signal, marking something read updated
+ * the page and left every badge stale until a reload.
+ */
+const SYNC_EVENT = 'pulse:read-notifications';
+
 function write(ids: Set<string>): void {
   writeRaw(STORAGE_KEY, serializeReadIds(ids));
+  window.dispatchEvent(new Event(SYNC_EVENT));
 }
 
 /**
@@ -53,12 +62,17 @@ export function useReadNotifications() {
   const [readIds, setReadIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
-    setReadIds(read());
+    const refresh = () => setReadIds(read());
+    refresh();
     const onStorage = (e: StorageEvent) => {
-      if (e.key === STORAGE_KEY) setReadIds(read());
+      if (e.key === STORAGE_KEY) refresh();
     };
     window.addEventListener('storage', onStorage);
-    return () => window.removeEventListener('storage', onStorage);
+    window.addEventListener(SYNC_EVENT, refresh);
+    return () => {
+      window.removeEventListener('storage', onStorage);
+      window.removeEventListener(SYNC_EVENT, refresh);
+    };
   }, []);
 
   const isRead = useCallback((id: string) => readIds.has(id), [readIds]);

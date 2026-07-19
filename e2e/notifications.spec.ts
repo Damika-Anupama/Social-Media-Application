@@ -60,6 +60,34 @@ test.describe("Pulse — notifications", () => {
     ).toBeVisible();
   });
 
+  test("the top bar bell counts unread, and mark-all-read clears it", async ({ page }) => {
+    await gotoNotifications(page);
+
+    // The bell, the sidebar, and the page all read the same store.
+    await expect(
+      page.getByRole("link", { name: /^notifications, \d+ unread$/i })
+    ).toBeVisible();
+
+    await page.getByRole("button", { name: /mark all read/i }).click();
+    // The bell's label drops the count the moment the store updates — the
+    // same-tab sync event, not a reload, is what clears it.
+    await expect(page.getByLabel("Notifications", { exact: true })).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: /^notifications, \d+ unread$/i })
+    ).toHaveCount(0);
+  });
+
+  test("on a phone, the tab bar carries the unread badge the sidebar can't", async ({ page }) => {
+    await signIn(page);
+
+    // Below lg the sidebar — and its badge — does not exist. The tab bar is
+    // the navigation there, and it used to say nothing about unread.
+    await page.setViewportSize({ width: 390, height: 844 });
+    await expect(
+      page.getByRole("link", { name: /^inbox, \d+ unread$/i })
+    ).toBeVisible();
+  });
+
   test("read state survives a reload", async ({ page }) => {
     await gotoNotifications(page);
 
