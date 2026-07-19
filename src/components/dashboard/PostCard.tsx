@@ -1,8 +1,10 @@
 'use client';
 
+import { useState } from 'react';
 import Image from 'next/image';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import clsx from 'clsx';
 import {
   Heart,
@@ -26,6 +28,10 @@ export function PostCard({ post }: { post: Post }) {
   const { isLiked, isBookmarked, isReshared, toggleLike, toggleBookmark, toggleReshare } =
     useReactions();
   const { toast } = useToast();
+  const router = useRouter();
+  // Animates the heart only on the press that likes — not on every card that
+  // renders already-liked.
+  const [likePopped, setLikePopped] = useState(false);
 
   const onToggleReshare = () => {
     const wasReshared = isReshared(post.id);
@@ -126,17 +132,28 @@ export function PostCard({ post }: { post: Post }) {
             min-content width wider than a 320px phone. */}
         <div className="-ml-2 flex min-w-0 flex-1 items-center gap-0.5 text-ink-muted sm:gap-1">
           <ReactionButton
-            icon={<Heart className={clsx('h-[18px] w-[18px]', liked && 'fill-accent-coral text-accent-coral-fg')} />}
+            icon={
+              <span
+                className={clsx('inline-flex', likePopped && 'motion-safe:animate-pop')}
+                onAnimationEnd={() => setLikePopped(false)}
+              >
+                <Heart className={clsx('h-[18px] w-[18px]', liked && 'fill-accent-coral text-accent-coral-fg')} />
+              </span>
+            }
             count={likeCount}
             active={liked}
             tone="coral"
-            onClick={() => toggleLike(post.id)}
+            onClick={() => {
+              if (!liked) setLikePopped(true);
+              toggleLike(post.id);
+            }}
             label="Like"
           />
           <ReactionButton
             icon={<MessageCircle className="h-[18px] w-[18px]" />}
             count={post.metrics.comments}
             tone="brand"
+            onClick={() => router.push(`/dashboard/p/${post.id}#replies`)}
             label="Comment"
           />
           <ReactionButton
@@ -189,7 +206,10 @@ function ReactionButton({
   count: number;
   active?: boolean;
   tone: 'coral' | 'mint' | 'brand';
-  onClick?: () => void;
+  // Required on purpose: the dead-controls guard sees `onClick={onClick}` and
+  // is satisfied, so an optional prop here is how the Comment button shipped
+  // doing nothing at all.
+  onClick: () => void;
   label: string;
 }) {
   const hover = {

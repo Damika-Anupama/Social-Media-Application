@@ -105,6 +105,18 @@ test.describe("Pulse — controls that only looked like they worked", () => {
     await expect.poll(() => trends.count()).toBe(before);
   });
 
+  test("Comment on a post card opens that post's reply thread", async ({ page }) => {
+    await signIn(page);
+
+    // Regression: ReactionButton renders onClick={onClick} whether or not a
+    // handler was passed, so the dead-controls guard was satisfied while the
+    // Comment button did nothing at all.
+    await page.getByRole("button", { name: "Comment", exact: true }).first().click();
+
+    await expect(page).toHaveURL(/\/dashboard\/p\/[^/]+#replies$/);
+    await expect(page.getByRole("heading", { name: /replies|reply/i })).toBeVisible();
+  });
+
   test("a story reply is sent as a message, not swallowed", async ({ page }) => {
     await signIn(page);
     await page.goto("/dashboard/stories");

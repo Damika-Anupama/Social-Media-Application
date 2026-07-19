@@ -64,8 +64,14 @@ const config: Config = {
         'slide-in': 'slideIn 0.4s ease-out',
         shimmer: 'shimmer 2s linear infinite',
         float: 'float 6s ease-in-out infinite',
+        pop: 'pop 0.3s ease-out',
       },
       keyframes: {
+        pop: {
+          '0%': { transform: 'scale(1)' },
+          '40%': { transform: 'scale(1.35)' },
+          '100%': { transform: 'scale(1)' },
+        },
         fadeIn: {
           '0%': { opacity: '0' },
           '100%': { opacity: '1' },

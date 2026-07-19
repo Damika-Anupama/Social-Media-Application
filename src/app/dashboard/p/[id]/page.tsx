@@ -128,7 +128,9 @@ export default async function PostDetailPage({ params }: Params) {
         </dl>
       </article>
 
-      <section className="card mb-6 p-6 sm:p-8">
+      {/* The anchor target for a post card's Comment button; scroll-mt keeps
+          the heading clear of the sticky top bar when the hash lands here. */}
+      <section id="replies" className="card mb-6 scroll-mt-20 p-6 sm:p-8">
         <h2 className="mb-5 text-base font-semibold text-ink">
           {comments.length} {comments.length === 1 ? 'reply' : 'replies'}
         </h2>
