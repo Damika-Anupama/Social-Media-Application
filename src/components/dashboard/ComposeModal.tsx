@@ -52,7 +52,8 @@ function ComposeModalContent({ onClose }: { onClose: () => void }) {
           <PostComposer variant="naked" onPosted={() => setOpen(false)} />
         </div>
         <p className="mt-3 text-center text-[11px] text-ink-dim">
-          Press <kbd className="rounded border border-line bg-bg-subtle px-1.5 py-0.5 font-mono text-[10px]">Esc</kbd> to close
+          Press <kbd className="rounded border border-line bg-bg-subtle px-1.5 py-0.5 font-mono text-[10px]">Esc</kbd> to close — your draft is kept ·{' '}
+          <kbd className="rounded border border-line bg-bg-subtle px-1.5 py-0.5 font-mono text-[10px]">⌘/Ctrl</kbd>+<kbd className="rounded border border-line bg-bg-subtle px-1.5 py-0.5 font-mono text-[10px]">Enter</kbd> posts
         </p>
       </div>
     </div>

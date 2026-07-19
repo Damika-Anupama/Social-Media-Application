@@ -6,6 +6,7 @@ import { Avatar } from '@/components/Avatar';
 import { DemoButton } from '@/components/DemoButton';
 import { currentUser } from '@/lib/mock-data';
 import { useUserPostsContext } from '@/lib/UserPostsContext';
+import { useDraft } from '@/lib/useDraft';
 import clsx from 'clsx';
 
 const tones = [
@@ -23,11 +24,14 @@ export function PostComposer({
   onPosted?: () => void;
   variant?: 'card' | 'naked';
 }) {
-  const [text, setText] = useState('');
-  const [tone, setTone] = useState('thought');
+  // Text and tone live in the persisted draft store, so closing the compose
+  // modal — or a reload — no longer eats whatever was typed.
+  const { draft, save, clear } = useDraft();
   const [posted, setPosted] = useState(false);
   const { addPost } = useUserPostsContext();
 
+  const text = draft.text;
+  const tone = draft.tone;
   const remaining = 500 - text.length;
   const remainingTone =
     remaining < 0 ? 'text-accent-coral-fg' : remaining < 40 ? 'text-accent-sun-fg' : 'text-ink-dim';
@@ -37,7 +41,7 @@ export function PostComposer({
     const trimmed = text.trim();
     if (!trimmed || remaining < 0) return;
     addPost(trimmed);
-    setText('');
+    clear();
     setPosted(true);
     setTimeout(() => setPosted(false), 2500);
     onPosted?.();
@@ -59,7 +63,7 @@ export function PostComposer({
               <button
                 key={t.id}
                 type="button"
-                onClick={() => setTone(t.id)}
+                onClick={() => save({ ...draft, tone: t.id })}
                 className={clsx(
                   'rounded-full border px-3 py-1 text-xs font-medium transition-colors',
                   tone === t.id
@@ -74,7 +78,14 @@ export function PostComposer({
 
           <textarea
             value={text}
-            onChange={(e) => setText(e.target.value)}
+            onChange={(e) => save({ ...draft, text: e.target.value })}
+            onKeyDown={(e) => {
+              // Cmd/Ctrl+Enter posts — the shortcut every composer teaches.
+              if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+                e.preventDefault();
+                e.currentTarget.form?.requestSubmit();
+              }
+            }}
             placeholder="What are you noticing today?"
             rows={3}
             className="w-full resize-none rounded-xl bg-transparent p-2 text-[15px] leading-relaxed text-ink placeholder:text-ink-dim focus:outline-none focus:ring-2 focus:ring-brand-500/30"

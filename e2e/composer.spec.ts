@@ -55,6 +55,47 @@ test.describe("Pulse — persistent composer", () => {
     ).toHaveCount(0);
   });
 
+  test("a half-written draft survives a reload", async ({ page }) => {
+    await signIn(page);
+
+    // Regression: the compose modal unmounts on close, so Esc — the key the
+    // modal itself tells you to press — destroyed everything typed.
+    const draft = `Half a thought ${Date.now()}`;
+    const box = page.getByPlaceholder(/what are you noticing today/i).first();
+    await box.fill(draft);
+
+    await page.reload();
+    await expect(
+      page.getByPlaceholder(/what are you noticing today/i).first()
+    ).toHaveValue(draft);
+  });
+
+  test("posting clears the saved draft", async ({ page }) => {
+    await signIn(page);
+
+    const text = `${UNIQUE} clears-draft`;
+    const box = page.getByPlaceholder(/what are you noticing today/i).first();
+    await box.fill(text);
+    await page.getByRole("button", { name: /^Post$/ }).click();
+    await expect(page.getByTestId("user-post").filter({ hasText: text })).toBeVisible();
+
+    await page.reload();
+    await expect(
+      page.getByPlaceholder(/what are you noticing today/i).first()
+    ).toHaveValue("");
+  });
+
+  test("Cmd/Ctrl+Enter posts from the keyboard", async ({ page }) => {
+    await signIn(page);
+
+    const text = `${UNIQUE} kbd-post`;
+    const box = page.getByPlaceholder(/what are you noticing today/i).first();
+    await box.fill(text);
+    await box.press("ControlOrMeta+Enter");
+
+    await expect(page.getByTestId("user-post").filter({ hasText: text })).toBeVisible();
+  });
+
   test("empty or whitespace text does not post", async ({ page }) => {
     await signIn(page);
     const postButton = page.getByRole("button", { name: /^Post$/ });
