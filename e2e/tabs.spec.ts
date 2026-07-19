@@ -77,6 +77,25 @@ test.describe("Pulse — tabs keyboard support", () => {
     await expect(notifications).toHaveAttribute("aria-selected", "true");
   });
 
+  test("the home feed switcher is a tablist, and arrows change the feed", async ({ page }) => {
+    await signIn(page);
+
+    // Regression: the feed switcher was four independent buttons — no
+    // aria-selected, five Tab stops, and nothing announced which feed you
+    // were reading. It also meant a button named "Following" sat on the
+    // dashboard, shadowing the right-rail follow buttons in tests.
+    const forYou = page.getByRole("tab", { name: "For you" });
+    const following = page.getByRole("tab", { name: "Following" });
+
+    await expect(forYou).toHaveAttribute("aria-selected", "true");
+    await expect(following).toHaveAttribute("tabindex", "-1");
+
+    await forYou.focus();
+    await page.keyboard.press("ArrowRight");
+    await expect(following).toHaveAttribute("aria-selected", "true");
+    await expect(following).toBeFocused();
+  });
+
   test("profile tabs arrow horizontally", async ({ page }) => {
     await signIn(page);
     await page.goto("/dashboard/profile");
