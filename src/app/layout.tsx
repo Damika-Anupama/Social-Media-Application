@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import { resolveSiteUrl } from '@/lib/site';
+import { ServiceWorkerRegister } from '@/components/ServiceWorkerRegister';
 import './globals.css';
 
 // Was hardcoded to a vercel.app domain we do not own — it resolves to a
@@ -49,6 +50,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="min-h-screen bg-bg text-ink antialiased">
         {children}
+        <ServiceWorkerRegister />
       </body>
     </html>
   );
