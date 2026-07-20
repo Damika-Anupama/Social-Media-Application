@@ -39,11 +39,16 @@ test.describe("Pulse — explore", () => {
     await signIn(page);
     await page.goto("/dashboard/explore");
 
+    // Give the global "/" shortcut somewhere to land (see shortcuts.spec) so
+    // opening the palette isn't racy.
+    await page.locator("#main-content").focus();
+
     // Regression: q was only read on mount, so this used to change the URL
     // while the input and results sat there ignoring it.
     await page.keyboard.press("/");
     await page.getByLabel("Search commands").fill("climate");
-    await page.getByRole("button", { name: /search “climate”/i }).click();
+    // The palette is now an ARIA combobox: results are options, not buttons.
+    await page.getByRole("option", { name: /search “climate”/i }).click();
 
     await expect(page).toHaveURL(/\?q=climate/);
     await expect(page.getByRole("searchbox", { name: /search pulse/i })).toHaveValue(
