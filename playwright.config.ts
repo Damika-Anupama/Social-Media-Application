@@ -60,7 +60,14 @@ export default defineConfig({
     {
       name: "mobile-safari",
       use: { ...devices["iPhone 13"] },
-      testIgnore: [/a11y\.spec\.ts/, /reflow\.spec\.ts/, /focus\.spec\.ts/, /shortcuts\.spec\.ts/, /tabs\.spec\.ts/],
+      testIgnore: [
+        /a11y\.spec\.ts/,
+        /reflow\.spec\.ts/,
+        /focus\.spec\.ts/,
+        /shortcuts\.spec\.ts/,
+        /command-palette\.spec\.ts/,
+        /tabs\.spec\.ts/,
+      ],
     },
   ],
   webServer: process.env.E2E_BASE_URL

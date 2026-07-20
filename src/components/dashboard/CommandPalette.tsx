@@ -163,6 +163,13 @@ export function CommandPaletteProvider({ children }: { children: React.ReactNode
     setActiveIndex((i) => Math.min(i, Math.max(filtered.length - 1, 0)));
   }, [filtered.length]);
 
+  // Keep the active option scrolled into view as arrow keys move it, so the
+  // highlight never disappears below the fold of a long result list.
+  useEffect(() => {
+    if (!open) return;
+    document.getElementById(`cmdk-opt-${activeIndex}`)?.scrollIntoView({ block: 'nearest' });
+  }, [activeIndex, open]);
+
   // Global ⌘K / Ctrl+K to toggle the palette.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -231,6 +238,11 @@ export function CommandPaletteProvider({ children }: { children: React.ReactNode
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search or jump to…"
                 aria-label="Search commands"
+                role="combobox"
+                aria-expanded={filtered.length > 0}
+                aria-controls="cmdk-listbox"
+                aria-autocomplete="list"
+                aria-activedescendant={filtered.length ? `cmdk-opt-${activeIndex}` : undefined}
                 className="w-full bg-transparent text-sm text-ink placeholder:text-ink-dim focus:outline-none"
               />
               <kbd className="rounded border border-line bg-bg-subtle px-1.5 py-0.5 font-mono text-[10px] text-ink-dim">
@@ -238,43 +250,57 @@ export function CommandPaletteProvider({ children }: { children: React.ReactNode
               </kbd>
             </div>
 
-            <ul className="max-h-[50vh] overflow-y-auto p-2">
+            <ul id="cmdk-listbox" role="listbox" aria-label="Results" className="max-h-[50vh] overflow-y-auto p-2">
               {filtered.length === 0 ? (
-                <li className="px-3 py-6 text-center text-sm text-ink-muted">No matches.</li>
+                <li role="presentation" className="px-3 py-6 text-center text-sm text-ink-muted">
+                  No matches.
+                </li>
               ) : (
                 filtered.map((c, i) => {
                   const Icon = c.icon;
                   const active = i === activeIndex;
+                  // Options carry role/id/aria-selected and focus stays on the
+                  // input (aria-activedescendant) — the correct combobox pattern,
+                  // so they are list options, not nested tab-focusable buttons.
                   return (
-                    <li key={c.id}>
-                      <button
-                        type="button"
-                        onMouseEnter={() => setActiveIndex(i)}
-                        onClick={() => c.perform()}
+                    <li
+                      key={c.id}
+                      id={`cmdk-opt-${i}`}
+                      role="option"
+                      aria-selected={active}
+                      onMouseEnter={() => setActiveIndex(i)}
+                      onClick={() => c.perform()}
+                      className={clsx(
+                        'flex w-full cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm transition-colors',
+                        active ? 'bg-brand-500/15 text-ink' : 'text-ink-muted hover:bg-bg-elevated/60',
+                      )}
+                    >
+                      <Icon className={clsx('h-4 w-4 shrink-0', active ? 'text-brand-300' : 'text-ink-dim')} />
+                      <span className="flex-1 truncate">{c.label}</span>
+                      {/* ink-dim is tuned against the neutral surfaces; on the
+                          brand-tinted active row it lands at 4.44:1. */}
+                      <span
                         className={clsx(
-                          'flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm transition-colors',
-                          active ? 'bg-brand-500/15 text-ink' : 'text-ink-muted hover:bg-bg-elevated/60',
+                          'text-[10px] uppercase tracking-wider',
+                          active ? 'text-brand-200' : 'text-ink-dim',
                         )}
                       >
-                        <Icon className={clsx('h-4 w-4 shrink-0', active ? 'text-brand-300' : 'text-ink-dim')} />
-                        <span className="flex-1 truncate">{c.label}</span>
-                        {/* ink-dim is tuned against the neutral surfaces; on the
-                            brand-tinted active row it lands at 4.44:1. */}
-                        <span
-                          className={clsx(
-                            'text-[10px] uppercase tracking-wider',
-                            active ? 'text-brand-200' : 'text-ink-dim',
-                          )}
-                        >
-                          {c.group}
-                        </span>
-                        {active && <CornerDownLeft className="h-3.5 w-3.5 text-ink-dim" />}
-                      </button>
+                        {c.group}
+                      </span>
+                      {active && <CornerDownLeft className="h-3.5 w-3.5 text-ink-dim" />}
                     </li>
                   );
                 })
               )}
             </ul>
+
+            {/* Announce result count to screen readers as the query changes —
+                aria-activedescendant alone doesn't convey how many matched. */}
+            <div className="sr-only" role="status" aria-live="polite">
+              {filtered.length === 0
+                ? 'No matches.'
+                : `${filtered.length} result${filtered.length === 1 ? '' : 's'}.`}
+            </div>
 
             <div className="flex items-center justify-end gap-2 border-t border-line/60 px-4 py-2.5 text-[11px] text-ink-dim">
               <span>Keyboard shortcuts</span>
