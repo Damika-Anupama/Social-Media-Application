@@ -1,6 +1,7 @@
 'use client';
 
 import { useId, useState } from 'react';
+import Link from 'next/link';
 import { TopBar } from '@/components/dashboard/TopBar';
 import { useTabs } from '@/components/Tabs';
 import { DemoButton } from '@/components/DemoButton';
@@ -163,6 +164,15 @@ function PrivacySection() {
         checked={settings.privateAccount}
         onChange={(v) => setSetting('privateAccount', v)}
       />
+      {settings.privateAccount && (
+        <Link
+          href="/dashboard/requests"
+          className="-mt-3 inline-flex items-center gap-1.5 text-sm font-medium text-brand-300 hover:text-brand-200"
+        >
+          Review follow requests
+          <ChevronRight className="h-4 w-4" />
+        </Link>
+      )}
       <Toggle
         label="Hide read receipts in DMs"
         hint="Only affects new conversations."
