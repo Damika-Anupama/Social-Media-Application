@@ -241,7 +241,7 @@ export function ExploreClient() {
               const followed = isFollowing(u.id);
               return (
                 <div key={u.id} className="flex min-w-0 items-center gap-3 rounded-xl border border-line/60 bg-bg-subtle/60 p-3">
-                  <Link href={`/dashboard/u/`} aria-label={`'s profile`} className="shrink-0">
+                  <Link href={`/dashboard/u/${u.handle}`} aria-label={`${u.name}'s profile`} className="shrink-0">
                     <Avatar user={u} size={44} />
                   </Link>
                   <div className="min-w-0 flex-1">
