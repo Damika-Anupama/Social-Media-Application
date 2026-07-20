@@ -19,6 +19,7 @@ import { Avatar } from '@/components/Avatar';
 import { DemoButton } from '@/components/DemoButton';
 import { useConversations } from '@/lib/useConversations';
 import { useReadConversations } from '@/lib/useReadConversations';
+import { composeReply, replyDelay } from '@/lib/chatReply';
 import { scrollBehavior, useReducedMotion } from '@/lib/useReducedMotion';
 import {
   conversations as seedConversations,
@@ -27,14 +28,6 @@ import {
   type ChatMessage,
   type ConversationPreview,
 } from '@/lib/mock-data';
-
-const cannedReplies = [
-  'Got it — let me chase that down and revert in a bit.',
-  'Yes, that works on my end. Sending the details after lunch.',
-  'Appreciate the heads up. Will loop in the rest of the team.',
-  'Perfect, I will queue it up for tomorrow morning.',
-  'Just opened the doc — going through it now.',
-];
 
 export default function MessagesPage() {
   const [convos, setConvos] = useState<ConversationPreview[]>(seedConversations);
@@ -111,18 +104,15 @@ export default function MessagesPage() {
     setDraft('');
 
     setTyping(true);
-    replyTimer.current = window.setTimeout(
-      () => {
-        const reply = cannedReplies[Math.floor(Math.random() * cannedReplies.length)];
-        append(conversationId, { from: 'them', time: 'now', text: reply });
-        setConvos((cs) =>
-          cs.map((c) => (c.id === conversationId ? { ...c, lastMessage: reply, time: 'now' } : c)),
-        );
-        setTyping(false);
-        replyTimer.current = null;
-      },
-      1400 + Math.random() * 1000,
-    );
+    const reply = composeReply(text);
+    replyTimer.current = window.setTimeout(() => {
+      append(conversationId, { from: 'them', time: 'now', text: reply });
+      setConvos((cs) =>
+        cs.map((c) => (c.id === conversationId ? { ...c, lastMessage: reply, time: 'now' } : c)),
+      );
+      setTyping(false);
+      replyTimer.current = null;
+    }, replyDelay(text));
   };
 
   return (
