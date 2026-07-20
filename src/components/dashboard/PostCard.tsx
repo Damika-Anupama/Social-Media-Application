@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import type { Post } from '@/lib/mock-data';
 import { formatCount } from '@/lib/mock-data';
+import { normalizeTag } from '@/lib/hashtagFeed';
 import { Avatar } from '@/components/Avatar';
 import { DemoButton } from '@/components/DemoButton';
 import { useReactions } from '@/lib/useReactions';
@@ -120,7 +121,13 @@ export function PostCard({ post }: { post: Post }) {
       {post.tags && post.tags.length > 0 && (
         <div className="mt-3 flex flex-wrap gap-1.5">
           {post.tags.map((t) => (
-            <span key={t} className="chip">#{t}</span>
+            <Link
+              key={t}
+              href={`/dashboard/tag/${normalizeTag(t)}`}
+              className="chip transition-colors hover:text-ink"
+            >
+              #{t}
+            </Link>
           ))}
         </div>
       )}
