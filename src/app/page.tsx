@@ -68,9 +68,9 @@ export default function LandingPage() {
             <span>© {new Date().getFullYear()} Pulse</span>
           </div>
           <div className="flex items-center gap-5">
-            <a className="inline-flex min-h-[24px] items-center hover:text-ink" href="#">Privacy</a>
-            <a className="inline-flex min-h-[24px] items-center hover:text-ink" href="#">Terms</a>
-            <a className="inline-flex min-h-[24px] items-center hover:text-ink" href="#">Help</a>
+            <Link className="inline-flex min-h-[24px] items-center hover:text-ink" href="/legal/privacy">Privacy</Link>
+            <Link className="inline-flex min-h-[24px] items-center hover:text-ink" href="/legal/terms">Terms</Link>
+            <Link className="inline-flex min-h-[24px] items-center hover:text-ink" href="/help">Help</Link>
           </div>
         </div>
       </footer>

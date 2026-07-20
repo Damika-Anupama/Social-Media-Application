@@ -222,7 +222,9 @@ export function PublicProfileClient({
           <div className="card p-5">
             <h3 className="text-sm font-semibold text-ink">Pinned link</h3>
             <a
-              href="#"
+              href={`https://${user.link ?? `${user.handle}.studio`}`}
+              target="_blank"
+              rel="noreferrer noopener"
               className="mt-3 block rounded-xl border border-line/60 bg-bg-subtle/60 p-4 transition-colors hover:border-brand-400/40"
             >
               <div className="text-[11px] uppercase tracking-wider text-brand-300">Studio</div>

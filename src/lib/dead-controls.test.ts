@@ -72,10 +72,33 @@ function deadButtons(): string[] {
   return dead;
 }
 
+/**
+ * A link to "#" is the anchor equivalent of a dead button: it looks clickable
+ * and goes nowhere. Real destinations (a route, an external URL) or a
+ * DemoButton if the action is out of scope.
+ */
+function deadLinks(): string[] {
+  const dead: string[] = [];
+  for (const file of tsxFiles('src')) {
+    const source = stripComments(readFileSync(file, 'utf8'));
+    const pattern = /href="#"/g;
+    let match: RegExpExecArray | null;
+    while ((match = pattern.exec(source))) {
+      const line = source.slice(0, match.index).split('\n').length;
+      dead.push(`${file}:${line}`);
+    }
+  }
+  return dead;
+}
+
 describe('interactive controls', () => {
   it('has no button wired to nothing', () => {
     // Use DemoButton if a control is deliberately out of scope: it says so
     // instead of failing silently.
     expect(deadButtons()).toEqual([]);
+  });
+
+  it('has no link pointing at "#"', () => {
+    expect(deadLinks()).toEqual([]);
   });
 });

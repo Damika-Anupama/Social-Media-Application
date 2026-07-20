@@ -149,11 +149,11 @@ export default function RegisterPage() {
           />
           <span>
             I&apos;ve read and agree to the{' '}
-            <Link href="#" className="text-ink underline-offset-4 hover:underline">
+            <Link href="/legal/terms" className="text-ink underline-offset-4 hover:underline">
               Community Charter
             </Link>{' '}
             and the{' '}
-            <Link href="#" className="text-ink underline-offset-4 hover:underline">
+            <Link href="/legal/privacy" className="text-ink underline-offset-4 hover:underline">
               Privacy Notice
             </Link>
             . Pulse will never sell your data to advertisers.
