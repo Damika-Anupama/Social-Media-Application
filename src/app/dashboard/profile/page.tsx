@@ -95,14 +95,17 @@ export default function ProfilePage() {
           <div className="absolute inset-0 bg-gradient-to-t from-bg-raised via-bg-raised/40 to-transparent" />
         </div>
         <div className="px-6 pb-6 sm:px-8">
-          <div className="-mt-12 flex flex-col items-start gap-5 sm:flex-row sm:items-end sm:justify-between">
+          <div className="flex flex-col items-start gap-5 sm:flex-row sm:items-end sm:justify-between">
             {/* The avatar is fixed-width; the name beside it must be allowed to
-                shrink, or a long display name pushes the card off a 320px phone. */}
+                shrink, or a long display name pushes the card off a 320px phone.
+                Only the avatar carries the negative margin so it alone straddles
+                the banner — the name/handle stay fully below the wallpaper edge
+                instead of riding up into the photo and getting clipped. */}
             <div className="flex min-w-0 max-w-full items-end gap-4">
-              <span className="relative inline-flex h-24 w-24 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-brand-400 via-brand-500 to-accent-mint p-1 shadow-xl">
+              <span className="relative -mt-12 inline-flex h-24 w-24 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-brand-400 via-brand-500 to-accent-mint p-1 shadow-xl">
                 <img src={user.avatar} alt="" className="h-full w-full rounded-full bg-bg object-cover" />
               </span>
-              <div className="min-w-0 pb-2">
+              <div className="min-w-0 translate-y-1 pb-2">
                 <div className="flex min-w-0 items-center gap-2">
                   <h2 className="truncate font-display text-2xl font-semibold tracking-tight">
                     {user.name}
