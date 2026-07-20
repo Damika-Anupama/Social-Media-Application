@@ -47,6 +47,16 @@ export function isValidProfile(edits: ProfileEdits): boolean {
   return Object.keys(validateProfile(edits)).length === 0;
 }
 
+/**
+ * The "Posts" stat on the profile. The current user authors no seed posts in
+ * this frontend demo — their only real content is what they compose — so the
+ * count is their seeded posts plus their persisted composed posts. It starts
+ * honest (rather than a hardcoded "184") and grows the moment they post.
+ */
+export function profilePostCount(seedPostCount: number, composedPostCount: number): number {
+  return Math.max(0, seedPostCount) + Math.max(0, composedPostCount);
+}
+
 /** Trim every field, so " Ada " and "Ada" are not two different names. */
 export function normalizeProfile(edits: ProfileEdits): ProfileEdits {
   return {

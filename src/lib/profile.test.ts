@@ -4,6 +4,7 @@ import {
   isValidProfile,
   normalizeProfile,
   parseProfileEdits,
+  profilePostCount,
   validateProfile,
   type ProfileEdits,
 } from './profile';
@@ -76,5 +77,23 @@ describe('parseProfileEdits', () => {
 
   it('ignores non-string values', () => {
     expect(parseProfileEdits(JSON.stringify({ name: 42, bio: null }))).toEqual({});
+  });
+});
+
+describe('profilePostCount', () => {
+  it('sums seeded and composed posts', () => {
+    expect(profilePostCount(0, 0)).toBe(0);
+    expect(profilePostCount(2, 3)).toBe(5);
+  });
+
+  it('grows as the user composes', () => {
+    // No seed posts for the current user in this demo: the count IS the store.
+    expect(profilePostCount(0, 1)).toBe(1);
+    expect(profilePostCount(0, 4)).toBe(4);
+  });
+
+  it('never goes negative on malformed input', () => {
+    expect(profilePostCount(-5, -2)).toBe(0);
+    expect(profilePostCount(-1, 3)).toBe(3);
   });
 });

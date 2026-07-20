@@ -19,15 +19,22 @@ import { useTabs } from '@/components/Tabs';
 import { DemoButton } from '@/components/DemoButton';
 import { PostCard } from '@/components/dashboard/PostCard';
 import { useProfile } from '@/lib/useProfile';
+import { useUserPostsContext } from '@/lib/UserPostsContext';
 import { buildShareUrl, shareLink } from '@/lib/share';
 import { useDialog } from '@/lib/useDialog';
 import { Portal } from '@/components/Portal';
 import { useToast } from '@/components/Toast';
-import { LIMITS, validateProfile, type ProfileEdits, type ProfileErrors } from '@/lib/profile';
-import { posts, formatCount, type User } from '@/lib/mock-data';
+import {
+  LIMITS,
+  validateProfile,
+  profilePostCount,
+  type ProfileEdits,
+  type ProfileErrors,
+} from '@/lib/profile';
+import { posts, postsByUser, currentUser, formatCount, type User } from '@/lib/mock-data';
 
-const stats = (u: User) => [
-  { label: 'Posts', value: '184' },
+const stats = (u: User, postCount: number) => [
+  { label: 'Posts', value: formatCount(postCount) },
   { label: 'Following', value: formatCount(u.following ?? 0) },
   { label: 'Followers', value: formatCount(u.followers ?? 0) },
   { label: 'Joined', value: u.joined ?? 'Mar 2024' },
@@ -39,9 +46,15 @@ type Tab = (typeof tabs)[number];
 export default function ProfilePage() {
   // Persisted: an edit that disappears on reload is not an edit.
   const { user, saveProfile } = useProfile();
+  // Composed posts are the user's only real content in this demo — the profile
+  // reads the same store the composer writes to, so the count and the Posts tab
+  // both update the moment they post.
+  const { posts: userPosts } = useUserPostsContext();
   const { toast } = useToast();
   const [tab, setTab] = useState<Tab>('Posts');
   const [editing, setEditing] = useState(false);
+
+  const postCount = profilePostCount(postsByUser(currentUser.id).length, userPosts.length);
 
   // The Share button had no onClick — sharing your own profile is the one thing
   // a profile page is for, and it was the one thing it did not do.
@@ -63,9 +76,12 @@ export default function ProfilePage() {
 
   const tabPosts = useMemo(() => {
     const withMe = posts.map((p) => ({ ...p, author: user }));
+    // Show the user's own composed posts first, so posting is visible here and
+    // not only in the home feed. Re-attribute to `user` to pick up profile edits.
+    const mine = userPosts.map((p) => ({ ...p, author: user }));
     switch (tab) {
       case 'Posts':
-        return withMe.slice(0, 4);
+        return [...mine, ...withMe.slice(0, 4)];
       case 'Replies':
         return withMe.slice(2, 5);
       case 'Media':
@@ -75,7 +91,7 @@ export default function ProfilePage() {
       case 'Likes':
         return withMe.filter((p) => p.liked).concat(withMe.slice(0, 2));
     }
-  }, [tab, user]);
+  }, [tab, user, userPosts]);
 
   return (
     <div className="px-4 pt-1 sm:px-6">
@@ -157,7 +173,7 @@ export default function ProfilePage() {
           </div>
 
           <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
-            {stats(user).map((s) => (
+            {stats(user, postCount).map((s) => (
               <div key={s.label} className="rounded-2xl border border-line/60 bg-bg-subtle/60 p-3">
                 <div className="text-lg font-semibold text-ink">{s.value}</div>
                 <div className="text-[11px] uppercase tracking-wider text-ink-dim">{s.label}</div>
