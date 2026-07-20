@@ -3,6 +3,7 @@
 
 import { useId, useMemo, useRef, useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import clsx from 'clsx';
 import {
   Calendar,
@@ -33,10 +34,10 @@ import {
 } from '@/lib/profile';
 import { posts, postsByUser, currentUser, formatCount, type User } from '@/lib/mock-data';
 
-const stats = (u: User, postCount: number) => [
+const stats = (u: User, postCount: number): { label: string; value: string; href?: string }[] => [
   { label: 'Posts', value: formatCount(postCount) },
-  { label: 'Following', value: formatCount(u.following ?? 0) },
-  { label: 'Followers', value: formatCount(u.followers ?? 0) },
+  { label: 'Following', value: formatCount(u.following ?? 0), href: `/dashboard/u/${u.handle}/following` },
+  { label: 'Followers', value: formatCount(u.followers ?? 0), href: `/dashboard/u/${u.handle}/followers` },
   { label: 'Joined', value: u.joined ?? 'Mar 2024' },
 ];
 
@@ -173,12 +174,28 @@ export default function ProfilePage() {
           </div>
 
           <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
-            {stats(user, postCount).map((s) => (
-              <div key={s.label} className="rounded-2xl border border-line/60 bg-bg-subtle/60 p-3">
-                <div className="text-lg font-semibold text-ink">{s.value}</div>
-                <div className="text-[11px] uppercase tracking-wider text-ink-dim">{s.label}</div>
-              </div>
-            ))}
+            {stats(user, postCount).map((s) => {
+              const base = 'rounded-2xl border border-line/60 bg-bg-subtle/60 p-3';
+              const body = (
+                <>
+                  <div className="text-lg font-semibold text-ink">{s.value}</div>
+                  <div className="text-[11px] uppercase tracking-wider text-ink-dim">{s.label}</div>
+                </>
+              );
+              return s.href ? (
+                <Link
+                  key={s.label}
+                  href={s.href}
+                  className={clsx(base, 'block text-left transition-colors hover:border-brand-400/40')}
+                >
+                  {body}
+                </Link>
+              ) : (
+                <div key={s.label} className={base}>
+                  {body}
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>

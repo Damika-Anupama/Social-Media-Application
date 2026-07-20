@@ -166,8 +166,16 @@ export function PublicProfileClient({
 
           <div className="mt-6 grid grid-cols-3 gap-3">
             <Stat label="Posts" value={basePosts.length.toString()} />
-            <Stat label="Following" value={formatCount(user.following ?? 0)} />
-            <Stat label="Followers" value={formatCount((user.followers ?? 0) + (following ? 1 : 0))} />
+            <Stat
+              label="Following"
+              value={formatCount(user.following ?? 0)}
+              href={`/dashboard/u/${user.handle}/following`}
+            />
+            <Stat
+              label="Followers"
+              value={formatCount((user.followers ?? 0) + (following ? 1 : 0))}
+              href={`/dashboard/u/${user.handle}/followers`}
+            />
           </div>
         </div>
       </div>
@@ -238,11 +246,19 @@ export function PublicProfileClient({
   );
 }
 
-function Stat({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-2xl border border-line/60 bg-bg-subtle/60 p-3">
+function Stat({ label, value, href }: { label: string; value: string; href?: string }) {
+  const body = (
+    <>
       <div className="text-lg font-semibold text-ink">{value}</div>
       <div className="text-[11px] uppercase tracking-wider text-ink-dim">{label}</div>
-    </div>
+    </>
+  );
+  const base = 'rounded-2xl border border-line/60 bg-bg-subtle/60 p-3';
+  return href ? (
+    <Link href={href} className={clsx(base, 'block text-left transition-colors hover:border-brand-400/40')}>
+      {body}
+    </Link>
+  ) : (
+    <div className={base}>{body}</div>
   );
 }
