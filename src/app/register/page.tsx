@@ -13,6 +13,7 @@ import {
   validateName,
   validatePassword,
 } from '@/lib/validation';
+import { signIn } from '@/lib/session';
 import { ArrowRight, Check, Loader2 } from 'lucide-react';
 import clsx from 'clsx';
 
@@ -54,6 +55,7 @@ export default function RegisterPage() {
 
     setSubmitting(true);
     await new Promise((r) => setTimeout(r, 700));
+    signIn();
     router.push('/dashboard');
   };
 

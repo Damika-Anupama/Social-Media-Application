@@ -1,3 +1,4 @@
+import { AuthGate } from '@/components/dashboard/AuthGate';
 import { Sidebar } from '@/components/dashboard/Sidebar';
 import { MobileTabBar } from '@/components/dashboard/MobileTabBar';
 import { ComposeProvider } from '@/components/dashboard/ComposeContext';
@@ -17,6 +18,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <UserPostsProvider>
           <ComposeProvider>
             <CommandPaletteProvider>
+              <AuthGate>
               <a
                 href="#main-content"
                 className="sr-only z-[100] rounded-full bg-brand-500 px-4 py-2 text-sm font-semibold text-white shadow-lg focus:not-sr-only focus:fixed focus:left-4 focus:top-4"
@@ -41,6 +43,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 <ConnectionBanner />
                 <StorageNotice />
               </div>
+              </AuthGate>
             </CommandPaletteProvider>
           </ComposeProvider>
         </UserPostsProvider>

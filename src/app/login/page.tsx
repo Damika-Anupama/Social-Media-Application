@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { AuthShell } from '@/components/AuthShell';
 import { Field } from '@/components/Field';
 import { validateEmail, validatePassword } from '@/lib/validation';
+import { signIn } from '@/lib/session';
 import { ArrowRight, Loader2 } from 'lucide-react';
 
 export default function LoginPage() {
@@ -30,6 +31,7 @@ export default function LoginPage() {
 
     setSubmitting(true);
     await new Promise((r) => setTimeout(r, 600));
+    signIn();
     router.push('/dashboard');
   };
 

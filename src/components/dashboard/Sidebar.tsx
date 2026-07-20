@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import clsx from 'clsx';
 import {
   Home,
@@ -22,6 +22,7 @@ import { conversations, currentUser, notifications } from '@/lib/mock-data';
 import { useComposeOpener } from '@/components/dashboard/ComposeContext';
 import { useReadNotifications, countUnread } from '@/lib/useReadNotifications';
 import { useReadConversations, countUnreadMessages } from '@/lib/useReadConversations';
+import { signOut } from '@/lib/session';
 
 const navItems = [
   { href: '/dashboard', label: 'Home', icon: Home, badge: null as number | null },
@@ -36,6 +37,7 @@ const navItems = [
 
 export function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
   const openCompose = useComposeOpener();
   const { readIds } = useReadNotifications();
   const unreadNotifications = countUnread(notifications, readIds);
@@ -124,9 +126,20 @@ export function Sidebar() {
             <div className="truncate text-sm font-semibold text-ink">{currentUser.name}</div>
             <div className="truncate text-xs text-ink-dim">@{currentUser.handle}</div>
           </div>
-          <Link href="/login" className="btn-icon h-8 w-8" aria-label="Sign out">
+          <button
+            type="button"
+            onClick={() => {
+              // A real sign-out: clear the session flag, then leave the gated
+              // dashboard. The gate also listens for this, so any other open
+              // dashboard tab bounces to /login too.
+              signOut();
+              router.replace('/login');
+            }}
+            className="btn-icon h-8 w-8"
+            aria-label="Sign out"
+          >
             <LogOut className="h-4 w-4" />
-          </Link>
+          </button>
         </div>
       </div>
     </aside>
