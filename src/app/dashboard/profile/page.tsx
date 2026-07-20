@@ -140,7 +140,12 @@ export default function ProfilePage() {
               </span>
             )}
             {user.link && (
-              <a className="inline-flex min-h-[24px] items-center gap-1 text-brand-300 hover:text-brand-200" href="#">
+              <a
+                className="inline-flex min-h-[24px] items-center gap-1 text-brand-300 hover:text-brand-200"
+                href={`https://${user.link}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <LinkIcon className="h-3.5 w-3.5" /> {user.link}
               </a>
             )}
