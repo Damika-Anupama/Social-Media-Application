@@ -26,6 +26,8 @@ import {
 } from 'lucide-react';
 import { useComposeOpener } from './ComposeContext';
 import { useDialog } from '@/lib/useDialog';
+import { searchDirectory } from '@/lib/commandPalette';
+import { users, communities } from '@/lib/mock-data';
 
 type CommandPaletteContextValue = {
   open: boolean;
@@ -37,7 +39,7 @@ const Ctx = createContext<CommandPaletteContextValue | null>(null);
 type Command = {
   id: string;
   label: string;
-  group: 'Navigate' | 'Actions';
+  group: 'Navigate' | 'Actions' | 'People' | 'Communities';
   icon: React.ComponentType<{ className?: string }>;
   keywords?: string;
   perform: () => void;
@@ -114,7 +116,35 @@ export function CommandPaletteProvider({ children }: { children: React.ReactNode
       });
     }
 
-    return [...actionCommands, ...navCommands];
+    // Typing turns the palette into a real jump list: matching people and
+    // communities navigate straight to their pages, not just the fixed sections.
+    const { people, communities: communityResults } = searchDirectory(q, users, communities);
+    const directoryCommands: Command[] = [
+      ...people.map((p) => ({
+        id: `user:${p.id}`,
+        label: p.label,
+        group: 'People' as const,
+        icon: User,
+        keywords: p.keywords,
+        perform: () => {
+          router.push(p.href);
+          close();
+        },
+      })),
+      ...communityResults.map((c) => ({
+        id: `community:${c.id}`,
+        label: c.label,
+        group: 'Communities' as const,
+        icon: Users2,
+        keywords: c.keywords,
+        perform: () => {
+          router.push(c.href);
+          close();
+        },
+      })),
+    ];
+
+    return [...actionCommands, ...directoryCommands, ...navCommands];
   }, [navItems, query, router, openCompose, close]);
 
   const filtered = useMemo(() => {
