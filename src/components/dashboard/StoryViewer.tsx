@@ -16,10 +16,13 @@ export function StoryViewer({
   stories,
   startIndex,
   onClose,
+  onSeen,
 }: {
   stories: Story[];
   startIndex: number;
   onClose: () => void;
+  /** Called with a story's id once it is shown, so the grid can mark it watched. */
+  onSeen?: (id: string) => void;
 }) {
   const [index, setIndex] = useState(startIndex);
   const [progress, setProgress] = useState(0);
@@ -35,6 +38,12 @@ export function StoryViewer({
   const { toast } = useToast();
 
   const current = stories[index];
+
+  // Whichever story is on screen counts as watched. Fires on open and on every
+  // advance, so the grid's "Already watched" row reflects the whole session.
+  useEffect(() => {
+    onSeen?.(current.id);
+  }, [current.id, onSeen]);
 
   /**
    * Send the reply as a direct message to whoever posted the story. If there is

@@ -8,13 +8,13 @@ import { TopBar } from '@/components/dashboard/TopBar';
 import { StoryViewer } from '@/components/dashboard/StoryViewer';
 import { stories } from '@/lib/mock-data';
 import { Avatar } from '@/components/Avatar';
+import { useSeenStories, partitionStories } from '@/lib/useSeenStories';
 
 export default function StoriesPage() {
   const [openAt, setOpenAt] = useState<number | null>(null);
+  const { seenIds, markSeen } = useSeenStories();
 
-  const live = stories.filter((s) => s.isLive);
-  const fresh = stories.filter((s) => !s.isLive && !s.viewed);
-  const seen = stories.filter((s) => s.viewed);
+  const { live, fresh, watched: seen } = partitionStories(stories, seenIds);
 
   return (
     <div className="px-4 pt-1 sm:px-6">
@@ -40,7 +40,12 @@ export default function StoriesPage() {
       )}
 
       {openAt !== null && (
-        <StoryViewer stories={stories} startIndex={openAt} onClose={() => setOpenAt(null)} />
+        <StoryViewer
+          stories={stories}
+          startIndex={openAt}
+          onClose={() => setOpenAt(null)}
+          onSeen={markSeen}
+        />
       )}
     </div>
   );
