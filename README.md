@@ -11,13 +11,13 @@ client-side validation on the auth screens "signs you in" and redirects to
 
 ## Branches
 
-- **`main`** — historical snapshot. Original Spring Boot backend (Java) and the
-  legacy Angular 11 + NativeScript frontend, combined into a single workspace.
-  Full Git history for each side lives in the original repos:
-  - https://github.com/Damika-Anupama/Social-Media-Application-Backend
-  - https://github.com/Damika-Anupama/Social-Media-Application-Frontend
-- **`frontend-demo`** — production branch for the live demo. A fresh Next.js app
-  at the repo root. This is the branch deployed to Vercel.
+`frontend-demo` is the sole published branch and the production branch for the
+live Vercel demo. It includes the local history formerly held on `main`; the
+older Spring Boot and Angular project history is also available in the original
+repositories:
+
+- https://github.com/Damika-Anupama/Social-Media-Application-Backend
+- https://github.com/Damika-Anupama/Social-Media-Application-Frontend
 
 ## Features
 
