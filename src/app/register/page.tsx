@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { AuthShell } from '@/components/AuthShell';
-import { DemoEntry } from '@/components/DemoEntry';
 import { Field } from '@/components/Field';
 import {
   passwordScore,
@@ -73,9 +72,7 @@ export default function RegisterPage() {
         </>
       }
     >
-      <DemoEntry label="Skip sign-up — explore the demo" dividerLabel="or create an account" />
-
-      <form onSubmit={handleSubmit} noValidate className="mt-5 space-y-5">
+      <form onSubmit={handleSubmit} noValidate className="space-y-5">
         <div className="grid gap-5 sm:grid-cols-2">
           <Field
             label="Full name"

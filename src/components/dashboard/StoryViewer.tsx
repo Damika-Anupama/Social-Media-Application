@@ -1,7 +1,6 @@
 'use client';
 
 import Image from 'next/image';
-import { createPortal } from 'react-dom';
 import { useCallback, useEffect, useState } from 'react';
 import clsx from 'clsx';
 import { X, ChevronLeft, ChevronRight, Heart, Send, Radio, Pause, Play } from 'lucide-react';
@@ -125,7 +124,7 @@ export function StoryViewer({
     return () => document.removeEventListener('keydown', onKey);
   }, [next, prev]);
 
-  const overlay = (
+  return (
     <div
       ref={dialogRef}
       role="dialog"
@@ -277,12 +276,4 @@ export function StoryViewer({
       </div>
     </div>
   );
-
-  // Portal to <body> so the overlay is a true full-screen window. Rendered in
-  // place, it is trapped by the Stories card's `overflow-hidden` and its
-  // `backdrop-filter` (which makes the card a containing block for fixed
-  // descendants) — the popup would be clipped to that small card instead of
-  // covering the screen.
-  if (typeof document === 'undefined') return null;
-  return createPortal(overlay, document.body);
 }

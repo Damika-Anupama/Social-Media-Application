@@ -7,12 +7,10 @@ import Link from 'next/link';
 import clsx from 'clsx';
 import { Plus, Radio } from 'lucide-react';
 import { stories, currentUser } from '@/lib/mock-data';
-import { useSeenStories, isStoryWatched } from '@/lib/useSeenStories';
 import { StoryViewer } from './StoryViewer';
 
 export function StoryRail() {
   const [viewerIndex, setViewerIndex] = useState<number | null>(null);
-  const { seenIds, markSeen } = useSeenStories();
 
   const others = stories.slice(1);
 
@@ -44,16 +42,14 @@ export function StoryRail() {
           <span className="relative text-xs font-medium text-ink">Your story</span>
         </button>
 
-        {others.map((s, i) => {
-          const watched = isStoryWatched(s, seenIds);
-          return (
+        {others.map((s, i) => (
           <button
             key={s.id}
             type="button"
             onClick={() => setViewerIndex(i + 1)}
             className={clsx(
               'group relative flex h-40 w-28 shrink-0 flex-col justify-end overflow-hidden rounded-2xl border p-3 text-left transition-transform hover:-translate-y-0.5',
-              watched ? 'border-line/60 opacity-70' : 'border-transparent',
+              s.viewed ? 'border-line/60 opacity-70' : 'border-transparent',
             )}
           >
             <Image src={s.thumbnail} alt="" fill sizes="112px" className="object-cover" />
@@ -66,7 +62,7 @@ export function StoryRail() {
               <span
                 className={clsx(
                   'absolute left-2 top-2 inline-flex h-9 w-9 items-center justify-center rounded-full p-0.5',
-                  watched ? 'bg-line' : 'bg-gradient-to-br from-brand-400 via-accent-coral to-accent-sun',
+                  s.viewed ? 'bg-line' : 'bg-gradient-to-br from-brand-400 via-accent-coral to-accent-sun',
                 )}
               >
                 <img src={s.user.avatar} alt={s.user.name} className="h-full w-full rounded-full bg-bg" />
@@ -74,8 +70,7 @@ export function StoryRail() {
             )}
             <span className="relative text-xs font-medium text-ink line-clamp-1">{s.user.name.split(' ')[0]}</span>
           </button>
-          );
-        })}
+        ))}
       </div>
 
       {viewerIndex !== null && (
@@ -83,7 +78,6 @@ export function StoryRail() {
           stories={stories}
           startIndex={viewerIndex}
           onClose={() => setViewerIndex(null)}
-          onSeen={markSeen}
         />
       )}
     </div>

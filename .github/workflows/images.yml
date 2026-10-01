@@ -1,0 +1,27 @@
+name: Image link check
+
+# Deliberately NOT on push. This check depends on a third party (Unsplash,
+# dicebear) being reachable, and someone else's outage is not a reason to block
+# a merge. It runs weekly to catch images that rot after they shipped — which is
+# exactly how two dead ids sat in the app unnoticed.
+on:
+  schedule:
+    # Weekly, Monday 07:13 UTC — off the hour, since everyone schedules on :00.
+    - cron: '13 7 * * 1'
+  workflow_dispatch:
+
+jobs:
+  check:
+    name: Every remote image still resolves
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          # 22 for --experimental-strip-types: the script imports mock-data.ts directly,
+          # so the image list can never drift from what the app actually renders.
+          node-version: 22
+
+      - name: Check images
+        run: npm run check:images

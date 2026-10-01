@@ -1,0 +1,82 @@
+name: CI
+
+on:
+  push:
+    branches: [main, frontend-demo]
+  pull_request:
+
+# Cancel superseded runs on the same ref to save CI minutes.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Typecheck · Lint · Test · Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Unit tests
+        run: npm run test
+
+      - name: Build
+        run: npm run build
+
+  # The e2e suite — including the axe accessibility audit — existed only on a
+  # laptop. Every guarantee in it was unenforced: nothing stopped a regression
+  # reaching production. It runs on the built app, so it needs its own job.
+  # One job per browser, in parallel. The suite is 548 tests across four
+  # projects; running them serially in one job took 25+ minutes and starved the
+  # runner badly enough that healthy tests timed out — CI was manufacturing its
+  # own failures.
+  e2e:
+    name: E2E · ${{ matrix.project }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        project: [chromium, webkit, firefox, mobile-safari]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps ${{ matrix.project == 'firefox' && 'firefox' || matrix.project == 'chromium' && 'chromium' || 'webkit' }}
+
+      - name: Build
+        run: npm run build
+
+      # playwright.config.ts starts `npm run start` itself, so the suite runs
+      # against the production bundle, not a dev server.
+      - name: Run suite
+        run: npx playwright test --project=${{ matrix.project }}
+
+      - name: Upload report on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-${{ matrix.project }}
+          path: playwright-report/
+          retention-days: 7

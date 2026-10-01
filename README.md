@@ -9,11 +9,15 @@ All data, photography, and accounts are fictional. Any input that passes
 client-side validation on the auth screens "signs you in" and redirects to
 `/dashboard`; there is no real authentication or server.
 
-## Public demo mirror
+## Branches
 
-This public repository contains only the self-contained `frontend-demo` deployment.
-The complete implementation and its history are maintained in a private source
-repository, which publishes a sanitized orphan commit here after safety checks.
+`frontend-demo` is the sole published branch and the production branch for the
+live Vercel demo. It includes the local history formerly held on `main`; the
+older Spring Boot and Angular project history is also available in the original
+repositories:
+
+- https://github.com/Damika-Anupama/Social-Media-Application-Backend
+- https://github.com/Damika-Anupama/Social-Media-Application-Frontend
 
 ## Features
 
@@ -80,8 +84,8 @@ npm test             # Vitest unit tests
 npm run build        # next build
 ```
 
-CI in the private source repository runs all four checks before the sanitized
-frontend demo is published here.
+A GitHub Actions workflow (`.github/workflows/ci.yml`) runs all four on every
+push to `main`/`frontend-demo` and on pull requests.
 
 ## Testing
 

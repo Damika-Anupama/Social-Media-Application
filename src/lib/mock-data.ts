@@ -91,15 +91,6 @@ const av = (seed: string) =>
 const img = (id: string, w = 1600, h = 1000) =>
   `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=${w}&h=${h}&q=80`;
 
-/**
- * Stories now open in a full-screen viewer, so their source has to be a crisp
- * portrait — a 200×320 thumbnail looked fine in the rail and upscaled to mush at
- * 88vh. A 9:16, 1080×1920, q=85 crop stays sharp on a retina phone; next/image
- * still downsizes it to 112px for the rail from this one source.
- */
-const storyImg = (id: string) =>
-  `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=1080&h=1920&q=85`;
-
 export const currentUser: User = {
   id: 'u_me',
   handle: 'demo',
@@ -140,18 +131,18 @@ export const users: User[] = [
 const byHandle = (h: string) => users.find((u) => u.handle === h)!;
 
 export const stories: Story[] = [
-  { id: 's0', user: currentUser, thumbnail: storyImg('1495474472287-4d71bcdd2085'), caption: 'Studio morning · making coffee, reviewing the new identity work.' },
-  { id: 's1', user: byHandle('nadia'), thumbnail: storyImg('1542038784456-1ea8e935640e'), isLive: true, caption: 'Live from the Halftone studio — type pairing walkthrough.' },
-  { id: 's2', user: byHandle('kenji'), thumbnail: storyImg('1499678329028-101435549a4e'), caption: 'Three frames from this morning, Portra 400.' },
-  { id: 's3', user: byHandle('sasha'), thumbnail: storyImg('1469854523086-cc02fe5d8800'), caption: 'On the road to Phoenix for part two of the cluster series.' },
-  { id: 's4', user: byHandle('amaru'), thumbnail: storyImg('1451187580459-43490279c0fa'), viewed: true, caption: 'Cluster dashboards are green again.' },
-  { id: 's5', user: byHandle('lina'), thumbnail: storyImg('1513104890138-7c749659a591'), caption: 'The new dye lot just came in — naturally indigo.' },
-  { id: 's6', user: byHandle('theo'), thumbnail: storyImg('1470071459604-3b5ec3a7fe05'), caption: 'Procgen town · seed 4729.' },
-  { id: 's7', user: byHandle('priya'), thumbnail: storyImg('1469474968028-56623f02e42e'), viewed: true, caption: 'Field day in the highlands.' },
-  { id: 's8', user: byHandle('marcos'), thumbnail: storyImg('1476480862126-209bfaa8edc8'), caption: '180km · negative split · espresso to celebrate.' },
-  { id: 's9', user: byHandle('aiko'), thumbnail: storyImg('1473163928189-364b2c4e1135'), caption: 'Sketching new italic forms today.' },
-  { id: 's10', user: byHandle('mei'), thumbnail: storyImg('1419242902214-272b3f66ee7a'), isLive: true, caption: 'Live from the observatory — Andromeda over Mauna Kea.' },
-  { id: 's11', user: byHandle('jamal'), thumbnail: storyImg('1470225620780-dba8ba36b745'), caption: 'New track in the works — drums first.' },
+  { id: 's0', user: currentUser, thumbnail: img('1500530855697-b586d89ba3ee', 200, 320), caption: 'Studio morning · making coffee, reviewing the new identity work.' },
+  { id: 's1', user: byHandle('nadia'), thumbnail: img('1542038784456-1ea8e935640e', 200, 320), isLive: true, caption: 'Live from the Halftone studio — type pairing walkthrough.' },
+  { id: 's2', user: byHandle('kenji'), thumbnail: img('1499678329028-101435549a4e', 200, 320), caption: 'Three frames from this morning, Portra 400.' },
+  { id: 's3', user: byHandle('sasha'), thumbnail: img('1517242027094-631f8c218a0f', 200, 320), caption: 'On the road to Phoenix for part two of the cluster series.' },
+  { id: 's4', user: byHandle('amaru'), thumbnail: img('1486325212027-8081e485255e', 200, 320), viewed: true, caption: 'Cluster dashboards are green again.' },
+  { id: 's5', user: byHandle('lina'), thumbnail: img('1513104890138-7c749659a591', 200, 320), caption: 'The new dye lot just came in — naturally indigo.' },
+  { id: 's6', user: byHandle('theo'), thumbnail: img('1542751371-adc38448a05e', 200, 320), caption: 'Procgen town · seed 4729.' },
+  { id: 's7', user: byHandle('priya'), thumbnail: img('1469474968028-56623f02e42e', 200, 320), viewed: true, caption: 'Field day in the highlands.' },
+  { id: 's8', user: byHandle('marcos'), thumbnail: img('1488646953014-85cb44e25828', 200, 320), caption: '180km · negative split · espresso to celebrate.' },
+  { id: 's9', user: byHandle('aiko'), thumbnail: img('1473163928189-364b2c4e1135', 200, 320), caption: 'Sketching new italic forms today.' },
+  { id: 's10', user: byHandle('mei'), thumbnail: img('1502134249126-9f3755a50d78', 200, 320), isLive: true, caption: 'Live from the observatory — Andromeda over Mauna Kea.' },
+  { id: 's11', user: byHandle('jamal'), thumbnail: img('1470225620780-dba8ba36b745', 200, 320), caption: 'New track in the works — drums first.' },
 ];
 
 const corePosts: Post[] = [

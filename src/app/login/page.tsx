@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { AuthShell } from '@/components/AuthShell';
-import { DemoEntry } from '@/components/DemoEntry';
 import { Field } from '@/components/Field';
 import { validateEmail, validatePassword } from '@/lib/validation';
 import { signIn } from '@/lib/session';
@@ -49,9 +48,7 @@ export default function LoginPage() {
         </>
       }
     >
-      <DemoEntry label="Explore the demo" dividerLabel="or sign in with email" />
-
-      <form onSubmit={handleSubmit} noValidate className="mt-5 space-y-5">
+      <form onSubmit={handleSubmit} noValidate className="space-y-5">
         <Field
           label="Email"
           type="email"

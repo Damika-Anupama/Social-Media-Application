@@ -22,14 +22,11 @@ export function StorageNotice() {
       onStorageFailure((failure) => {
         if (warned.current) return;
         warned.current = true;
-        // Sticky, not a 3.2s flash: losing your data is exactly the kind of
-        // warning that must not vanish before it is read. It carries its own
-        // dismiss button, and warning once per session means it never stacks.
         toast(
           failure.quotaExceeded
             ? "Storage is full — this won't be saved after you leave."
             : "Can't save to this browser — changes will be lost when you leave.",
-          { tone: 'info', duration: 0 },
+          { tone: 'info' },
         );
       }),
     [toast],
