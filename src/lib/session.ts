@@ -34,9 +34,32 @@ export function parseSession(raw: string | null): boolean {
   }
 }
 
-/** Read the current session flag from storage. SSR-safe (false on the server). */
+/**
+ * In-memory mirror of the session, for this tab only.
+ *
+ * When storage is unavailable — Safari private browsing, a full quota, a
+ * locked-down profile — the write in `signIn()` fails and the flag never lands.
+ * Without this, the sign-in would appear to succeed and then the AuthGate,
+ * reading storage back and finding nothing, would bounce the viewer straight to
+ * /login: signing in would be impossible on exactly the browsers the storage
+ * layer already goes out of its way to degrade gracefully for. The memory flag
+ * carries the session for the life of the tab so sign-in still works; it is
+ * only consulted when storage has nothing to say.
+ */
+let memorySignedIn = false;
+
+/**
+ * Read the current session flag. SSR-safe (false on the server).
+ *
+ * Storage is authoritative whenever it can answer — so a sign-out in another
+ * tab still takes effect here. Only when storage is empty or unreadable does
+ * this fall back to the in-tab memory flag, which is what keeps sign-in working
+ * when writes throw.
+ */
 export function readSession(): boolean {
-  return parseSession(readRaw(SESSION_KEY));
+  const raw = readRaw(SESSION_KEY);
+  if (raw !== null) return parseSession(raw);
+  return memorySignedIn;
 }
 
 function announce(): void {
@@ -45,12 +68,14 @@ function announce(): void {
 
 /** Mark the viewer signed in. Called after a successful login/register. */
 export function signIn(): void {
+  memorySignedIn = true;
   writeJson(SESSION_KEY, { signedIn: true });
   announce();
 }
 
 /** Clear the session. Called by "Sign out". */
 export function signOut(): void {
+  memorySignedIn = false;
   writeJson(SESSION_KEY, { signedIn: false });
   announce();
 }
